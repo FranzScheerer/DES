@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+#
+#       Collatz numbers, Hailstone algorithm
+#
+#       Copyright (c) 2014 Scheerer Software
+#       Author: Franz Scheerer <scheerer.software@gmail.com>
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+#
+
+def Efile(nam, keytxt):
+  keyn = 117
+  for char in keytxt:
+    keyn = 256 * keyn + ord(char)
+  f = open(nam,'r')
+  data = f.read()
+  cipher = CollatzE(data, keyn)
+  f.close()
+  fnam = nam + '.enc'
+  f = open(fnam, 'w' )
+  f.write(cipher)
+  f.close()
+
+def Dfile(nam, keytxt):
+  keyn = 117
+  for char in keytxt:
+    keyn = 256 * keyn + ord(char)
+  fnam = nam + '.enc'
+  f = open(fnam,'r')
+  cipher = f.read()
+  data = CollatzD(cipher, keyn)
+  f.close()
+  f = open(nam, 'w')
+  f.write(data)
+  f.close()
+
+def CollatzE(data, key):
+    up = 3**90
+    low = 2**42 + 7
+    out = []
+    for char in data:
+      byval = 0
+      for bit in range(8):
+        if key < low:
+          while key < up:
+            key = key**2 + 7
+        if key % 2:
+           key = (3*key+1)/2
+        else:
+           key = key/2
+        byval = byval + ((key & 1) << bit)
+      key = key + ord(char)
+      out.append(chr( (ord(char) ^ byval) & 255) )
+    return ''.join(out)
+
+def CollatzD(data, key):
+    up = 3**90
+    low = 2**42 + 7
+    out = []
+    for char in data:
+      byval = 0
+      for bit in range(8):
+        if key < low:
+          while key < up:
+            key = key**2 + 7
+        if key % 2:
+           key = (3*key+1)/2
+        else:
+           key = key/2
+        byval = byval + ((key & 1) << bit)
+      key = key + ((ord(char) ^ byval) & 255)
+      out.append(chr( (ord(char) ^ byval) & 255) )
+    return ''.join(out)

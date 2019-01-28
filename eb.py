@@ -15,26 +15,6 @@ a = prime - 31
 c = 17
 b = 0
  
-def bin2num(x):
-  res = 0
-  for c in x:
-    res = (res<<8) ^ ord(c)
-  return res
-
-def num2bin(x):
-  res = ''
-  while x > 0:
-    res = chr(x % 256) + res
-    x /= 256
-  return res
-
-def gcd(a,b):
-  if b > a:
-    a,b = b,a
-  while b > 0:
-    a,b = b,a % b
-  return a
-
 def inv(b,m):
   s = 0
   t = 1
@@ -104,10 +84,7 @@ def mulP(P,n):
 def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
-
-x = a + 17
-
-P = genP(x,a,b)
+P = genP(a+17, a, b)
 cinv = inv(c, prime)
 
 f = open(sys.argv[1], 'r')
@@ -115,10 +92,12 @@ message = f.read()
 f.close()
 
 y = [readNumber('y0'), readNumber('y1')]
-
-
-#sig = signSchnorr(P, message, x)
-
 sig = [readNumber('s0'), readNumber('s1')]
+
+print "Public key: X: ", y[0] % prime
+print "Public key: Y: ", y[1] % prime
+print "Sigature    X: ", sig[0]
+print "Sigature    y: ", sig[1]
+print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
 

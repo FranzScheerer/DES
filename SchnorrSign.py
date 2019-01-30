@@ -1,4 +1,9 @@
-import sys, math, hashlib, random
+#Public key: X:  31589741389133467498485049377409088176383143580742
+#Public key: Y:  150844991338099363134563975329455292233558653985486
+#Sigature    X:  29048759453577046130633244911708776627912290891610
+#Sigature    y:  160717029072932688141285465925959237381983041764342
+
+import sys, math, hashlib, random, time
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -154,6 +159,18 @@ def random256(m):
       result = (result << 8) ^ ord(largestr[i])
   return result
 
+def randomX(m):
+  md = hashlib.sha256("***RANDOM-SEED_X***")
+  md.update('large key value for generation of random number')
+  md.update( m )
+  md.update( str(random.randint(0, 999999999999)) )
+  md.update( str(random.randint(0, 9999)) + str(time.gmtime()))
+  result = 0
+  largestr = md.digest()
+  for i in range(len(largestr)):
+      result = (result << 8) ^ ord(largestr[i])
+  return result
+
 def genP(x,a,b):
    if (4*a*a*a + 27*b*b) % prime == 0:
       b = b + 1
@@ -207,18 +224,36 @@ def mulP(P,n):
   return resP
 
 def signSchnorr(G,m,x):
-  k = random256(m)
+  k = randomX(m)
   R = mulP(G,k)
   e = h(str(R[0]) + m)
   return [(k - x*e) % n_, e]
+
+def ecdsa(G,m,x):
+  s = 0 
+  n4 = n_/4
+  hh = h(m)
+  k = 2*randomX(m) + 1
+  R = mulP(G,k)
+  s = ( inv(k,n4) * (hh + R[0]*x) ) % n4
+  return [s, R[0]]
+
+def ecdsa_v(G,m,S,Y):
+  n4 = n_/4
+  si = inv(S[0], n4)
+  hh = h(m)
+  u1 = (si * h(m)) % n4
+  u2 = (si * S[1]) % n4
+  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 
 # x-value of the starting point  
 x = a + 17
 
 # The starting point which is added many times to itself 
-P = genP(x,a,b)
 cinv = inv(c, prime)
+P = genP(x,a,b)
+P = mulP(P,4)
 #Q = P = [2,2]
 #for xx in range(10):
 #  if mulP(P,xx+2) == P: 
@@ -230,16 +265,23 @@ f = open(sys.argv[1],'r')
 message = f.read()
 f.close()
 
-x = random256(sys.argv[1])
+x = 2*random256(sys.argv[1]) + 1
 y = mulP(P,x)
 
 #print "The public key for Schnorr's signature \n", y
 writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
-sig = signSchnorr(P, message, x)
+#sig = signSchnorr(P, message, x)
+sig = ecdsa(P, message, x)
+print "Verify: ", ecdsa_v(P,message,sig,y)
+
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
+
+
+#print "test ecda ", ecdsa_v(P,message,sig,y)
+
 
 #print "Schnorr's signature: ", sig
 #sig = [-1292541924106963660360868782867113836640471570935670569480312947333642626935647627L, 104703152638071622131923639130501753836895585613487714321614770491877799248030L]

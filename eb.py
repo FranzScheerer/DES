@@ -1,5 +1,6 @@
 import math, hashlib, sys
 
+
 def readNumber(fnam):
   f = open(fnam, 'rb')
   n = 0
@@ -10,10 +11,10 @@ def readNumber(fnam):
   return n
 
 prime = (2**160 * 5 * 23) + 86427
-n_ = prime + 1
 a = prime - 31
 c = 17
 b = 0
+n4 = (prime+1) / 4
  
 def inv(b,m):
   s = 0
@@ -32,12 +33,11 @@ def inv(b,m):
   return t
 
 def h(x):
-  dx1 = hashlib.md5(x).digest()
-  dx2 = ''
+  dx1 = hashlib.sha256(x).digest()
   res = 0
-  for cx in (dx1+dx2):
+  for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res
+  return res % n4
 
 def genP(x,a,b):
    if (4*a*a*a + 27*b*b) % prime == 0:
@@ -80,12 +80,19 @@ def mulP(P,n):
      n = n / 2
   return resP
 
-
 def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
-P = genP(a+17, a, b)
+def ecdsa_v(G,m,S,Y):
+  si = inv(S[0], n4)
+  hh = h(m)
+  u1 = (si * h(m)) % n4
+  u2 = (si * S[1]) % n4
+  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
+
 cinv = inv(c, prime)
+P = genP((a+17), a, b)
+P = mulP(P,4)
 
 f = open(sys.argv[1], 'r')
 message = f.read()

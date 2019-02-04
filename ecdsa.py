@@ -27,8 +27,6 @@ def num2bin(x):
   return res
 
 def gcd(a,b):
-  if b > a:
-    a,b = b,a
   while b > 0:
     a,b = b,a % b
   return a
@@ -63,7 +61,7 @@ def nextPrime_odd(p):
 prime = 2**160 * 115 + 86427
 
 #  n_ = 115792089210356248762697446949407573529996955224135760342422259061068512044369
-n_ = prime + 1
+n4 = (prime + 1) / 4
 a = prime - 31
 c = 17
 
@@ -137,12 +135,11 @@ def num2code(x):
 
 
 def h(x):
-  dx1 = hashlib.md5(x).digest()
-  dx2 = ''
+  dx1 = hashlib.sha256(x).digest()
   res = 0
-  for cx in (dx1+dx2):
+  for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res
+  return res % n4
 
 def random256(m):
   md = hashlib.sha256("***RANDOM-SEED_X***")
@@ -222,11 +219,10 @@ def signSchnorr(G,m,x):
   k = randomX(m)
   R = mulP(G,k)
   e = h(str(R[0]) + m)
-  return [(k - x*e) % n_, e]
+  return [(k - x*e) % n4, e]
 
 def ecdsa(G,m,x):
   s = 0 
-  n4 = n_/4
   hh = h(m)
   k = 2*randomX(m) + 1
   R = mulP(G,k)
@@ -234,7 +230,6 @@ def ecdsa(G,m,x):
   return [s, R[0]]
 
 def ecdsa_v(G,m,S,Y):
-  n4 = n_/4
   si = inv(S[0], n4)
   hh = h(m)
   u1 = (si * h(m)) % n4
@@ -276,8 +271,13 @@ writeNumber(sig[1],'s1')
 
 
 print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) == sig[1]
+print ""
 
-
+prsa = 8385647898295963999049140603928120720585934089883136011945521838147034012244988899985964546489882032409210981791177825092404273037568870869737652196281623L
+qrsa = 5896537508120270599375621438873224649609952399446966743129611102982173232417619904161060093921283515355516521689617286169837352797326072163750297707480311L
+print pow(h(message), inv(prime, (prsa-1)*(qrsa-1)), prsa*qrsa)
+print " "
+print "n = ",prsa*qrsa
 #print "Schnorr's signature: ", sig
 #sig = [-1292541924106963660360868782867113836640471570935670569480312947333642626935647627L, 104703152638071622131923639130501753836895585613487714321614770491877799248030L]
 #y=[27762649179563285105647484721445015479861271674141761119854131955025690103024L, 20688193634345669388836031406765716102383163783280129571842259728849528226163L]

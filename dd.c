@@ -270,8 +270,12 @@ int main(int argc, char ** argv)
         data ^= ivec; 
         if ( sz == sum_ ){
             memcpy(buf, &data, 8);
-            while ((amount > 0) && (buf[amount-1] != 0x10))
+            while ((amount > 0) && (buf[amount-1] != 0x10)){
+              if (buf[amount-1] != 0x20){
+               fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! :O\n"); 
+              }
               amount--;
+            }
             if (amount == 0){
                fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! :O\n"); 
             }

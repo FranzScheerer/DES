@@ -203,18 +203,8 @@ int main(int argc, char ** argv)
     }
 
     input = stdin;
+    output = stdout;
 
-    // Default output file if none is specified
-    if(output == NULL) 
-        output = fopen("out_d", "w");
-
-    // Check if we have write rights
-    if(output == NULL)
-    {
-        fprintf(stderr, "Error: don't have permission to write output file\n");
-        exit(-1);
-
-    }
     size_t amount; // Used for fwrite
     uint64_t data, i0;
 

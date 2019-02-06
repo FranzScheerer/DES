@@ -186,12 +186,6 @@ void rounds(uint64_t *data, uint64_t key)
     *data = (*data << 32) + (right_block >> 32);
 }
 
-
-//////////////////////////////////////////////////////
-//                 FUNCTIONS                       //
-////////////////////////////////////////////////////
-
-
 // Main
 int main(int argc, char ** argv)
 {
@@ -202,42 +196,17 @@ int main(int argc, char ** argv)
     FILE *input = NULL;
     FILE *output = NULL;
 
-    if (argc != 2)
+    if (argc != 1)
     {
         fprintf(stderr, "Error:  wrong number of parameters\n");
         exit(-1);
     }
 
-    // Check if there is a input file passed as argument
-    if(argv[1] == NULL)
-    {
-        fprintf(stderr, "Error: Missing input file argument\n");
-        exit(-1);
-    }
-    input = fopen(argv[1], "r");
-    if(input == NULL)
-    {
-        fprintf(stderr, "Error: can't open input file\n");
-        exit(-1);
-    }
-    fseek(input, 0L, SEEK_END);
-    sz = ftell(input);
-    // printf("************ %d\n",sz);
-    fclose(input);
-
-    // Check if we can open the input file
-    input = fopen(argv[1], "rb");
-
-    if(input == NULL)
-    {
-        fprintf(stderr, "Error: can't open input file\n");
-        exit(-1);
-
-    }
+    input = stdin;
 
     // Default output file if none is specified
     if(output == NULL) 
-        output = fopen("output.txt", "w");
+        output = fopen("out_d", "w");
 
     // Check if we have write rights
     if(output == NULL)
@@ -248,11 +217,20 @@ int main(int argc, char ** argv)
     }
     size_t amount; // Used for fwrite
     uint64_t data, i0;
-    sum_ = 0;
-    while((amount = fread(&data, 1, 8, input)) > 0)
+
+    sz = 10;
+    while( 1 )
     {
+        if (sz == 10){ 
+          if ( fread(&data, 1, 8, input) == 0){
+            fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! \n"); 
+          }
+        } else {
+           memcpy(&data, buf, 8);
+        }
+        sz = fread(buf, 1, 8, input);
         i0 = data;
-        sum_ += amount;
+ 
         // Initial permutation
         Permutation(&data, 1);
         
@@ -268,21 +246,23 @@ int main(int argc, char ** argv)
         // Final permutation
         Permutation(&data, 0);
         data ^= ivec; 
-        if ( sz == sum_ ){
+        if ( sz == 0 ){
             memcpy(buf, &data, 8);
+            amount = 8;
             while ((amount > 0) && (buf[amount-1] != 0x10)){
               if (buf[amount-1] != 0x20){
-               fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! :O\n"); 
+               fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! \n"); 
               }
               amount--;
             }
             if (amount == 0){
-               fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! :O\n"); 
+               fprintf(stderr, "Uuuups - das haette nicht passieren duerfen! \n"); 
             }
             else {
                amount--;
             }
-            fwrite(buf, 1, amount, output);            
+            fwrite(buf, 1, amount, output);
+            break;            
         } 
         else{   
            ivec = i0;       
@@ -292,7 +272,7 @@ int main(int argc, char ** argv)
         data = 0;
     }
 
-    fclose(input);
+//    fclose(input);
     fclose(output);
     return 0;
 }                                 

@@ -1,3 +1,9 @@
+/*
+Public key: X:  9077572496699197102248386532972864485916919625199
+Public key: Y:  134515195054937579274419852829878822831347037282247
+Sigature    X:  105815839111076612323401407627985051560607987996934
+Sigature    y:  293770025855885860051732686819580774127
+*/
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -35,11 +41,6 @@ void Permutation(uint64_t* data, bool initial);
 
 
 void rounds(uint64_t *data, uint64_t key);
-
-
-//////////////////////////////////////////////////////
-//                 GLOBAL VARIABLES                //
-////////////////////////////////////////////////////
 
 // Permutation tables
 
@@ -139,11 +140,6 @@ const int Pbox[32] = {
 28, 1, 29, 9, 23, 25, 12, 6, 30, 4, 19, 2, 26
 };
 
-
-//////////////////////////////////////////////////////
-//                  FUNCTIONS                      //
-////////////////////////////////////////////////////
-
 void addbit(uint64_t *block, uint64_t from,
             int position_from, int position_to)
 {
@@ -224,47 +220,23 @@ int main(int argc, char ** argv)
     uint64_t key = 83247388437587L;
     uint64_t ivec = 183247389437587L;
     uint64_t k2 = 983247389437587L;
-    int sz;
+    int sz = 0;
     char buf[8];
     FILE * input = NULL;
     FILE * output = NULL;
 
-    //////////////////////////////////////////////////////
-    //                 OPTION PARSER                   //
-    ////////////////////////////////////////////////////
-
-    int optc = 0;
-
-    if (argc != 2)
+    if (argc != 1)
     {
         fprintf(stderr, "Error:  wrong number of parameters\n");
         exit(-1);
     }
 
-    // Check if there is a input file passed as argument
-    if(argv[1] == NULL)
-    {
-        fprintf(stderr, "Error: Missing input file argument\n");
-        exit(-1);
-    }
-    input = fopen(argv[1], "r");
+    input = stdin;
     if(input == NULL)
     {
         fprintf(stderr, "Error: can't open input file\n");
         exit(-1);
     }
-    fseek(input, 0L, SEEK_END);
-    sz = ftell(input);
-    fclose(input);
-    // Check if we can open the input file
-    input = fopen(argv[1], "rb");
-
-    if(input == NULL)
-    {
-        fprintf(stderr, "Error: can't open input file\n");
-        exit(-1);
-    }
-
     // Default output file if none is specified
     if(output == NULL) 
         output = fopen("out_e", "w");
@@ -283,6 +255,7 @@ int main(int argc, char ** argv)
     {
         int ix;
         ix = amount;
+        sz += amount;
         while (ix < 8){
             buf[ix] = (amount == ix ? 0x10 : 0x20);
             ix++;
@@ -303,6 +276,7 @@ int main(int argc, char ** argv)
         fwrite(&data, 1, 8, output);
         data = 0;
     }
+    fprintf(stderr,"Length of file %d\n", sz);
     if (sz % 8 == 0){
        buf[0] = 0x10;
        buf[1] = buf[2] = buf[3] = buf[4] = buf[5] = buf[6] = buf[7] = 0x20;
@@ -315,7 +289,7 @@ int main(int argc, char ** argv)
        Permutation(&data, 0);
        fwrite(&data, 1, 8, output);
     }
-    fclose(input);
+//  fclose(input);
     fclose(output);
 
     return 0;

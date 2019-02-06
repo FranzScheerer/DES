@@ -29,10 +29,6 @@ uint64_t kx[64] = {15541898472998496256UL,9742394704947216384UL,1179782310628909
 
 #define FIRSTBIT 0x8000000000000000 
 
-//////////////////////////////////////////////////////
-//                 PROTOTYPES                      //
-////////////////////////////////////////////////////
-
 void addbit(uint64_t *block, uint64_t from,
             int position_from, int position_to);
 
@@ -232,21 +228,7 @@ int main(int argc, char ** argv)
     }
 
     input = stdin;
-    if(input == NULL)
-    {
-        fprintf(stderr, "Error: can't open input file\n");
-        exit(-1);
-    }
-    // Default output file if none is specified
-    if(output == NULL) 
-        output = fopen("out_e", "w");
-
-    // Check if we have write rights
-    if(output == NULL)
-    {
-        fprintf(stderr, "Error: don't have permission to write output file\n");
-        exit(-1);
-    }
+    output = stdout;
 
     size_t amount; // Used for fwrite
     uint64_t data;

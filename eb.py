@@ -1,6 +1,5 @@
 import math, hashlib, sys
 
-
 def readNumber(fnam):
   f = open(fnam, 'rb')
   n = 0
@@ -85,8 +84,8 @@ def verify(G,s,Y,e,m):
 
 def ecdsa_v(G,m,S,Y):
   si = inv(S[0], n4)
-  hh = h(m)
-  u1 = (si * h(m)) % n4
+  hh = h(m + str(S[1]))
+  u1 = (si * hh) % n4
   u2 = (si * S[1]) % n4
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
@@ -107,4 +106,5 @@ print "Sigature    X: ", sig[0]
 print "Sigature    y: ", sig[1]
 print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
+print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
 

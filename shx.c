@@ -206,10 +206,16 @@ int main(int narg, char *argv[]){
   BYTE hash[32];
   SHA256_CTX ctx;
   sha256_init(&ctx);
-  if (narg > 1)
-     sha256_update(&ctx, argv[1], strlen(argv[1]));
-  else
-     sha256_update(&ctx, "0", 1); 
+  if (narg > 1){
+     FILE *fp;
+     int c;
+     fp = fopen(argv[1], "r");
+     while ( (c = fgetc(fp)) != -1)
+        sha256_update(&ctx, (BYTE*)&c, 1);
+     fclose(fp);
+  } else {
+     sha256_update(&ctx, "\0", 0); 
+  }
   sha256_final(&ctx, hash);
   for (i=0;i<32;i++) printf("%02x", hash[i]);
   printf("\n");

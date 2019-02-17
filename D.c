@@ -109,14 +109,10 @@ int main(int narg, char **argv) {
       R2[i] = i;
       R3[i] = i;
   }
-  if (narg == 1){
-      fprintf(stderr,"ERROR: no password\n");
-      return -1;     
-  } else {
       spritz("1", strlen("1"),0);      
-      spritz(argv[1], strlen(argv[1]),0); 
+      spritz("ERROR: no password\n", strlen("ERROR: no password\n"),0); 
       spritz("Pass2", strlen("Pass2"),0);       
-  }
+  
   i = 256;  
   while (i > 1) {
      i = i - 1;
@@ -167,9 +163,11 @@ int main(int narg, char **argv) {
         i1 = (addR1 + spritz("ENIGMA2", 0, addR1)) % 256;
         i2 = spritz("ENIGMA2", 0, addR1);
         i3 = spritz("ENIGMA2", 0, addR1);
-        t = R1[i1]; R1[i1]=R1[i2];R1[i2]=t;
-        IR1[R1[i1]] = i1;
-        IR1[R1[i2]] = i2;
+        t = R3[i1]; 
+        R3[i1] = R3[i2];
+        R3[i2] = t;
+        IR3[R3[i1]] = i1;
+        IR3[R3[i2]] = i2;
         {
             int t1,t2,t3,t4;
             t4 = c;

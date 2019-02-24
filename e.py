@@ -172,22 +172,12 @@ def randomX(m):
   return result
 
 def genP(x,a,b):
-   if pow(c*x**3 + a*x + b, (prime - 1)/2, prime) != 1:
+   if pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:
      x = prime - x
-   y = pow(c*x**3 + a*x + b, (prime + 1)/4, prime)
-   return [x % prime, (y) % prime]
-
-def dpoint(P):
-  x = P[0]
-  y = P[1] 
-  s = ((3*(x**2) + a) * inv(2*y, prime)) % prime
-  xr = (s**2 - 2*x) % prime
-  yr = (-y + s * (x-xr)) % prime
-  return [xr , yr]
+   y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
+   return [(x) % prime, (y) % prime]
 
 def addP(P,Q):
-  if P == Q:
-    return dpoint(P)
   x1 = P[0]
   x2 = Q[0]
   y1 = P[1] 

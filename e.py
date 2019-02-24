@@ -1,3 +1,12 @@
+'''
+Public key: X:  103906006718052110902169049870974959817427789371704
+Public key: Y:  1674806087064178522885202972342590242420415136331
+Sigature    X:  18010107303844949835350100892884460288168430083581
+Sigature    y:  34523600745681466958569379715665959497545247519603
+
+The verification of signature  False
+The verification of ecdsa signature  True
+'''
 import sys, math, hashlib, random, time
 
 def writeNumber(number, fnam):
@@ -60,7 +69,6 @@ def nextPrime_odd(p):
 #prime = nextPrime(115 * 2**160)
 prime = 2**160 * 115 + 86427
 
-#  n_ = 115792089210356248762697446949407573529996955224135760342422259061068512044369
 n4 = (prime + 1) / 4
 a = prime - 1
 c = 1
@@ -164,18 +172,16 @@ def randomX(m):
   return result
 
 def genP(x,a,b):
-   if (4*a*a*a + 27*b*b) % prime == 0:
-      b = b + 1
-   while pow(c*x**3 + a*x + b, (prime - 1)/2, prime) != 1:
-     x = x + 1
+   if pow(c*x**3 + a*x + b, (prime - 1)/2, prime) != 1:
+     x = prime - x
    y = pow(c*x**3 + a*x + b, (prime + 1)/4, prime)
    return [x % prime, (y) % prime]
 
 def dpoint(P):
   x = P[0]
   y = P[1] 
-  s = ((3*c*(x**2) + a) * inv(2*y, prime)) % prime
-  xr = (cinv*s**2 - 2*x) % prime
+  s = ((3*(x**2) + a) * inv(2*y, prime)) % prime
+  xr = (s**2 - 2*x) % prime
   yr = (-y + s * (x-xr)) % prime
   return [xr , yr]
 
@@ -186,12 +192,13 @@ def addP(P,Q):
   x2 = Q[0]
   y1 = P[1] 
   y2 = Q[1] 
-  while x1 < x2:
-     x1 = x1 + prime
-  while y1 < y2:
-     y1 = y1 + prime
-  s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
+  if x2 > x1:
+    x2 = x2 - prime
+  if x1 == x2:
+     s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
+  else:
+     s = ((y1-y2) * inv(x1-x2, prime)) % prime
+  xr = s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
@@ -201,18 +208,16 @@ def mulP(P,n):
   if n < 0:
     resP[1] = prime - resP[1]
     n = (-1)*n 
-  bsize = 20
-  while 2**bsize < n:
-     bsize = bsize + 1
   PP = resP
-  for b in range(bsize + 1):
-     if (n & (1 << b) != 0):   
+  while n > 0:
+     if (n & 1) != 0:   
          if isFirst:
             resP = PP
             isFirst = False
          else:
             resP = addP(resP,PP)
-     PP = dpoint(PP) 
+     PP = addP(PP, PP)
+     n = n >> 1 
   return resP
 
 def signSchnorr(G,m,x):
@@ -342,3 +347,25 @@ print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) 
 #print "Does it work, is mm = m? ", mm == m
 
 #print prime - (2**160) * 115
+#a=7
+#b=7
+#import math
+#for px in range(3500):
+#  prime = 4*(px+1) + 3
+#  if pow(7, prime-1, prime) == 1:
+#    x=0
+#    sq = math.sqrt(prime)
+#    while pow(x**3 + a*x + b,(prime-1)/2,prime) != 1:
+#      x = x + 1
+#    y = pow(x**3 + a*x + b,(prime+1)/4,prime)
+#    Q = P = [x,y]
+#    Q = addP(Q,P)
+#    n = 3
+#    while Q[0] != P[0]:
+#      n = n + 1
+#      Q = addP(Q,P)
+#    if n - prime - 1 > sq:
+#      print prime, " ", n - prime - 1
+
+
+  

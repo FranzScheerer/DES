@@ -1,11 +1,15 @@
 '''
-Public key: X:  103906006718052110902169049870974959817427789371704
-Public key: Y:  1674806087064178522885202972342590242420415136331
-Sigature    X:  18010107303844949835350100892884460288168430083581
-Sigature    y:  34523600745681466958569379715665959497545247519603
+E: Set of points with
+   y^2 = (x^3 - x) mod p 
+plus neutral element at infinity defines a smooth elliptic curve.
+p := (2^160 * 5 * 23) + 86427
+is a prime number
 
-The verification of signature  False
-The verification of ecdsa signature  True
+The number
+n4 := (p + 1) / 4
+is also a prime. 
+P is specially choosen point on the curve, 
+such that n4 is the order of the subgroup.
 '''
 import sys, math, hashlib, random, time
 
@@ -71,7 +75,6 @@ prime = 2**160 * 115 + 86427
 
 n4 = (prime + 1) / 4
 a = prime - 1
-c = 1
 
 def inv(b,m):
   s = 0

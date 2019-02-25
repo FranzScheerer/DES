@@ -3,13 +3,13 @@ E: Set of points with
    y^2 = (x^3 - x) mod p 
 plus neutral element at infinity defines a smooth elliptic curve.
 p := (2^160 * 5 * 23) + 86427
-is a prime number
+is a prime number.
 
 The number
 n4 := (p + 1) / 4
 is also a prime. 
-P is specially choosen point on the curve, 
-such that n4 is the order of the subgroup.
+G is specially chosen point on the curve E, 
+such that n4 is the order of the subgroup of that point G.
 '''
 import sys, math, hashlib, random, time
 

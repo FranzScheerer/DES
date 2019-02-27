@@ -18,10 +18,10 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F") 
+prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFEE37") 
 a = 0
-b = 7
-n4 = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141")
+b = 3
+n = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFE 26F2FC17 0F69466A 74DEFD8D")
  
 def inv(b,m):
   s = 0
@@ -44,7 +44,7 @@ def h(x):
   res = 0
   for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res % n4
+  return res % n
 
 def genP(x,a,b):
    while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
@@ -89,10 +89,10 @@ def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
 def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], n4)
+  si = inv(S[0], n)
   hh = h(m + str(S[1]))
-  u1 = (si * hh) % n4
-  u2 = (si * S[1]) % n4
+  u1 = (si * hh) % n
+  u2 = (si * S[1]) % n
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 #cinv = inv(c, prime)

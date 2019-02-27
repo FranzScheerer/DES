@@ -9,10 +9,10 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F") 
+prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFEE37") 
 a = 0
-b = 7
-n4 = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141")
+b = 3
+n4 = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFE 26F2FC17 0F69466A 74DEFD8D")
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')

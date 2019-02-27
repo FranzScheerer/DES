@@ -9,10 +9,10 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = hextxt2num("FFFFFFFF 00000001 00000000 00000000 00000000 FFFFFFFF FFFFFFFF FFFFFFFF") 
-a = prime - 3
-b = hextxt2num("5AC635D8 AA3A93E7 B3EBBD55 769886BC 651D06B0 CC53B0F6 3BCE3C3E 27D2604B")
-n4 = hextxt2num("FFFFFFFF 00000000 FFFFFFFF FFFFFFFF BCE6FAAD A7179E84 F3B9CAC2 FC632551")
+prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F") 
+a = 0
+b = 7
+n4 = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141")
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -153,6 +153,8 @@ def randomX(m):
   return result
 
 def genP(x,a,b):
+   while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
+     x = x + 1
    y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
    return [(x) % prime, (y) % prime]
 
@@ -211,7 +213,7 @@ def ecdsa_v(G,m,S,Y):
 
 
 # x-value of the starting point  
-x = a - 17
+x = 17
 
 # The starting point which is added many times to itself 
 #cinv = inv(c, prime)

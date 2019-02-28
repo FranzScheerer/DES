@@ -159,7 +159,6 @@ def genP(x,a,b):
    y = pow(tmp, inv(5, prime - 1), prime)
    return [(x) % prime, (y) % prime]
 
-
 def addP(P,Q):
   x1 = P[0]
   x2 = Q[0]
@@ -226,7 +225,7 @@ f = open(sys.argv[1],'r')
 message = f.read()
 f.close()
 
-x = 2*random256(sys.argv[1]) + 1
+x = random256(sys.argv[1]) % n4
 y = mulP(P,x)
 
 #print "The public key for Schnorr's signature \n", y

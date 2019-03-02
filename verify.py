@@ -18,10 +18,10 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = 115792089237316195423570985008687907853269984665640564039457584007913129640423L
-h_ = 8 * 9 * 7 * 301219
+prime = 115*2**160 + 86427
+h_ = 4
 n = (prime + 1)/(h_)
-a = prime - 17
+a = prime - 1
 b = 0
  
 def inv(b,m):
@@ -48,8 +48,8 @@ def h(x):
   return res % n
 
 def genP(x,a,b):
-   while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
-     x = x + 1
+   if (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
+     x = prime - x
    y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
    return [(x) % prime, (y) % prime]
 
@@ -64,7 +64,7 @@ def addP(P,Q):
      s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
+  xr = s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
@@ -96,8 +96,7 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
-#cinv = inv(c, prime)
-cinv=1
+
 P = genP(17, a, b)
 P = mulP(P,h_)
 

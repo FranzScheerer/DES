@@ -1,16 +1,3 @@
-'''
-E: Set of points with
-   y^2 = (x^3 - x) mod p 
-plus neutral element at infinity defines a smooth elliptic curve.
-p := (2^160 * 5 * 23) + 86427
-is a prime number.
-
-The number 
-n4 := (p + 1) / 4
-is also a prime. 
-G is specially chosen point on the curve E, 
-such that n4 is the order of the subgroup of that point G.
-'''
 import sys, math, hashlib, random, time
 
 def writeNumber(number, fnam):
@@ -66,10 +53,10 @@ def nextPrime_odd(p):
     break
   return p
 
-prime = 115792089237316195423570985008687907853269984665640564039457584007913129640423L
-h_ = 8 * 9 * 7 * 301219
+prime = 115*2**160 + 86427
+h_ = 4
 n4 = (prime + 1)/(h_)
-a = prime - 17
+a = prime - 1
 b = 0
 
 def inv(b,m):
@@ -167,8 +154,8 @@ def randomX(m):
   return result
 
 def genP(x,a,b):
-   while (pow(x**3 + a*x + b, (prime - 1) / 2, prime) != 1):
-     x = x + 1
+   if (pow(x**3 + a*x + b, (prime - 1) / 2, prime) != 1):
+     x = prime - x
    y = pow(x**3 + a*x + b, (prime + 1) / 4, prime)
    return [(x) % prime, (y) % prime]
 
@@ -227,6 +214,10 @@ def ecdsa_v(G,m,S,Y):
 
 P = genP(17, a, b)
 P = mulP(P, h_)
+
+print "Base point:\n", P
+Q = mulP(P,random.randint(1,n4))
+print "Second point\n",Q
 
 f = open(sys.argv[1],'r')
 message = f.read()

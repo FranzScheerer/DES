@@ -18,8 +18,8 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = 115*2**160 + 86427
-h_ = 4
+prime = 746975106511015010896458941361712303516180297891220107035031
+h_ = 8 * 17 * 1387223951
 n = (prime + 1)/(h_)
 a = prime - 1
 b = 0
@@ -48,8 +48,8 @@ def h(x):
   return res % n
 
 def genP(x,a,b):
-   if (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
-     x = prime - x
+   while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
+     x = x + 1
    y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
    return [(x) % prime, (y) % prime]
 

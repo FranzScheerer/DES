@@ -28,33 +28,33 @@ def gcd(a,b):
   return a
 
 def nextPrime(p):
- while p % 4 != 3:
+ while p % 8 != 3:
    p = p + 1
  return nextPrime_odd(p)
 
 def nextPrime_odd(p):
-  m_ = 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
+  m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
   while True:
     while gcd(p,m_) != 1:
-      p = p + 4 
+      p = p + 8 
     q = (p+1)/4
-    if (pow(2,p-1,p) != 1):
-       p = p + 4
+    if (pow(2,p-1,p) != 1 or pow(7,q-1,q) != 1):
+       p = p + 8
        continue
     if (pow(3,p-1,p) != 1):
-       p = p + 4
+       p = p + 8
        continue
     if (pow(5,p-1,p) != 1):
-       p = p + 4
+       p = p + 8
        continue
     if (pow(17,p-1,p) != 1):
-       p = p + 4
+       p = p + 8
        continue
     break
   return p
 
-prime = 746975106511015010896458941361712303516180297891220107035031
-h_ = 8 * 17 * 1387223951
+prime = 39132472195907923298288079854653344382267
+h_ = 4
 n4 = (prime + 1)/(h_)
 a = prime - 1
 b = 0

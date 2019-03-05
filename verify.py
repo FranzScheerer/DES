@@ -18,20 +18,19 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = 39132472195907923298288079854653344382267
-h_ = 4
+prime = 1393796574908163946345982392040522594173643
+h_ = 12
 n = (prime + 1)/(h_)
-a = prime - 1
-b = 0
+b = prime - 1
+a = 0
 
- 
 def inv(b,m):
   s = 0
   t = 1
   a = m
   while b != 1:
     q = a/b
-    aa = b
+    aa = b 
     b = a % b
     a = aa
     ss = t

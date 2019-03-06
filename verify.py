@@ -19,10 +19,6 @@ def hextxt2num(x):
   return res
 
 prime = 1393796574908163946345982392040522594173643
-h_ = 1
-n = prime
-b = 0
-a = 0
 
 def inv(b,m):
   s = 0
@@ -45,12 +41,12 @@ def h(x):
   res = 0
   for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res % n
+  return res % prime
 
-def genP(x,a,b):
-   while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
+def genP(x):
+   while (pow(x**3,  (prime - 1)/2, prime) != 1):
      x = x + 1
-   y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
+   y = pow(x**3, (prime + 1)/4, prime)
    return [(x) % prime, (y) % prime]
 
 def addP(P,Q):
@@ -61,7 +57,7 @@ def addP(P,Q):
   while x1 < x2:
      x1 = x1 + prime
   if x1 == x2:
-     s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
+     s = ((3*(x1**2)) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
   xr = s**2 - x1 - x2
@@ -90,15 +86,14 @@ def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
 def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], n)
+  si = inv(S[0], prime)
   hh = h(m + str(S[1]))
-  u1 = (si * hh) % n
-  u2 = (si * S[1]) % n
+  u1 = (si * hh) % prime
+  u2 = (si * S[1]) % prime
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 
-P = genP(17, a, b)
-P = mulP(P,h_)
+P = genP(17)
 
 f = open(sys.argv[1], 'r')
 message = f.read()

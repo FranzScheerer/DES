@@ -54,9 +54,9 @@ def nextPrime_odd(p):
   return p
 
 prime = 1393796574908163946345982392040522594173643
-h_ = 1
-n4 = prime
-b = 0
+h_ = 12
+n4 = (prime + 1)/h_
+b = 1689398
 a = 0
 
 def inv(b,m):
@@ -223,7 +223,7 @@ f = open(sys.argv[1],'r')
 message = f.read()
 f.close()
 
-x = 2*random256(sys.argv[1]) + 1
+x = random256(sys.argv[1])
 y = mulP(P,x)
 
 #print "The public key for Schnorr's signature \n", y

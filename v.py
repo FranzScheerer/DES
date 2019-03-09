@@ -18,18 +18,20 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFEE37") 
-a = 0
-b = 3
-n = hextxt2num("FFFFFFFF FFFFFFFF FFFFFFFE 26F2FC17 0F69466A 74DEFD8D")
- 
+prime = 1393796574908163946345982392040522594173643
+h_ = 12
+n = (prime + 1)/(h_)
+b = 0
+a = prime - 3
+
+
 def inv(b,m):
   s = 0
   t = 1
   a = m
   while b != 1:
     q = a/b
-    aa = b
+    aa = b 
     b = a % b
     a = aa
     ss = t
@@ -47,9 +49,9 @@ def h(x):
   return res % n
 
 def genP(x,a,b):
-   while (pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1):
+   while (pow(x**3 + a*x + b, (prime - 1) / 2, prime) != 1):
      x = x + 1
-   y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
+   y = pow(x**3 + a*x + b, (prime + 1) / 4, prime)
    return [(x) % prime, (y) % prime]
 
 def addP(P,Q):
@@ -63,7 +65,7 @@ def addP(P,Q):
      s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
+  xr = s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
@@ -95,10 +97,9 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
-#cinv = inv(c, prime)
-cinv=1
-P = genP(17, a, b)
-P = mulP(P,4)
+
+P = genP(34,a,b)
+P = mulP(P,h_)
 
 f = open(sys.argv[1], 'r')
 message = f.read()
@@ -114,4 +115,3 @@ print "Sigature    y: ", sig[1]
 print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
 print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
-

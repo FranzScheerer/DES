@@ -1,6 +1,6 @@
 import random, hashlib, sys
 
-nrsa = 14044894356192612772818841984347061797337978519759913940791778279418677427548291059927485749856462915496664738812520182880020537192153403698682811419371843770446086552727175109468776241126237562982782648467083756626157205149889393549435971679553896797633931663407696559928494554397737985903430806016836540593L
+nrsa =  302115439799038182896386815849878919122567835123131826568109896502620182031223405986247554935662826891896081484109272207954246476604600300991988934803319302738603699646192794202090929866410051848628761825554259507528510671412852153860315176683
 
 def bin2num(x):
   res = 0
@@ -30,6 +30,39 @@ def hextxt2num(x):
     elif ord(c) <= ord('f') and ord(c) >= ord('a'):
        res = (res<<4) + ord(c) - 87
   return res
+
+def code2num(x):
+  res = 0
+  for c in x:
+     if ord(c) >= 48 and ord(c) < 58:
+       res = (res << 6) + ord(c) - 48
+     if ord(c) >= 65 and ord(c) < 91:
+       res = (res << 6) + ord(c) - 55
+     if ord(c) >= 97 and ord(c) < 123:
+       res = (res << 6) + ord(c) - 61
+     if c == '#': 
+       res = (res << 6) + 62
+     if c == '/': 
+       res = (res << 6) + 63
+  return res
+
+def num2code(x):
+  res = ''
+  while x > 0:
+    y = x % 64
+    if y < 10:
+       res = chr( y + 48 ) + res
+    elif y < 36:
+       res = chr( y + 55 ) + res
+    elif y < 62:
+       res = chr( y + 61 ) + res 
+    elif y == 62:
+       res = '#' + res 
+    elif y == 63:
+       res = '/' + res 
+    x /= 64
+  return res
+
 
 def num2hextxt(x):
   res = ''
@@ -67,7 +100,7 @@ def nextPrime(p):
  return nextPrime_odd(p)
 
 def nextPrime_odd(p):
-  m_ = 3*5*7*11*13*17*19*23*29
+  m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
   while gcd(p,m_) != 1:
     p = p + 2 
   if (pow(2,p-1,p) != 1):
@@ -79,6 +112,17 @@ def nextPrime_odd(p):
   if (pow(17,p-1,p) != 1):
       return nextPrime_odd(p + 2)
   return p
+
+def nextP(r,limit):
+  while r < limit: 
+     r = r * 7
+  return nextPrime(r)
+
+def wgxxx():
+  p = nextP(1689398, 2**400)
+  q = nextP(49611, 2**401)
+  writeNumber(inv(rsa129,(p-1)*(q-1)),'gxxx')
+  print "nrsa = ", p*q
   
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -187,10 +231,10 @@ if len(sys.argv) == 3 and sys.argv[1] == "D":
   print " decrypt text:\n " + num2bin(pow (digital2num(sys.argv[2]),rsa129,nrsa)) 
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
-  print "result of verification: " + str(vF(sys.argv[2], hextxt2num(sys.argv[3])))
+  print "result of verification: " + str(vF(sys.argv[2], code2num(sys.argv[3])))
 
 if len(sys.argv) == 3 and sys.argv[1] == "S":
-  print " digital signature:\n " + num2hextxt(sF(sys.argv[2]))
+  print " digital signature:\n " + num2code(sF(sys.argv[2]))
      
 #m = pp(25000)
 #x = 2**50

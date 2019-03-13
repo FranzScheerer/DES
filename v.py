@@ -19,10 +19,10 @@ def hextxt2num(x):
   return res
 
 prime = 1393796574908163946345982392040522594173643
-h_ = 12
-n = (prime + 1)/(h_)
+h_ = 1
+n = (prime + 0)/(h_)
 b = 0
-a = prime - 3
+a = 0
 
 
 def inv(b,m):
@@ -98,8 +98,9 @@ def ecdsa_v(G,m,S,Y):
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 
-P = genP(34,a,b)
-P = mulP(P,h_)
+#P = genP(34,a,b)
+#P = mulP(P,h_)
+P = [1,1]
 
 f = open(sys.argv[1], 'r')
 message = f.read()

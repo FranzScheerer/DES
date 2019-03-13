@@ -38,7 +38,7 @@ def nextPrime_odd(p):
     while gcd(p,m_) != 1:
       p = p + 24 
     q = (p+1)/4/3
-    if (pow(2,p-1,p) != 1 or pow(7,q-1,q) != 1):
+    if (pow(2,p-1,p) != 1):
        p = p + 24
        continue
     if (pow(3,p-1,p) != 1):
@@ -54,10 +54,11 @@ def nextPrime_odd(p):
   return p
 
 prime = 1393796574908163946345982392040522594173643
-h_ = 12
-n4 = (prime + 1)/h_
+#print "prime - 2^140 ", prime - 2**140
+h_ = 1
+n4 = (prime + 0)/h_
 b = 0
-a = prime - 3
+a = 0
 
 def inv(b,m):
   s = 0
@@ -199,21 +200,22 @@ def signSchnorr(G,m,x):
   return [(k - x*e) % n4, e]
 
 def ecdsa(G,m,x):
-  k = randomX(m)
+  k = randomX(m) 
   R = mulP(G,k)
-  hh = h(m+str(R[0]))
-  s = ( inv(k,n4) * (hh + R[0]*x) ) % n4
-  return [s, R[0]]
+  hh = h(m+str(R[0] % n4))
+  s = ( inv(k,n4) * (hh + (R[0] % n4)*x) ) % n4
+  return [s, R[0] % n4]
 
 def ecdsa_v(G,m,S,Y):
   si = inv(S[0], n4)
   hh = h(m + str(S[1]))
   u1 = (si * hh) % n4
   u2 = (si * S[1]) % n4
-  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
+  return addP( mulP(G, u1), mulP(Y, u2) )[0] % n4 == S[1]
 
-P = genP(34, a, b)
-P = mulP(P, h_)
+#P = genP(17,a,b)
+#P = mulP(P, h_)
+P = [1,1]
 
 print "Base point:\n", P
 Q = mulP(P,random.randint(1,n4))
@@ -237,5 +239,12 @@ print "Verify: ", ecdsa_v(P,message,sig,y)
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 
+#print sig
 
 print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) == sig[1]
+
+#h = 2**256
+#for i in range(10):
+#  h = nextPrime(h)
+#  print "\n", h
+#  h = h + 1

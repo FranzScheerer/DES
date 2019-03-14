@@ -217,7 +217,7 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n4
   return addP( mulP(G, u1), mulP(Y, u2) )[0] % n4 == S[1]
 
-P = genP(17,a,b)
+P = genP(34,a,b)
 P = mulP(P, h_)
 
 print "Base point:\n", P
@@ -246,8 +246,3 @@ print sig
 
 print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) == sig[1]
 
-h = 2**256
-for i in range(10):
-  h = nextPrime(h)
-  print "\n", h
-  h = h + 1

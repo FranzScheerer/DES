@@ -9,6 +9,15 @@ def writeNumber(number, fnam):
     f.write(chr(byte))
   f.close()
  
+def readNumber(fnam):
+  f = open(fnam, 'rb')
+  txt = f.read()
+  f.close()
+  number = 0 
+  for c in reversed(txt):
+    number = (number << 8) + ord(c)
+  return number
+ 
 def bin2num(x):
   res = 0
   for c in x:
@@ -58,7 +67,7 @@ prime = 40094690950920881030683735292761468389214899724061
 # A prime factor of RSA100
 #
 h = 1
-n = prime + 0
+n = prime
 b = 0
 a = 0
 
@@ -171,3 +180,5 @@ writeNumber(sig[1],'s1')
 
 print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) == sig[1]
 
+print "s ", sig
+print "y ", y

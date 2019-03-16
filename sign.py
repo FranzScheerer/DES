@@ -62,10 +62,7 @@ def nextPrime_odd(p):
     break
   return p
 
-prime = 40094690950920881030683735292761468389214899724061
-#
-# A prime factor of RSA100
-#
+prime = 2**127 - 1
 h = 1
 n = prime
 b = 0

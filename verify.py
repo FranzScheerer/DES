@@ -20,9 +20,6 @@ def readNumber(fnam):
  
 # VERIFY SCHNORR
 prime = 2**127 - 1
-n = prime
-b = 0
-a = 0
 
 def h(x):
   dx = hashlib.sha256(x).digest()
@@ -37,7 +34,7 @@ def addP(P,Q):
   y1 = P[1] 
   y2 = Q[1] 
   if x1 == x2:
-     s = ((3*(x1**2) + a) * pow(2*y1, prime-2, prime)) % prime
+     s = (3*(x1**2) * pow(2*y1, prime-2, prime)) % prime
   else:
      s = ((y1-y2) * pow(x1-x2, prime-2, prime)) % prime
   xr = s**2 - x1 - x2

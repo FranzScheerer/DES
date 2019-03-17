@@ -44,9 +44,6 @@ def addP(P,Q):
 def mulP(P,n):
   isFirst = True
   resP = P
-  if n < 0:
-    resP[1] = prime - resP[1]
-    n = (-1)*n 
   PP = resP
   while n > 0:
      if (n & 1) != 0:   

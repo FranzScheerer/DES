@@ -63,6 +63,7 @@ def nextPrime_odd(p):
   return p
 
 prime = 2**127 - 1
+
 h = 1
 n = prime
 b = 0
@@ -107,7 +108,7 @@ def randomX(m):
   md.update('large key value for generation of random number')
   md.update( m )
 #  md.update( str(random.randint(0, 999999999999)) )
-  md.update( str(time.gmtime().tm_year + time.gmtime().tm_mday))
+  md.update( str(time.gmtime().tm_year + 0*time.gmtime().tm_mday))
   result = 0
   largestr = md.digest()
   for i in range(len(largestr)):

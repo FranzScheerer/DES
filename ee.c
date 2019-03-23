@@ -5,7 +5,7 @@
 #include <stdbool.h>
 //#include <getopt.h> 
 
-uint64_t kx[64] = {15541898472998496256UL,9742394704947216384UL,1179782310628909056UL,
+uint64_t kx[16] = {15541898472998496256UL,9742394704947216384UL,1179782310628909056UL,
 3083609941704052736UL,1319800878577229824UL,3421426469963220992UL,
 3485005304174794752UL,4313196360192434176UL,8006886543861346304UL,
 11126723444717156352UL,17275337824244322304UL,11506993556996247552UL,
@@ -250,7 +250,7 @@ int main(int argc, char ** argv)
             rounds(&data, kx[ii]);
 
         // Final permutation
-        Permutation(&data, 0);
+        Permutation(&data, 1);
         ivec = data;
         // Write output
         fwrite(&data, 1, 8, output);
@@ -266,7 +266,7 @@ int main(int argc, char ** argv)
        Permutation(&data, 1);
        for(int ii = 11; ii < 16; ii++)
            rounds(&data, kx[ii]);
-       Permutation(&data, 0);
+       Permutation(&data, 1);
        fwrite(&data, 1, 8, output);
     }
 //  fclose(input);

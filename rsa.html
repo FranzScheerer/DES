@@ -72,6 +72,33 @@ function bigInt2num(x){
   }
   return res
 }
+
+function code2bigInt(x){
+  res = bigInt(0)
+//  alert(x.length)
+
+  for (var i = 0; i < x.length; i++){
+    //alert( x.charCodeAt(i) )
+    if (x.charCodeAt(i) >= 48 && x.charCodeAt(i) < 58){
+       res = res.times(64).add( bigInt(x.charCodeAt(i) - 48) )
+    }
+    if (x.charCodeAt(i) >= 65 && x.charCodeAt(i) < 91){
+       res = res.times(64).add( bigInt(x.charCodeAt(i) - 55) )
+    }
+    if (x.charCodeAt(i) >= 97 && x.charCodeAt(i) < 123){
+       res = res.times(64).add( bigInt(x.charCodeAt(i) - 91) )
+    }
+    if (x.charCodeAt(i) == '#'.charCodeAt(0)){
+       res = res.times(64).add( bigInt(62) )
+    }
+    if (x.charCodeAt(i) == '/'.charCodeAt(0)){
+       res = res.times(64).add( bigInt(63) ) 
+    }
+    alert( res )
+   }
+   return res;
+}
+
 /*
 def code2num(x):
   res = 0
@@ -153,7 +180,7 @@ function rsa_vsign(sig){
   else
      alert("CAUTION: The signature is WRONG");
 //  nextPrime(bigInt("545435453475482357457845746756347856347856734657346573465786347856478"))
-    alert( bigInt2code(txt2bigInt("545435453475482357457845746756347856347856734657346573465786347856478")) )   
+    alert( "\nxxxx\n*" + String( bigInt2num( code2bigInt(bigInt2code(txt2bigInt("545435453475482357457845746756347856347856734657346573465786347856478"))))) )   
 }
 function rsa_encrypt(){
   var txt = document.forms[0].ttt2.value

@@ -67,34 +67,31 @@ function txt2bigInt(x){
 function bigInt2num(x){
   var res = '';
   while (x.gt(0)){
-     res = String(x.mod(10)) + res
+     res = String.fromCharCode(x.mod(10).add(48)) + res
      x = x.divide(10)
   }
   return res
 }
 
-function code2bigInt(x){
+function c2bi(x){
   res = bigInt(0)
-//  alert(x.length)
-
-  for (var i = 0; i < x.length; i++){
-    //alert( x.charCodeAt(i) )
+  for (var i = 0; i < x.length; i++)
+  {
     if (x.charCodeAt(i) >= 48 && x.charCodeAt(i) < 58){
-       res = res.times(64).add( bigInt(x.charCodeAt(i) - 48) )
+       res = res.times(64).add( (x.charCodeAt(i) - 48) )
     }
     if (x.charCodeAt(i) >= 65 && x.charCodeAt(i) < 91){
-       res = res.times(64).add( bigInt(x.charCodeAt(i) - 55) )
+       res = res.times(64).add( (x.charCodeAt(i) - 55) )
     }
     if (x.charCodeAt(i) >= 97 && x.charCodeAt(i) < 123){
-       res = res.times(64).add( bigInt(x.charCodeAt(i) - 91) )
+       res = res.times(64).add( (x.charCodeAt(i) - 61) )
     }
     if (x.charCodeAt(i) == '#'.charCodeAt(0)){
-       res = res.times(64).add( bigInt(62) )
+       res = res.times(64).add( 62 )
     }
     if (x.charCodeAt(i) == '/'.charCodeAt(0)){
-       res = res.times(64).add( bigInt(63) ) 
+       res = res.times(64).add( 63 ) 
     }
-    alert( res )
    }
    return res;
 }
@@ -120,33 +117,30 @@ def num2code(x):
   while x > 0:
     y = x % 64
     if y < 10:
-       res = chr( y + 48 ) + res
+       res = res + chr( y + 48 )
     elif y < 36:
-       res = chr( y + 55 ) + res
+       res = res + chr( y + 55 )
     elif y < 62:
-       res = chr( y + 61 ) + res 
+       res = res + chr( y + 61 ) 
     elif y == 62:
-       res = '#' + res 
+       res = res + '#' 
     elif y == 63:
-       res = '/' + res 
+       res = res + '/' 
     x /= 64
   return res
 */
-function bigInt2code(x){
+function bi2c(x){
   var res = '';  
   while ( ! x.equals(0) )
   {
-     if (x.mod(64).lesserOrEquals(10)) {
+     if (x.mod(64).lt(10)) {
         res = String.fromCharCode(x.mod(64).add(48)) + res
      } 
-     else if (x.mod(64).lesserOrEquals(55)){
+     else if (x.mod(64).lt(36)){
         res = String.fromCharCode(x.mod(64).add(55)) + res
      } 
-     else if (x.mod(64).lesserOrEquals(55)){
-        res = String.fromCharCode(x.mod(64).add(61)) + res
-     }
-     else if (x.mod(64).lesserOrEquals(61)){
-        res = String.fromCharCode(x.mod(64).add(61)) + res
+     else if (x.mod(64).lt(62)){
+        res = String.fromCharCode(x.mod(64).add(61))  + res
      }
      else if (x.mod(64).equals(62)){
         res = '#' + res
@@ -158,7 +152,6 @@ function bigInt2code(x){
    }
   return res
 }
-
 
 
 function num2bigInt(x){
@@ -180,7 +173,11 @@ function rsa_vsign(sig){
   else
      alert("CAUTION: The signature is WRONG");
 //  nextPrime(bigInt("545435453475482357457845746756347856347856734657346573465786347856478"))
-    alert( "\nxxxx\n*" + String( bigInt2num( code2bigInt(bigInt2code(txt2bigInt("545435453475482357457845746756347856347856734657346573465786347856478"))))) )   
+    var x_ =  c2bi(bi2c(txt2bigInt("545435453475482357457845746756347856347856734657346573465786347856478")))
+    alert(x_)
+    alert( c2bi(bi2c( bigInt("12354584758478574895748957894") )) )
+    alert( "\nTest code64 \n*" + bigInt2num(x_)
+    +"\n" )   
 }
 function rsa_encrypt(){
   var txt = document.forms[0].ttt2.value

@@ -108,3 +108,26 @@ print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
 print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
 
+def writeNumber(number, fnam):
+  f = open(fnam, 'wb')
+  n = number
+  while n > 0:
+    byte = n % 256
+    n = n / 256
+    f.write(chr(byte))
+  f.close()
+
+def signSchnorr(G,m,x):
+  k = h(m + 'kk1')
+  R = mulP(G,k)
+  e = h(str(R[0]) + m)
+  return [(k - x*e) % n4, e]
+
+sig = signSchnorr(P, message, h('kk1_'))
+y = mulP(P, h('kk1_'))
+writeNumber(sig[0],'s0')
+writeNumber(sig[1],'s1')
+writeNumber(y[0],'y0')
+writeNumber(y[1],'y1')
+
+ 

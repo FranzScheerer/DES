@@ -1,4 +1,4 @@
-import math, hashlib, sys
+import random, math, hashlib, sys
 
 def readNumber(fnam):
   f = open(fnam, 'rb')
@@ -123,8 +123,9 @@ def signSchnorr(G,m,x):
   e = h(str(R[0]) + m)
   return [(k - x*e) % n4, e]
 
-sig = signSchnorr(P, message, h('kk1_'))
-y = mulP(P, h('kk1_'))
+hxx = h('kk1_' + str(777*random.random()))
+sig = signSchnorr(P, message, hxx)
+y = mulP(P, hxx)
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')

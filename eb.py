@@ -9,11 +9,23 @@ def readNumber(fnam):
   f.close()
   return n
 
+def hextxt2num(x):
+  res = 0
+  for c in x:
+    if ord(c) < 58 and ord(c) >= 48:
+       res = (res<<4) + ord(c) - 48
+    elif ord(c) <= ord('f') and ord(c) >= ord('a'):
+       res = (res<<4) + ord(c) - 87
+    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
+       res = (res<<4) + ord(c) - 55
+  return res
+
 prime = (2**160 * 5 * 23) + 86427
-a = prime - 31
-c = 17
-b = 0
-n4 = (prime+1) / 4
+prime = 115792089210356248762697446949407573530086143415290314195533631308867097853951
+a = prime - 3
+c = 1
+b = hextxt2num("5ac635d8 aa3a93e7 b3ebbd55 769886bc 651d06b0 cc53b0f6 3bce3c3e27d2604b")
+n4 =  115792089210356248762697446949407573529996955224135760342422259061068512044369
  
 def inv(b,m):
   s = 0

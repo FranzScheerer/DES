@@ -51,8 +51,6 @@ def h(x):
   return res % n4
 
 def genP(x,a,b):
-   if (4*a*a*a + 27*b*b) % prime == 0:
-      b = b + 1
    while pow(c*x**3 + a*x + b, (prime - 1)/2, prime) != 1:
      x = x + 1
    y = pow(c*x**3 + a*x + b, (prime + 1)/4, prime)

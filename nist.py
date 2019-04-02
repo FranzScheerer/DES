@@ -99,7 +99,7 @@ def ecdsa_v(G,m,S,Y):
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 P = genP((a-17), a, b)
-P = mulP(P,4)
+#print P == mulP(P,n4+1)
 
 f = open(sys.argv[1], 'r')
 message = f.read()

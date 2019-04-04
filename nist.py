@@ -24,8 +24,10 @@ def hextxt2num(x):
 prime = 115792089210356248762697446949407573530086143415290314195533631308867097853951
 a = prime - 3
 b = 41058363725152142129326129780047268409114441015993725554835256314039467401291
+b = 0
 n4 =  115792089210356248762697446949407573529996955224135760342422259061068512044369
- 
+#n4 = (prime + 1)/4
+  
 def inv(b,m):
   s = 0
   t = 1
@@ -98,8 +100,13 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n4
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
-P = genP((a-17), a, b)
-#print P == mulP(P,n4+1)
+px = hextxt2num("6b17d1f2 e12c4247 f8bce6e5 63a440f2 77037d81 2deb33a0 f4a13945 d898c296")
+py = hextxt2num("4fe342e2 fe1a7f9b 8ee7eb4a 7c0f9e16 2bce3357 6b315ece cbb64068 37bf51f5")
+Qx = hextxt2num("c97445f4 5cdef9f0 d3e05e1e 585fc297 235b82b5 be8ff3ef ca67c598 52018192") 
+Qy = hextxt2num("b28ef557 ba31dfcb dd21ac46 e2a91e3c 304f44cb 87058ada 2cb81515 1e610046")
+P = [px,py]
+Q = [Qx,Qy]
+
 
 f = open(sys.argv[1], 'r')
 message = f.read()

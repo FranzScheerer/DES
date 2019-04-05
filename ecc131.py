@@ -21,6 +21,10 @@ def hextxt2num(x):
   return res
 
 #prime = (2**160 * 5 * 23) + 86427
+#
+# The curve eccp131 from the famous ecc challenge
+# The cost to crack the DLP is at least 20000$
+#  
 prime = hextxt2num("04 8E1D43F2 93469E33 194C4318 6B3ABC0B")
 a = hextxt2num("04 1CB121CE 2B31F608 A76FC8F2 3D73CB66")
 b = hextxt2num("02 F74F717E 8DEC9099 1E5EA9B2 FF03DA58") 
@@ -130,19 +134,17 @@ def writeNumber(number, fnam):
   f.close()
 
 def signSchnorr(G,m,x):
-  k = h(m + 'kk1')
+  k = h(m + 'kk1') # pseudo random k, allways different for different m
   R = mulP(G,k)
   e = h(str(R[0]) + m)
   return [(k - x*e) % n4, e]
 
-hxx = h('kk1_' + str(777*random.random()))
-sig = signSchnorr(P, message, hxx)
-y = mulP(P, hxx)
+onetime_private_key = h('kk1_' + str(777*random.random()))
+sig = signSchnorr(P, message, onetime_private_key)
+y = mulP(P, onetime_private_key) # The public key required to verify signature
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
-#print "Test n ", pow(7,n4-1,n4) == 1
-#print b
 
   

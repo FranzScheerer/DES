@@ -29,9 +29,11 @@ prime = hextxt2num("04 8E1D43F2 93469E33 194C4318 6B3ABC0B")
 a = hextxt2num("04 1CB121CE 2B31F608 A76FC8F2 3D73CB66")
 b = hextxt2num("02 F74F717E 8DEC9099 1E5EA9B2 FF03DA58") 
 n4 = hextxt2num("04 8E1D43F2 93469E31 7F7ED728 F6B8E6F1")
-xx = hextxt2num("03 DF84A96B 5688EF57 4FA91A32 E197198A")
-yy = hextxt2num("01 47211619 17A44FB7 B4626F36 F0942E71")
-
+#xx = hextxt2num("03 DF84A96B 5688EF57 4FA91A32 E197198A")
+#yy = hextxt2num("01 47211619 17A44FB7 B4626F36 F0942E71")
+# replaced by random multiple of point
+xx = 784483531216899904315246249432289225643
+yy = 557910831689947807019241149783247956726
   
 def inv(b,m):
   s = 0
@@ -105,9 +107,7 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n4
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
-
 P = [xx,yy]
-
 
 f = open(sys.argv[1], 'r')
 message = f.read()
@@ -134,12 +134,12 @@ def writeNumber(number, fnam):
   f.close()
 
 def signSchnorr(G,m,x):
-  k = h(m + 'kk1') # pseudo random k, allways different for different m
+  k = h(m + 'kk1') # pseudo random k, allways different for different messages m
   R = mulP(G,k)
   e = h(str(R[0]) + m)
   return [(k - x*e) % n4, e]
 
-onetime_private_key = h('kk1_' + str(777*random.random()))
+onetime_private_key = h('kk1_' + str(random.randint(2,n4-1)))
 sig = signSchnorr(P, message, onetime_private_key)
 y = mulP(P, onetime_private_key) # The public key required to verify signature
 writeNumber(sig[0],'s0')

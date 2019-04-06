@@ -146,5 +146,11 @@ writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
-
+#
+# base point P or P' - it doesn't matter,
+# since
+# a P = Q
+# b P'= Q => aP = bP'
+# P' = cP => b = a/c
+#
   

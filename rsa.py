@@ -264,4 +264,4 @@ if len(sys.argv) == 3 and sys.argv[1] == "S":
 #d = inv(e,(p1-1)*(p2-1)) 
 #writeNumber(d,'gxxx')
 #writeNumber(n,'nrsa')
-#pubkey('1','3')   
+#pubkey('1Franz','3Scheerer')   

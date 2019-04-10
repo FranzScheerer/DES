@@ -17,7 +17,9 @@ def readNumber(fnam):
   for c in reversed(txt):
     number = (number << 8) + ord(c)
   return number
- 
+
+ps = readNumber('ps') 
+
 def bin2num(x):
   res = 0
   for c in x:
@@ -37,35 +39,24 @@ def gcd(a,b):
   return a
 
 def nextPrime(p):
- while p % 8 != 3 or p % 3 != 2:
+ while p % 6 != 5:
    p = p + 1
  return nextPrime_odd(p)
 
 def nextPrime_odd(p):
-  m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
+  m_ = 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p,m_) != 1:
-      p = p + 24 
-    q = (p+1)/4/3
-    if (pow(2,p-1,p) != 1):
-       p = p + 24
-       continue
-    if (pow(3,p-1,p) != 1):
-       p = p + 24
-       continue
-    if (pow(5,p-1,p) != 1):
-       p = p + 24
-       continue
-    if (pow(17,p-1,p) != 1):
-       p = p + 24
-       continue
-    break
-  return p
+    while gcd(p, m_) != 1:
+      p = p + 6 
+    if (pow(2,p-1,p) != 1 or pow(2,2*p, 2*p+1) != 1):
+      p = p + 6
+      continue
+    return 2*p+1
 
 prime = 2**127 - 1
 
 h = 1
-n = prime
+n = ps - 1
 b = 0
 a = 0
 
@@ -116,25 +107,13 @@ def randomX(m):
   return result
 
 def addP(P,Q):
-  x1 = P[0]
-  x2 = Q[0]
-  y1 = P[1] 
-  y2 = Q[1] 
-  if x2 > x1:
-    x2 = x2 - prime
-  if x1 == x2:
-     s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
-  else:
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = s**2 - x1 - x2
-  yr = s * (x1-xr) - y1 
-  return [xr % prime, yr % prime]
+  return (P*Q) % ps 
 
 def mulP(P,n):
   isFirst = True
   resP = P
   if n < 0:
-    resP[1] = prime - resP[1]
+    resP = inv(resP, ps-1)
     n = (-1)*n 
   PP = resP
   while n > 0:
@@ -151,10 +130,10 @@ def mulP(P,n):
 def signSchnorr(G,m,x):
   k = randomX(m)
   R = mulP(G,k)
-  e = h(str(R[0]) + m)
+  e = h(str(R) + m)
   return [(k - x*e) % n, e]
 
-P = [1,1]
+P = 17
 
 print "Base point:\n", P
 Q = mulP(P,random.randint(1,n))
@@ -168,15 +147,18 @@ x = random256(sys.argv[1])
 y = mulP(P,x)
 
 #print "The public key for Schnorr's signature \n", y
-writeNumber(y[0],'y0')
-writeNumber(y[1],'y1')
+writeNumber(y,'y')
+#writeNumber(y[1],'y1')
 
 sig = signSchnorr(P, message, x)
 
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 
-print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))[0]) + message) == sig[1]
+print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))) + message) == sig[1]
 
 print "s ", sig
 print "y ", y
+
+#ps = nextPrime(2**800+17)
+#writeNumber(ps,'ps')

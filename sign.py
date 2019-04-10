@@ -113,7 +113,7 @@ def mulP(P,n):
   isFirst = True
   resP = P
   if n < 0:
-    resP = inv(resP, ps-1)
+    resP = inv(resP, ps-2)
     n = (-1)*n 
   PP = resP
   while n > 0:
@@ -133,7 +133,7 @@ def signSchnorr(G,m,x):
   e = h(str(R) + m)
   return [(k - x*e) % n, e]
 
-P = 17
+P = 17 * 17
 
 print "Base point:\n", P
 Q = mulP(P,random.randint(1,n))

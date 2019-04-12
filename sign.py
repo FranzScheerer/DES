@@ -39,7 +39,7 @@ def gcd(a,b):
   return a
 
 def nextPrime(p):
- while p % 6 != 5:
+ while p % 12 != 11:
    p = p + 1
  return nextPrime_odd(p)
 
@@ -47,9 +47,9 @@ def nextPrime_odd(p):
   m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
   while True:
     while gcd(p, m_) != 1 or gcd(2*p+1, m_) != 1:
-      p = p + 6 
+      p = p + 12 
     if (pow(7,p-1,p) != 1 or pow(7, 2*p, 2*p+1) != 1):
-      p = p + 6
+      p = p + 12
       continue
     return 2*p + 1
 

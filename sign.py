@@ -44,14 +44,14 @@ def nextPrime(p):
  return nextPrime_odd(p)
 
 def nextPrime_odd(p):
-  m_ = 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
+  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p, m_) != 1:
+    while gcd(p, m_) != 1 or gcd(2*p+1, m_) != 1:
       p = p + 6 
-    if (pow(2,p-1,p) != 1 or pow(2,2*p, 2*p+1) != 1):
+    if (pow(7,p-1,p) != 1 or pow(7, 2*p, 2*p+1) != 1):
       p = p + 6
       continue
-    return 2*p+1
+    return 2*p + 1
 
 prime = 2**127 - 1
 
@@ -162,3 +162,4 @@ print "y ", y
 
 #ps = nextPrime(2**800+17)
 #writeNumber(ps,'ps')
+print nextPrime(2**800) 

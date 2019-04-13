@@ -20,12 +20,10 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-#prime = (2**160 * 5 * 23) + 86427
-prime = 115792089210356248762697446949407573530086143415290314195533631308867097853951
+prime = (2**160 * 5 * 23) + 86427
 a = prime - 3
-c = 1
-b = hextxt2num("5ac635d8 aa3a93e7 b3ebbd55 769886bc 651d06b0 cc53b0f6 3bce3c3e27d2604b")
-n4 =  115792089210356248762697446949407573529996955224135760342422259061068512044369
+b = 0
+n4 = (prime + 1)/4
  
 def inv(b,m):
   s = 0
@@ -50,12 +48,6 @@ def h(x):
     res = (res<<8) ^ ord(cx)
   return res % n4
 
-def genP(x,a,b):
-   while pow(c*x**3 + a*x + b, (prime - 1)/2, prime) != 1:
-     x = x + 1
-   y = pow(c*x**3 + a*x + b, (prime + 1)/4, prime)
-   return [x % prime, (y) % prime]
-
 def addP(P,Q):
   x1 = P[0]
   x2 = Q[0]
@@ -64,10 +56,10 @@ def addP(P,Q):
   while x1 < x2:
      x1 = x1 + prime
   if x1 == x2:
-     s = ((3*c*(x1**2) + a) * inv(2*y1, prime)) % prime
+     s = ((3*(x1**2) - 3 + prime) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
+  xr = s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
@@ -99,8 +91,11 @@ def ecdsa_v(G,m,S,Y):
   u2 = (si * S[1]) % n4
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
-cinv = inv(c, prime)
-P = genP((a+17), a, b)
+x = 1
+if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
+   x = prime - x
+y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
+P = [x % prime, y % prime]
 P = mulP(P,4)
 
 f = open(sys.argv[1], 'r')
@@ -142,3 +137,35 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
+def gcd(a,b):
+  while b > 0:
+    a,b = b,a % b
+  return a
+
+def nextPrime(p):
+ while p % 24 != 19:
+   p = p + 1
+ return nextPrime_odd(p)
+
+def nextPrime_odd(p):
+  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
+  while True:
+    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
+      p = p + 24 
+    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
+      p = p + 24
+      continue
+    return p
+
+prime =  nextPrime(100)
+x = 1
+if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
+   x = prime - x
+y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
+P = [x % prime, (y) % prime]
+
+a = prime - 3
+b = 0
+P = mulP(P,4)
+for i in range(18):
+  print " ",mulP(P,3*i+1)," ",mulP(P,3*i+2)," ",mulP(P,3*i+3)

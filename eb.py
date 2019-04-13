@@ -1,5 +1,26 @@
 import random, math, hashlib, sys
 
+def gcd(a,b):
+  while b > 0:
+    a,b = b,a % b
+  return a
+
+def nextPrime(p):
+ while p % 24 != 19:
+   p = p + 1
+ return nextPrime_odd(p)
+
+def nextPrime_odd(p):
+  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
+  while True:
+    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
+      p = p + 24 
+    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
+      p = p + 24
+      continue
+    return p
+
+
 def readNumber(fnam):
   f = open(fnam, 'rb')
   n = 0
@@ -20,7 +41,8 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = (2**160 * 5 * 23) + 86427
+#prime = (2**160 * 5 * 23) + 86427
+prime = nextPrime(2**160 * 5 * 23)
 a = prime - 3
 b = 0
 n4 = (prime + 1)/4
@@ -137,26 +159,6 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
-def gcd(a,b):
-  while b > 0:
-    a,b = b,a % b
-  return a
-
-def nextPrime(p):
- while p % 24 != 19:
-   p = p + 1
- return nextPrime_odd(p)
-
-def nextPrime_odd(p):
-  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
-  while True:
-    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
-      p = p + 24 
-    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
-      p = p + 24
-      continue
-    return p
-
 prime =  nextPrime(100)
 x = 1
 if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:

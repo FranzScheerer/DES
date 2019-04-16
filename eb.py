@@ -42,10 +42,11 @@ def hextxt2num(x):
   return res
 
 #prime = (2**160 * 5 * 23) + 86427
-prime = nextPrime(2**160 * 5 * 23)
+prime = nextPrime(2**128 * 5 * 19)
 a = prime - 3
 b = 0
 n4 = (prime + 1)/4
+hsize = 2**100 + 7
  
 def inv(b,m):
   s = 0
@@ -68,7 +69,7 @@ def h(x):
   res = 0
   for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res % n4
+  return res % hsize
 
 def addP(P,Q):
   x1 = P[0]
@@ -165,7 +166,7 @@ if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
    x = prime - x
 y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
 P = [x % prime, (y) % prime]
-
+print "small example p = ", prime
 a = prime - 3
 b = 0
 P = mulP(P,4)

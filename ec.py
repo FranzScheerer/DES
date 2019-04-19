@@ -134,7 +134,7 @@ print "Sigature    X: ", sig[0]
 print "Sigature    y: ", sig[1]
 print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
+#print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -151,9 +151,19 @@ def signSchnorr(G,m,x):
   e = h(str(R[0]) + m)
   return [(k - x*e) % n4, e]
 
+def ecdsa(G,m,x):
+  k = h(m + 'ecdsa')
+  R = mulP(G,k)
+  hh = h(m+str(R[0]))
+  s = ( inv(k,n4) * (hh + R[0]*x) ) % n4
+  return [s, R[0]]
+
 hxx = h('kk1_' + str(777*random.random()))
 sig = signSchnorr(P, message, hxx)
 y = mulP(P, hxx)
+dsa = ecdsa(P,message,hxx)
+print "The verification of ecdsa signature  ", ecdsa_v(P,message,dsa,y)
+
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')
@@ -161,3 +171,5 @@ writeNumber(y[1],'y1')
 print "\n TEST TEST TEST "
 print "prime       ", pow(7,prime-1,prime) == 1 
 print "prime order ", pow(7,n4-1,n4) == 1 
+print "order       ", P == mulP(P,n4+1) 
+

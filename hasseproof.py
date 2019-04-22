@@ -4,8 +4,8 @@ primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67
 
 for prime in primes:
  print "prime ", prime
- min = (prime + 1) - 2 * math.sqrt(prime)
- max = (prime + 1) + 2 * math.sqrt(prime)
+ min = (prime + 0) - 2 * math.sqrt(prime)
+ max = (prime + 0) + 2 * math.sqrt(prime)
 
  for a in range(prime):
   for b in range(prime):
@@ -19,5 +19,5 @@ for prime in primes:
          if pow(yy, (prime-1)/2, prime) == 1:
            cnt = cnt + 2 
     if cnt > max or cnt < min:
-      print "error b = ", b, " cnt = ", cnt
+      print "prime ", prime, " a = ", a, " b = ", b, " cnt = ", cnt
 

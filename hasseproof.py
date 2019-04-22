@@ -4,7 +4,7 @@ primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67
 
 for prime in primes:
  print "prime ", prime
- min = (prime + 0) - 2 * math.sqrt(prime)
+ min = (prime + 2) - 2 * math.sqrt(prime)
  max = (prime + 0) + 2 * math.sqrt(prime)
 
  for a in range(prime):

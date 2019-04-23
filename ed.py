@@ -168,8 +168,12 @@ writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
-print "\n TEST TEST TEST "
-print "prime       ", pow(7,prime-1,prime) == 1 
-print "prime order ", pow(7,n4-1,n4) == 1 
-print "order       ", P == mulP(P,n4+1) 
+len = 0
+while 2**len < n4:
+  len = len + 1
+print "\nMore security checks "
+print "bitlength ", len
+print "\ncheck prime       ", pow(7,prime-1,prime) == 1 
+print "prime order       ", pow(7,n4-1,n4) == 1 
+print "period            ", P == mulP(P,n4+1) 
 

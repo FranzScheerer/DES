@@ -122,7 +122,19 @@ print "Sigature    X: ", sig[0]
 print "Sigature    y: ", sig[1]
 print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
+x = random.randint(2,n4-1)
+ydsa = mulP(P,x)
+
+def ecdsa(G,m,x):
+  k = h(m + 'ecdsa')
+  R = mulP(G,k)
+  hh = h(m+str(R[0]))
+  s = ( inv(k,n4) * (hh + R[0]*x) ) % n4
+  return [s, R[0]]
+
+sig = ecdsa(P,message,x)
+
+print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, ydsa)
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -153,4 +165,12 @@ writeNumber(y[1],'y1')
 # b P'= Q => aP = bP'
 # P' = cP => b = a/c
 #
+len = 0
+while 2**len < n4:
+  len = len + 1
+print "\nMore security checks "
+print "bitlength ", len
+print "\ncheck prime       ", pow(7,prime-1,prime) == 1 
+print "prime order       ", pow(7,n4-1,n4) == 1 
+print "period            ", P == mulP(P,n4+1) 
   

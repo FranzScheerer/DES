@@ -46,7 +46,6 @@ a = prime - 3
 b = 0
  
 n4 = (prime + 1)/4
-print " ******************* ", n4
 hsize = 2**100 + 7
  
 def inv(b,m):
@@ -161,8 +160,13 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
-
-print " Challenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime)
+lb = n4
+cx = 0
+while lb > 0:
+  lb = lb/2
+  cx = cx + 1
+print "Bitlength ", cx
+print "\nChallenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime)
 q = n4
 print " check (p+1)/4 ", pow(7,q-1,q)
 print " check order   ", mulP(P,q+1) == P

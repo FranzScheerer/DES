@@ -41,11 +41,12 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-#prime = (2**160 * 5 * 23) + 86427
-prime = nextPrime(2**128 * 5 * 19)
+prime = 32326824857489154029020587706017980114227
 a = prime - 3
 b = 0
+ 
 n4 = (prime + 1)/4
+print " ******************* ", n4
 hsize = 2**100 + 7
  
 def inv(b,m):
@@ -119,7 +120,7 @@ if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
    x = prime - x
 y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
 P = [x % prime, y % prime]
-P = mulP(P,4)
+P = mulP(P, 4)
 
 f = open(sys.argv[1], 'r')
 message = f.read()
@@ -160,15 +161,18 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
-prime =  nextPrime(100)
-x = 1
-if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
-   x = prime - x
-y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
-P = [x % prime, (y) % prime]
-print "small example p = ", prime
-a = prime - 3
-b = 0
-P = mulP(P,4)
-for i in range(18):
-  print " ",mulP(P,3*i+1)," ",mulP(P,3*i+2)," ",mulP(P,3*i+3)
+
+print " Challenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime)
+q = n4
+print " check (p+1)/4 ", pow(7,q-1,q)
+print " check order   ", mulP(P,q+1) == P
+print "\n\nPx ", P[0]
+print "Py ", P[1]
+
+Q = mulP(P, random.randint(2,prime-2) )
+
+print "Challenge: Find d, Q = d P "
+print "\n\nQx ", Q[0]
+print "Qy ", Q[1]
+
+

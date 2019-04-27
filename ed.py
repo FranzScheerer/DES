@@ -164,16 +164,19 @@ y = mulP(P, hxx)
 dsa = ecdsa(P,message,hxx)
 print "The verification of ecdsa signature  ", ecdsa_v(P,message,dsa,y)
 
+l = n4
+cx = 0
+while l > 0:
+  cx = cx + 1
+  l = l/2
+print "\nbitlength of order ", cx
+print "check 4a^3 + 27b^2 ", (4*a*a*a + 27*b*b) % prime != 0
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
 writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
-len = 0
-while 2**len < n4:
-  len = len + 1
-print "\nMore security checks "
-print "bitlength ", len
-print "\ncheck prime       ", pow(7,prime-1,prime) == 1 
-print "prime order       ", pow(7,n4-1,n4) == 1 
-print "period            ", P == mulP(P,n4+1) 
+print "\nmore security checks "
+print "prime         ", pow(7,prime-1,prime) == 1 
+print "prime order   ", pow(7,n4-1,n4) == 1 
+print "order         ", P == mulP(P,n4+1), " not equal to p ", prime != n4 
 

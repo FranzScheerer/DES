@@ -121,7 +121,7 @@ P = [x, y]
 print "check (x,y) ", (y**2 - (x**3 + b)) % prime == 0
 P = mulP(P,12)
 print "check (x,y) ", (P[1]**2 - (P[0]**3 + b)) % prime == 0
-print "period ", mulP(P,prime+1) == P
+print "check period ", mulP(P,prime+1+1) == P
 
 f = open(sys.argv[1], 'r')
 message = f.read()

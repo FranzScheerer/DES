@@ -166,7 +166,7 @@ while lb > 0:
   lb = lb/2
   cx = cx + 1
 print "Bitlength ", cx
-print "\nChallenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
+print "\nChallenege: a = p-5, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
 
 print " check prime r ", pow(7,r-1,r) == 1
 print " check period  ", mulP(P,r+1) == P

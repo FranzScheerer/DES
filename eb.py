@@ -41,11 +41,11 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = 32326824857489154029020587706017980114227
-a = prime - 3
+prime = nextPrime(2019 * (2**130))
+a = prime - 5
 b = 0
  
-n4 = (prime + 1)/4
+r = (prime + 1)/4
 hsize = 2**100 + 7
  
 def inv(b,m):
@@ -108,10 +108,10 @@ def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
 def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], n4)
+  si = inv(S[0], r)
   hh = h(m + str(S[1]))
-  u1 = (si * hh) % n4
-  u2 = (si * S[1]) % n4
+  u1 = (si * hh) % r
+  u2 = (si * S[1]) % r
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 x = 1
@@ -134,7 +134,7 @@ print "Sigature    X: ", sig[0]
 print "Sigature    y: ", sig[1]
 print ""
 print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
+#print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
 
 def writeNumber(number, fnam):
   f = open(fnam, 'wb')
@@ -149,7 +149,7 @@ def signSchnorr(G,m,x):
   k = h(m + 'kk1')
   R = mulP(G,k)
   e = h(str(R[0]) + m)
-  return [(k - x*e) % n4, e]
+  return [(k - x*e) % r, e]
 
 hxx = h('kk1_' + str(777*random.random()))
 sig = signSchnorr(P, message, hxx)
@@ -160,16 +160,16 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
-lb = n4
+lb = r
 cx = 0
 while lb > 0:
   lb = lb/2
   cx = cx + 1
 print "Bitlength ", cx
-print "\nChallenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime)
-q = n4
-print " check (p+1)/4 ", pow(7,q-1,q)
-print " check order   ", mulP(P,q+1) == P
+print "\nChallenege: a = p-3, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
+
+print " check prime r ", pow(7,r-1,r) == 1
+print " check period  ", mulP(P,r+1) == P
 print "\n\nPx ", P[0]
 print "Py ", P[1]
 

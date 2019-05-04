@@ -44,6 +44,8 @@ def hextxt2num(x):
 prime = nextPrime(2019 * (2**130))
 a = prime - 5
 b = 0
+c = 17
+cinv = pow(c, prime-2, prime)
  
 r = (prime + 1)/4
 hsize = 2**100 + 7
@@ -79,10 +81,10 @@ def addP(P,Q):
   while x1 < x2:
      x1 = x1 + prime
   if x1 == x2:
-     s = ((3*(x1**2) - 3 + prime) * inv(2*y1, prime)) % prime
+     s = ((3*c*(x1**2) - 3 + prime) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = s**2 - x1 - x2
+  xr = cinv*s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
@@ -115,9 +117,9 @@ def ecdsa_v(G,m,S,Y):
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 x = 1
-if pow(x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
+if pow(c*x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
    x = prime - x
-y = pow(x**3 - 3*x + prime, (prime + 1)/4, prime)
+y = pow(c*x**3 - 3*x + prime, (prime + 1)/4, prime)
 P = [x % prime, y % prime]
 P = mulP(P, 4)
 

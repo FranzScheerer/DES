@@ -81,7 +81,7 @@ def addP(P,Q):
   while x1 < x2:
      x1 = x1 + prime
   if x1 == x2:
-     s = ((3*c*(x1**2) - 3 + prime) * inv(2*y1, prime)) % prime
+     s = ((3*c*(x1**2) - 5 + prime) * inv(2*y1, prime)) % prime
   else:  
      s = ((y1-y2) * inv(x1-x2, prime)) % prime
   xr = cinv*s**2 - x1 - x2
@@ -117,9 +117,9 @@ def ecdsa_v(G,m,S,Y):
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 x = 1
-if pow(c*x**3 - 3*x + prime, (prime - 1)/2, prime) != 1:
+if pow(c*x**3 - 5*x + prime, (prime - 1)/2, prime) != 1:
    x = prime - x
-y = pow(c*x**3 - 3*x + prime, (prime + 1)/4, prime)
+y = pow(c*x**3 - 5*x + prime, (prime + 1)/4, prime)
 P = [x % prime, y % prime]
 P = mulP(P, 4)
 

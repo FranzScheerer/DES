@@ -44,7 +44,10 @@ def hextxt2num(x):
 prime = nextPrime(2019 * (2**130))
 a = prime - 5
 b = 0
-c = 18
+c = 17
+while pow(c, (prime-1)/3, prime) == 1:
+  c = c + 1
+print "factor c = ", c
 cinv = pow(c, prime-2, prime)
  
 r = (prime + 1)/4

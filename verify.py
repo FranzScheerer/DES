@@ -112,13 +112,6 @@ def mulP(P,n):
 def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
-def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], r)
-  hh = h(m + str(S[1]))
-  u1 = (si * hh) % r
-  u2 = (si * S[1]) % r
-  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
-
 x = 1
 if pow(c*x**3 - 5*x + prime, (prime - 1)/2, prime) != 1:
    x = prime - x

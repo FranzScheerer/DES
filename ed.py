@@ -42,10 +42,11 @@ def hextxt2num(x):
   return res
 
 #prime = (2**160 * 5 * 23) + 86427
-prime = 6277101735386680763835789423207666416083908700390324961279
+#prime = 6277101735386680763835789423207666416083908700390324961279
+prime = 2**160 - 2**31 - 1
 a = prime - 3
 b = hextxt2num("64210519 e59c80e7 0fa7e9ab 72243049 feb8deec c146b9b1")
-n4 = 6277101735386680763835789423176059013767194773182842284081 
+r = hextxt2num("01 00000000 00000000 0001F4C8 F927AED3 CA752257") 
 hsize = 2**100 + 7
  
 def inv(b,m):
@@ -108,10 +109,10 @@ def verify(G,s,Y,e,m):
   return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
 def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], n4)
+  si = inv(S[0], r)
   hh = h(m + str(S[1]))
-  u1 = (si * hh) % n4
-  u2 = (si * S[1]) % n4
+  u1 = (si * hh) % r
+  u2 = (si * S[1]) % r
   return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
 
 x = 1
@@ -149,13 +150,13 @@ def signSchnorr(G,m,x):
   k = h(m + 'kk1')
   R = mulP(G,k)
   e = h(str(R[0]) + m)
-  return [(k - x*e) % n4, e]
+  return [(k - x*e) % r, e]
 
 def ecdsa(G,m,x):
   k = h(m + 'ecdsa')
   R = mulP(G,k)
   hh = h(m+str(R[0]))
-  s = ( inv(k,n4) * (hh + R[0]*x) ) % n4
+  s = ( inv(k,r) * (hh + R[0]*x) ) % r
   return [s, R[0]]
 
 hxx = h('kk1_' + str(777*random.random()))
@@ -164,7 +165,7 @@ y = mulP(P, hxx)
 dsa = ecdsa(P,message,hxx)
 print "The verification of ecdsa signature  ", ecdsa_v(P,message,dsa,y)
 
-l = n4
+l = r
 cx = 0
 while l > 0:
   cx = cx + 1
@@ -177,6 +178,6 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 print "\nmore security checks "
 print "prime         ", pow(7,prime-1,prime) == 1 
-print "prime order   ", pow(7,n4-1,n4) == 1 
-print "order         ", P == mulP(P,n4+1), " not equal to p ", prime != n4 
+print "prime order   ", pow(7,r-1,r) == 1 
+print "order         ", P == mulP(P,r+1), " not equal to p ", prime != r 
 

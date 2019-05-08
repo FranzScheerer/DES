@@ -1,37 +1,4 @@
-import sys, math, hashlib, random, time
-
-def writeNumber(number, fnam):
-  f = open(fnam, 'wb')
-  n = number
-  while n > 0:
-    byte = n % 256
-    n = n / 256
-    f.write(chr(byte))
-  f.close()
- 
-def readNumber(fnam):
-  f = open(fnam, 'rb')
-  txt = f.read()
-  f.close()
-  number = 0 
-  for c in reversed(txt):
-    number = (number << 8) + ord(c)
-  return number
-
-ps = readNumber('ps') 
-
-def bin2num(x):
-  res = 0
-  for c in x:
-    res = (res<<8) ^ ord(c)
-  return res
-
-def num2bin(x):
-  res = ''
-  while x > 0:
-    res = chr(x % 256) + res
-    x /= 256
-  return res
+import random, math, hashlib, sys
 
 def gcd(a,b):
   while b > 0:
@@ -39,27 +6,53 @@ def gcd(a,b):
   return a
 
 def nextPrime(p):
- while p % 12 != 11:
+ while p % 24 != 19:
    p = p + 1
  return nextPrime_odd(p)
 
 def nextPrime_odd(p):
   m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p, m_) != 1 or gcd(2*p+1, m_) != 1:
-      p = p + 12 
-    if (pow(7,p-1,p) != 1 or pow(7, 2*p, 2*p+1) != 1):
-      p = p + 12
+    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
+      p = p + 24 
+    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
+      p = p + 24
       continue
-    return 2*p + 1
+    return p
 
-prime = 2**127 - 1
 
-h = 1
-n = ps - 1
+def readNumber(fnam):
+  f = open(fnam, 'rb')
+  n = 0
+  snum = f.read()
+  for i in range(len(snum)):
+    n = (n << 8) ^ ord(snum[len(snum)-i-1])   
+  f.close()
+  return n
+
+def hextxt2num(x):
+  res = 0
+  for c in x:
+    if ord(c) < 58 and ord(c) >= 48:
+       res = (res<<4) + ord(c) - 48
+    elif ord(c) <= ord('f') and ord(c) >= ord('a'):
+       res = (res<<4) + ord(c) - 87
+    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
+       res = (res<<4) + ord(c) - 55
+  return res
+
+prime = nextPrime(2019 * (2**130))
+a = prime - 5
 b = 0
-a = 0
-
+c = 17
+while pow(c, (prime-1)/3, prime) == 1:
+  c = c + 1
+print "factor c = ", c
+cinv = pow(c, prime-2, prime)
+ 
+r = (prime + 1)/4
+hsize = 2**100 + 7
+ 
 def inv(b,m):
   s = 0
   t = 1
@@ -76,90 +69,102 @@ def inv(b,m):
     t = t + m
   return t
 
-
 def h(x):
   dx1 = hashlib.sha256(x).digest()
   res = 0
   for cx in (dx1):
     res = (res<<8) ^ ord(cx)
-  return res % n
-
-def random256(m):
-  md = hashlib.sha256("***RANDOM-SEED_X***")
-  md.update('large key value for generation of random number')
-  md.update( m )
-  result = 0
-  largestr = md.digest()
-  for i in range(len(largestr)):
-      result = (result << 8) ^ ord(largestr[i])
-  return result
-
-def randomX(m):
-  md = hashlib.sha256("***RANDOM-SEED_X***")
-  md.update('large key value for generation of random number')
-  md.update( m )
-#  md.update( str(random.randint(0, 999999999999)) )
-  md.update( str(time.gmtime().tm_year + 0*time.gmtime().tm_mday))
-  result = 0
-  largestr = md.digest()
-  for i in range(len(largestr)):
-      result = (result << 8) ^ ord(largestr[i])
-  return result
+  return res % hsize
 
 def addP(P,Q):
-  return (P*Q) % ps 
+  x1 = P[0]
+  x2 = Q[0]
+  y1 = P[1] 
+  y2 = Q[1] 
+  while x1 < x2:
+     x1 = x1 + prime
+  if x1 == x2:
+     s = ((3*c*(x1**2) - 5 + prime) * inv(2*y1, prime)) % prime
+  else:  
+     s = ((y1-y2) * inv(x1-x2, prime)) % prime
+  xr = cinv*s**2 - x1 - x2
+  yr = s * (x1-xr) - y1 
+  return [xr % prime, yr % prime]
 
 def mulP(P,n):
   isFirst = True
   resP = P
   if n < 0:
-    resP = inv(resP, ps-2)
+    resP[1] = prime - resP[1]
     n = (-1)*n 
   PP = resP
   while n > 0:
-     if (n & 1) != 0:   
+     if (n % 2 != 0):   
          if isFirst:
             resP = PP
             isFirst = False
          else:
             resP = addP(resP,PP)
-     PP = addP(PP, PP)
-     n = n >> 1 
+     PP = addP(PP, PP) 
+     n = n / 2
   return resP
 
-def signSchnorr(G,m,x):
-  k = randomX(m)
-  R = mulP(G,k)
-  e = h(str(R) + m)
-  return [(k - x*e) % n, e]
+def verify(G,s,Y,e,m):
+  return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
 
-P = 17 * 17
+x = 1
+if pow(c*x**3 - 5*x + prime, (prime - 1)/2, prime) != 1:
+   x = prime - x
+y = pow(c*x**3 - 5*x + prime, (prime + 1)/4, prime)
+P = [x % prime, y % prime]
+P = mulP(P, 4)
 
-print "Base point:\n", P
-Q = mulP(P,random.randint(1,n))
-print "Second point\n",Q
-
-f = open(sys.argv[1],'r')
+f = open(sys.argv[1], 'r')
 message = f.read()
 f.close()
 
-x = random256(sys.argv[1])
-y = mulP(P,x)
 
-#print "The public key for Schnorr's signature \n", y
-writeNumber(y,'y')
-#writeNumber(y[1],'y1')
+def writeNumber(number, fnam):
+  f = open(fnam, 'wb')
+  n = number
+  while n > 0:
+    byte = n % 256
+    n = n / 256
+    f.write(chr(byte))
+  f.close()
 
-sig = signSchnorr(P, message, x)
+def signSchnorr(G,m,x):
+  k = h(m + 'kk1')
+  R = mulP(G,k)
+  e = h(str(R[0]) + m)
+  return [(k - x*e) % r, e]
 
+hxx = h('kk1_' + str(777*random.random()))
+sig = signSchnorr(P, message, hxx)
+y = mulP(P, hxx)
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
+writeNumber(y[0],'y0')
+writeNumber(y[1],'y1')
 
-print "test Schnoor ", h(str(addP(mulP(P,sig[0]),mulP(y,sig[1]))) + message) == sig[1]
+ 
+lb = r
+cx = 0
+while lb > 0:
+  lb = lb/2
+  cx = cx + 1
+print "Bitlength ", cx
+print "\nChallenege: a = p-5, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
 
-print "s ", sig
-print "y ", y
+print " check prime r ", pow(7,r-1,r) == 1
+print " check period  ", mulP(P,r+1) == P
+print "\n\nPx ", P[0]
+print "Py ", P[1]
 
-#ps = nextPrime(2**800+17)
-#writeNumber(ps,'ps')
-print nextPrime(2**800) 
+Q = mulP(P, random.randint(2,prime-2) )
+
+print "Challenge: Find d, Q = d P "
+print "\n\nQx ", Q[0]
+print "Qy ", Q[1]
+
+

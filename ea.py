@@ -41,7 +41,7 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 55
   return res
 
-prime = nextPrime(115*2**128)
+prime = nextPrime(2**128)
 a = 0
 b = prime - 3
  
@@ -145,6 +145,15 @@ def writeNumber(number, fnam):
     f.write(chr(byte))
   f.close()
 
+def wa(number, fnam):
+  f = open(fnam, 'a')
+  n = number
+  while n > 0:
+    byte = n % 256
+    n = n / 256
+    f.write(chr(byte))
+  f.close()
+
 def signSchnorr(G,m,x):
   k = h(m + 'kk1')
   R = mulP(G,k)
@@ -179,17 +188,21 @@ print "Challenge: Find d, Q = d P "
 print "\n\nQx ", Q[0]
 print "Qy ", Q[1]
 
-prime = nextPrime(100)
-print "\n prime = ", prime
-b = prime - 3
-x = 1
-if pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:
-   x = prime - x
-y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
-P = [x % prime, y % prime]
-P = mulP(P, 12)
+#prime = nextPrime(100)
+#print "\n prime = ", prime
+#b = prime - 3
+#x = 1
+#if pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:
+#   x = prime - x
+#y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
+#P = [x % prime, y % prime]
+#P = mulP(P, 12)
 
-n4 = (prime + 1)/12
-for i in range(n4/3):
-  print mulP(P,3*i+1), mulP(P,3*i+2), mulP(P,3*i+3) 
+#n4 = (prime + 1)/12
+#for i in range(n4/3):
+#  print mulP(P,3*i+1), mulP(P,3*i+2), mulP(P,3*i+3) 
 
+
+for x in range(100):
+  wa(mulP(Q,x+2)[1],'test') 
+  wa(mulP(Q,x+2)[0],'test') 

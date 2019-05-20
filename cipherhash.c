@@ -1,29 +1,39 @@
+//
+// Bereits mit dem trivialen RC4 bekommen wir schon recht gute Zufallszahlen.
+// Mit diesen etwas komplizierten Algorithmus mit CIPHER FEEDBACK haben wir 
+// zusätzlich noch ein Prüfwert (Hash).
+// Damit ist die symmetrische Kryptogragie eigentlich schon abgehandelt.
+//
+
 // Standardeingabe (stdin) und Ausgabe (stdout)
 // und Fehleranzeige (stderr)
 #include <stdio.h>
-// Zur Bestimmung der Länge des Passwort benötigt
+// Zur Bestimmung der Länge des Passworts benötigt.
 // Kopfdatei für Zeichenketten (Strings)
 #include <string.h>
-// N ist die Anzahl der Zeichen im Standardalphabet der EDV
+// N ist die Anzahl der Zeichen im Standardalphabet der EDV (Bytes mit 8 Bits)
 #define N 256
-// Zahl der Wiederholungen
+
+// Zahl der Wiederholungen (Runden)
 #define ROUNDS 3
 
-// Die Ausführung befinnt hier wie immer in C mit der Funktion "main()") 
+// Die Ausführung beginnt hier wie immer in C mit der Funktion "main()") 
 int main(int argn, char **argv){
-// Im Vergleich zu RC4 gibt es eine weitere S-Box S_
+// Im Vergleich zu RC4 gibt es neben der S-Box s eine weitere S-Box s.
 //
   int s[N], s_[N];
   int klen,t,i,j=0;
   int i2,j2;
   int r, c;
-  // Das verschlüsselte Zeichen
-  unsigned char cout;
+  
+  unsigned char cout; // Das ver- oder entschlüsselte Zeichen
+
 // Das Programm soll mit mindestens einem Parameter plus Programmname in argv[0]
-// aufgeruden werden. Der Parameter ist das Passwort.
+// aufgeruden werden. Der Parameter ist das Passwort in argv[1].
 // Wird ein weiterer Parameter angegeben, erfolgt die Entschlüsselung statt
 // der Verschlüsselung.
-// Der Prgrammname sei "a.out", der Standardname ohne Parameter -o bei gcc.
+// Der Prgrammname sei "a.out", der Standardname ohne Parameter -o 
+// beim C-Compiler gcc.
   if (argn < 2){
     fprintf(stderr, "encrypt: cat file | ./a.out password > efile\n");
     fprintf(stderr, "decrypt: cat efile | ./a.out password D > file\n");

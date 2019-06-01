@@ -24,6 +24,13 @@ int t,k=1,i=0,j=0;
 // Generate 10000 x 8 random bits from SBOX
 // 
 int next(){
+    static int S[256],i,j,k;
+    static int init = 1;
+    if (init){
+      for (k=0;k<256;k++) S[k] = k;
+      i = j = k = 0;
+      init = 0;
+    }
     i = (i + 1) % 256;
     j = (S[(S[i] + j) % 256] + k) % 256;
     k = (k + S[(i + j) % 256]) % 256;
@@ -43,5 +50,5 @@ int next_0(){
 
 int main(){
   for (int ii=0; ii<1000000; ii++)
-     printf("%c", next_0() ^ next());
+     printf("%c", next());
 }

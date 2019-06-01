@@ -32,6 +32,7 @@ int next(){
     S[j] = t - S[j];
     return S[S[(t+j) % 256]];
 }
+// PRG exactly as in RC4
 int next_0(){
     i = (i + 1) % 256;
     j = (S[i] + j) % 256;

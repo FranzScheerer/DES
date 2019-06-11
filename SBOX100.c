@@ -37,7 +37,24 @@ int next(){
     t = S[k] + S[j];
     S[k] = t - S[k];
     S[j] = t - S[j];
-    return S[S[(t+j) % 256]];
+    return S[S[(t+j + S[i]*S[j]) % 256]];
+}
+int next_1(){
+    static int S[256],i,j,k;
+    static int init = 1;
+    if (init){
+      for (k=0;k<256;k++) S[k] = k;
+      i = j = k = 0;
+      init = 0;
+    }
+    i = (i + 1) % 256;
+    j = (S[(S[i] + j) % 256] + k) % 256;
+    k = (k + S[(i + j) % 256]) % 256;
+    t = S[i];
+    S[i] = S[j];
+    S[j] = S[k];
+    S[k] = t;
+    return S[S[(t+j + S[i]*S[j]) % 256]];
 }
 int next_0(){
     i = (i + 1) % 256;
@@ -50,5 +67,5 @@ int next_0(){
 
 int main(){
   for (int ii=0; ii<1000000; ii++)
-     printf("%c", next());
+     printf("%c", next() ^ next_1() ^ next_0());
 }

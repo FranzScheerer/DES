@@ -4,7 +4,7 @@
 
 #define SWAP(A,B) tmp = A; A = B; B = tmp;
 
-int a = 0, i = 0, j = 0, w = 1, s[240];
+int a = 0, i = 0, j = 0, w = 1, s[256];
 int tmp;
 
 void update()

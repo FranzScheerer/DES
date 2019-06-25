@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stddef.h>
-#include <string.h>
 
 #define SWAP(A,B) tmp = A; A = B; B = tmp;
 

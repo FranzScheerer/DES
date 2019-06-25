@@ -1,89 +1,69 @@
 #include <stdio.h>
+#include <stddef.h>
+#include <string.h>
 
-int S[256] = {
-47,194,252,122,16,9,255,78,88,123,114,75,143,139,237,160,
-2,151,247,73,230,39,40,32,121,100,178,193,68,17,96,184,
-154,214,49,48,206,242,241,133,131,175,144,213,201,112,164,171,
-181,85,46,221,232,35,235,20,153,50,220,56,92,13,173,234,
-141,58,72,10,57,105,34,165,168,0,15,224,245,240,60,186,
-176,248,52,93,125,110,115,113,4,209,188,62,3,36,150,99,
-30,222,132,86,203,12,83,191,225,202,159,102,136,246,145,215,
-200,69,167,98,238,169,41,250,212,45,76,149,81,208,128,106,
-251,104,24,192,71,147,38,107,79,185,70,82,117,64,170,233,
-229,21,140,97,108,207,53,243,111,74,244,223,116,239,101,211,
-162,90,80,127,84,217,138,195,179,27,89,37,43,77,218,161,
-124,204,6,65,1,197,174,134,157,18,254,19,205,14,236,23,
-253,63,95,55,182,210,44,189,190,130,177,109,94,66,249,59,
-198,137,172,142,22,148,29,42,33,187,227,91,54,135,28,119,
-120,126,166,158,216,87,219,67,26,163,196,146,7,11,228,231,
-183,103,180,25,226,155,129,51,8,5,199,61,118,31,152,156};
+#define SWAP(A,B) tmp = A; A = B; B = tmp;
 
+int a = 0, i = 0, j = 0, w = 1, s[240];
+int tmp;
 
-int t,k=1,i=2,j=3;
-//
-// Modified RC4-Algorithm from Ron Rivest
-// Create hash
-// Compile:
-// gcc hash.c -o hash
-// Usage:
-// cat filename | ./hash
-//
-int next(){
-    static int S[256],i,j,k;
-    static int init = 1;
-    if (init){
-      for (k=0;k<256;k++) S[k] = k;
-      i = j = k = 0;
-      init = 0;
-    }
-    i = (i + 1) % 256;
-    j = (S[(S[i] + j) % 256] + k) % 256;
-    k = (k + S[(i + j) % 256]) % 256;
-    t = S[k] + S[j];
-    S[k] = t - S[k];
-    S[j] = t - S[j];
-    return S[S[(t+j + S[i]*S[j]) % 256]];
+void update()
+{
+    i = (i + w) % 256;
+    j = s[(j + s[i]) % 256];
+    SWAP(s[i], s[j])
 }
-int next_1(){
-    static int S[256],i,j,k;
-    static int init = 1;
-    if (init){
-      for (k=0;k<256;k++) S[k] = k;
-      i = j = k = 0;
-      init = 0;
+
+void absorb_nibble(int x)
+{
+    if (a == 240){ 
+       for (int v = 0; v < 256; v++) 
+           update();
+       w = (w + 2) % 256;
+       a = 0;
     }
-    i = (i + 1) % 256;
-    j = (S[(S[i] + j) % 256] + k) % 256;
-    k = (k + S[(i + j) % 256]) % 256;
-    t = S[i];
-    S[i] = S[j];
-    S[j] = S[k];
-    S[k] = t;
-    return S[S[(t+j + S[i]*S[j]) % 256]];
+    SWAP(s[a], s[x+240])
+    a++;
 }
-int next_0(){
-    i = (i + 1) % 256;
-    j = (S[i] + j + k) % 256;
-    k = (k ^ S[j]) & 0xFF;
-    t = S[i] + S[k];
-    S[i] = t - S[i];
-    S[k] = t - S[k];
-    return S[S[t % 256]];
+
+void absorb_byte(int b)
+{
+    absorb_nibble(b % 16);
+    absorb_nibble(b / 16);
+}
+
+int output()
+{
+    update();
+    return s[j];
+}
+
+void squeeze(char *out, size_t outlen)
+{
+   if (a != 0){ 
+       for (int v = 0; v < 256; v++) 
+           update();
+       w = (w + 2) % 256;
+       a = 0;
+   }    
+   for (int v = 0; v < outlen; v++) 
+       out[v] = output();
 }
 
 int main(){
-  int r,c;
-  while ( (c=fgetc(stdin)) != -1)
-  {
-     r = next() ^ next_1() ^ next_0() ^ c;
-     j ^= r;
+  int c;
+  unsigned char out[32];
+  
+  printf("hash ");
+
+  for (int v = 0; v < 256; v++) 
+      s[v] = v;
+
+  while ( (c = fgetc(stdin)) != -1 ){
+    absorb_byte(c);
   }
-  for (r=0;r<32;r++){
-    k += next_0();
-    k ^= 256; 
-  } 
-  for (r=0;r<32;r++){
-    fprintf(stderr,"%02x", next_0());
-  } 
-  fprintf(stderr,"\nFinished\n");
+  squeeze(out, 32);
+  for (int ii=0; ii<32; ii++)  
+     printf("%x", out[ii]);
+  printf("\n");
 }

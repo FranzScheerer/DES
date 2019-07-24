@@ -10,6 +10,36 @@ def shuffle(ary):
       ary[d],ary[e]=ary[e],ary[d]
     return ary
 
+x = range(256)
+shuffle(x)
+xs = 'int sbox[256] = {'
+for i in range(256):
+  if i<255: 
+     xs += str(x[i]) + ', '
+  else:
+     xs += str(x[i])
+  if i % 16 == 15:  
+    xs = xs + "\n"
+
+xs += '};'
+
+print xs
+
+
+
+------------------------------------------------
+import random
+
+def shuffle(ary):
+    a=len(ary)
+    b=a-1
+    for d in range(b,0,-1):
+      e=random.randint(0,d)
+      if e == d:
+            continue
+      ary[d],ary[e]=ary[e],ary[d]
+    return ary
+
 x = range(64)
 x = shuffle(x)
 xs = ''

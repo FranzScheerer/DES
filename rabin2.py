@@ -147,17 +147,6 @@ def nextPrime_3(p):
       return nextPrime_3(p + 4)
   return p
   
-def h(x):
-  dx1 = hashlib.sha512(x).digest()
-  dx2 = hashlib.sha512(dx1+x).digest()
-  dx3 = hashlib.sha512(x+dx2).digest()
-  dx4 = hashlib.sha512(x+dx3).digest()
-  dx5 = hashlib.sha512(x+dx4).digest()
-  res = 0
-  for cx in (dx1+dx2+dx3+dx4+dx5):
-    res = (res<<8) ^ ord(cx)
-  return res % (nrabin)
-
 
 def root(m, p, q):
   x = h(m)

@@ -1,156 +1,117 @@
-import random, math, hashlib, sys
+import sys
 
-def gcd(a,b):
-  while b > 0:
-    a,b = b,a % b
-  return a
+nrabin = 1275574687529707052360270181001777089671167672089082721378211835809946265943774704298829077228926639950048281145477004890301800135170057571586644210706829514984111130118296710578328836619124873204558928730791403673479088571255223740478384830455590280922940539854528127509L
 
-def nextPrime(p):
- while p % 24 != 19:
-   p = p + 1
- return nextPrime_odd(p)
+def update_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    i_spritz = (i_spritz + w_spritz) % 256
+    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
+    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
 
-def nextPrime_odd(p):
-  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
-  while True:
-    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
-      p = p + 24 
-    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
-      p = p + 24
-      continue
-    return p
+def output_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    update_spritz()
+    return s_spritz[j_spritz]
 
+def shuffle_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    for v in range(256):
+        update_spritz()    
+    w_spritz = (w_spritz + 2) % 256
+    a_spritz = 0
 
-def readNumber(fnam):
-  f = open(fnam, 'rb')
-  n = 0
-  snum = f.read()
-  for i in range(len(snum)):
-    n = (n << 8) ^ ord(snum[len(snum)-i-1])   
-  f.close()
-  return n
+def absorb_nibble_spritz(x):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz == 240:
+        shuffle_spritz()
+    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
+    a_spritz = a_spritz + 1
 
-def hextxt2num(x):
-  res = 0
-  for c in x:
-    if ord(c) < 58 and ord(c) >= 48:
-       res = (res<<4) + ord(c) - 48
-    elif ord(c) <= ord('f') and ord(c) >= ord('a'):
-       res = (res<<4) + ord(c) - 87
-    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
-       res = (res<<4) + ord(c) - 55
-  return res
+def absorb_byte_spritz(b):
+    absorb_nibble_spritz(b % 16)
+    absorb_nibble_spritz(b / 16)
 
-prime = nextPrime(2019 * (2**130))
-a = prime - 5
-b = 0
-c = 17
-while pow(c, (prime-1)/3, prime) == 1:
-  c = c + 1
-print "factor c = ", c
-cinv = pow(c, prime-2, prime)
- 
-r = (prime + 1)/4
-hsize = 2**100 + 7
- 
-def inv(b,m):
-  s = 0
-  t = 1
-  a = m
-  while b != 1:
-    q = a/b
-    aa = b
-    b = a % b
-    a = aa
-    ss = t
-    t = s - q*t
-    s = ss
-  if t < 0:
-    t = t + m
-  return t
+def squeeze_spritz(out, outlen):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz != 0:
+        shuffle_spritz()
+    for v in range(outlen):
+        out.append(output_spritz())
 
 def h(x):
-  dx1 = hashlib.sha256(x).digest()
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
+  for c in x:
+     absorb_byte_spritz(ord(c)) 
+  res = []
+  squeeze_spritz(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrabin)
+
+def code2num(x):
   res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % hsize
+  for c in x:
+     if ord(c) >= 48 and ord(c) < 58:
+       res = (res << 6) + ord(c) - 48
+     if ord(c) >= 65 and ord(c) < 91:
+       res = (res << 6) + ord(c) - 55
+     if ord(c) >= 97 and ord(c) < 123:
+       res = (res << 6) + ord(c) - 61
+     if c == '#': 
+       res = (res << 6) + 62
+     if c == '/': 
+       res = (res << 6) + 63
+  return res
 
-def addP(P,Q):
-  x1 = P[0]
-  x2 = Q[0]
-  y1 = P[1] 
-  y2 = Q[1] 
-  while x1 < x2:
-     x1 = x1 + prime
-  if x1 == x2:
-     s = ((3*c*(x1**2) - 5 + prime) * inv(2*y1, prime)) % prime
-  else:  
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
-  yr = s * (x1-xr) - y1 
-  return [xr % prime, yr % prime]
+def num2code(x):
+  res = ''
+  while x > 0:
+    y = x % 64
+    if y < 10:
+       res = chr( y + 48 ) + res
+    elif y < 36:
+       res = chr( y + 55 ) + res
+    elif y < 62:
+       res = chr( y + 61 ) + res 
+    elif y == 62:
+       res = '#' + res 
+    elif y == 63:
+       res = '/' + res 
+    x /= 64
+  return res
 
-def mulP(P,n):
-  isFirst = True
-  resP = P
-  if n < 0:
-    resP[1] = prime - resP[1]
-    n = (-1)*n 
-  PP = resP
-  while n > 0:
-     if (n % 2 != 0):   
-         if isFirst:
-            resP = PP
-            isFirst = False
-         else:
-            resP = addP(resP,PP)
-     PP = addP(PP, PP) 
-     n = n / 2
-  return resP
+def hF(fnam):
+  f = open(fnam,'r')
+  return h(f.read())
 
-def verify(G,s,Y,e,m):
-  return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
+def sF(fnam):
+  p = readNumber("p")
+  q = readNumber("q")
 
-x = 1
-if pow(c*x**3 - 5*x + prime, (prime - 1)/2, prime) != 1:
-   x = prime - x
-y = pow(c*x**3 - 5*x + prime, (prime + 1)/4, prime)
-P = [x % prime, y % prime]
-P = mulP(P, 4)
+  f = open(fnam,'r')
+  s = root (f.read(), p, q)
+  f.close()
+  return s
 
-f = open(sys.argv[1], 'r')
-message = f.read()
-f.close()
+def vF(s, fnam):
+  a = 5
+  b = 3
+  h0 = hF(fnam)
+  ha = (a*h0) % nrabin
+  hb = (b*h0) % nrabin
+  hab = (a*b*h0) % nrabin
 
-y = [readNumber('y0'), readNumber('y1')]
-sig = [readNumber('s0'), readNumber('s1')]
-
-print "Public key: X: ", y[0] % prime
-print "Public key: Y: ", y[1] % prime
-print "Sigature    X: ", sig[0]
-print "Sigature    y: ", sig[1]
-print ""
-print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-
+  sq = (s * s) % nrabin
+  return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
-lb = r
-cx = 0
-while lb > 0:
-  lb = lb/2
-  cx = cx + 1
-print "Bitlength ", cx
-print "\nChallenege: a = p-5, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
+print "\n\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
 
-print " check prime r ", pow(7,r-1,r) == 1
-print " check period  ", mulP(P,r+1) == P
-print "\n\nPx ", P[0]
-print "Py ", P[1]
+if  len(sys.argv) == 4 and sys.argv[1] == "V":
+  print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
 
-Q = mulP(P, random.randint(2,prime-2) )
-
-print "Challenge: Find d, Q = d P "
-print "\n\nQx ", Q[0]
-print "Qy ", Q[1]
-
-
+     
+                     

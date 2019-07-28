@@ -98,7 +98,7 @@ def sF(fnam):
   return s
 
 def vF(s, fnam):
-  a = 5
+  a = 8
   b = 3
   h0 = hF(fnam)
   ha = (a*h0) % nrabin

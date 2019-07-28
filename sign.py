@@ -1,25 +1,86 @@
-import random, math, hashlib, sys
+import sys
 
-def gcd(a,b):
-  while b > 0:
-    a,b = b,a % b
-  return a
+nrabin = 1275574687529707052360270181001777089671167672089082721378211835809946265943774704298829077228926639950048281145477004890301800135170057571586644210706829514984111130118296710578328836619124873204558928730791403673479088571255223740478384830455590280922940539854528127509L
 
-def nextPrime(p):
- while p % 24 != 19:
-   p = p + 1
- return nextPrime_odd(p)
+def update_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    i_spritz = (i_spritz + w_spritz) % 256
+    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
+    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
 
-def nextPrime_odd(p):
-  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
-  while True:
-    while gcd(p, m_) != 1 or gcd((p+1)/4, m_) != 1:
-      p = p + 24 
-    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/4 - 1, (p+1)/4) != 1):
-      p = p + 24
-      continue
-    return p
+def output_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    update_spritz()
+    return s_spritz[j_spritz]
 
+def shuffle_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    for v in range(256):
+        update_spritz()    
+    w_spritz = (w_spritz + 2) % 256
+    a_spritz = 0
+
+def absorb_nibble_spritz(x):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz == 240:
+        shuffle_spritz()
+    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
+    a_spritz = a_spritz + 1
+
+def absorb_byte_spritz(b):
+    absorb_nibble_spritz(b % 16)
+    absorb_nibble_spritz(b / 16)
+
+def squeeze_spritz(out, outlen):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz != 0:
+        shuffle_spritz()
+    for v in range(outlen):
+        out.append(output_spritz())
+
+def h(x):
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
+  for c in x:
+     absorb_byte_spritz(ord(c)) 
+  res = []
+  squeeze_spritz(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrabin)
+
+def num2code(x):
+  res = ''
+  while x > 0:
+    y = x % 64
+    if y < 10:
+       res = chr( y + 48 ) + res
+    elif y < 36:
+       res = chr( y + 55 ) + res
+    elif y < 62:
+       res = chr( y + 61 ) + res 
+    elif y == 62:
+       res = '#' + res 
+    elif y == 63:
+       res = '/' + res 
+    x /= 64
+  return res
+
+  
+def root(m, p, q):
+  x = h(m)
+  a = 5
+  b = 3
+  if pow(x, (p-1)/2, p) > 1:
+    x *= a
+  if pow(x, (q-1)/2, q) > 1:
+    x *= b
+#  print pow(x, (q-1)/2, q)
+#  print pow(x, (p-1)/2, p)
+  return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
 
 def readNumber(fnam):
   f = open(fnam, 'rb')
@@ -30,141 +91,33 @@ def readNumber(fnam):
   f.close()
   return n
 
-def hextxt2num(x):
-  res = 0
-  for c in x:
-    if ord(c) < 58 and ord(c) >= 48:
-       res = (res<<4) + ord(c) - 48
-    elif ord(c) <= ord('f') and ord(c) >= ord('a'):
-       res = (res<<4) + ord(c) - 87
-    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
-       res = (res<<4) + ord(c) - 55
-  return res
+def hF(fnam):
+  f = open(fnam,'r')
+  return h(f.read())
 
-prime = nextPrime(2019 * (2**130))
-a = prime - 5
-b = 0
-c = 17
-while pow(c, (prime-1)/3, prime) == 1:
-  c = c + 1
-print "factor c = ", c
-cinv = pow(c, prime-2, prime)
- 
-r = (prime + 1)/4
-hsize = 2**100 + 7
- 
-def inv(b,m):
-  s = 0
-  t = 1
-  a = m
-  while b != 1:
-    q = a/b
-    aa = b
-    b = a % b
-    a = aa
-    ss = t
-    t = s - q*t
-    s = ss
-  if t < 0:
-    t = t + m
-  return t
+def sF(fnam):
+  p = readNumber("p")
+  q = readNumber("q")
 
-def h(x):
-  dx1 = hashlib.sha256(x).digest()
-  res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % hsize
-
-def addP(P,Q):
-  x1 = P[0]
-  x2 = Q[0]
-  y1 = P[1] 
-  y2 = Q[1] 
-  while x1 < x2:
-     x1 = x1 + prime
-  if x1 == x2:
-     s = ((3*c*(x1**2) - 5 + prime) * inv(2*y1, prime)) % prime
-  else:  
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = cinv*s**2 - x1 - x2
-  yr = s * (x1-xr) - y1 
-  return [xr % prime, yr % prime]
-
-def mulP(P,n):
-  isFirst = True
-  resP = P
-  if n < 0:
-    resP[1] = prime - resP[1]
-    n = (-1)*n 
-  PP = resP
-  while n > 0:
-     if (n % 2 != 0):   
-         if isFirst:
-            resP = PP
-            isFirst = False
-         else:
-            resP = addP(resP,PP)
-     PP = addP(PP, PP) 
-     n = n / 2
-  return resP
-
-def verify(G,s,Y,e,m):
-  return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
-
-x = 1
-if pow(c*x**3 - 5*x + prime, (prime - 1)/2, prime) != 1:
-   x = prime - x
-y = pow(c*x**3 - 5*x + prime, (prime + 1)/4, prime)
-P = [x % prime, y % prime]
-P = mulP(P, 4)
-
-f = open(sys.argv[1], 'r')
-message = f.read()
-f.close()
-
-
-def writeNumber(number, fnam):
-  f = open(fnam, 'wb')
-  n = number
-  while n > 0:
-    byte = n % 256
-    n = n / 256
-    f.write(chr(byte))
+  f = open(fnam,'r')
+  s = root (f.read(), p, q)
   f.close()
-
-def signSchnorr(G,m,x):
-  k = h(m + 'kk1')
-  R = mulP(G,k)
-  e = h(str(R[0]) + m)
-  return [(k - x*e) % r, e]
-
-hxx = h('kk1_' + str(777*random.random()))
-sig = signSchnorr(P, message, hxx)
-y = mulP(P, hxx)
-writeNumber(sig[0],'s0')
-writeNumber(sig[1],'s1')
-writeNumber(y[0],'y0')
-writeNumber(y[1],'y1')
+  return s
 
  
-lb = r
-cx = 0
-while lb > 0:
-  lb = lb/2
-  cx = cx + 1
-print "Bitlength ", cx
-print "\nChallenege: a = p-5, b = 0, \n p = ", prime, "\n check prime   ", pow(7,prime-1,prime) == 1
+print "\n\n rabin signature - copyright Scheerer Software 2018 - all rights reserved\n\n"
+print "First parameter is V (Verify) or S (Sign)\n\n"
+print "\n\n verify signature (2 parameters):"
+print "   > python rabin.py V <digital signature> "
 
-print " check prime r ", pow(7,r-1,r) == 1
-print " check period  ", mulP(P,r+1) == P
-print "\n\nPx ", P[0]
-print "Py ", P[1]
+print " create signature S (2 parameter):"
+print "   > python rabin.py S <filename> \n\n"
 
-Q = mulP(P, random.randint(2,prime-2) )
+print " number of parameters is " + str(len(sys.argv)-1)
+print " "
+print " "
 
-print "Challenge: Find d, Q = d P "
-print "\n\nQx ", Q[0]
-print "Qy ", Q[1]
-
-
+if len(sys.argv) == 3 and sys.argv[1] == "S":
+  print " digital signature:\n " + num2code(sF(sys.argv[2]))
+     
+                     

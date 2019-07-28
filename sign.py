@@ -72,7 +72,7 @@ def num2code(x):
   
 def root(m, p, q):
   x = h(m)
-  a = 5
+  a = 8
   b = 3
   if pow(x, (p-1)/2, p) > 1:
     x *= a

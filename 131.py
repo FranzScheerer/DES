@@ -1,5 +1,41 @@
 import random, math, hashlib, sys
 
+def update_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    i_spritz = (i_spritz + w_spritz) % 256
+    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
+    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
+
+def output_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    update_spritz()
+    return s_spritz[j_spritz]
+
+def shuffle_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    for v in range(256):
+        update_spritz()    
+    w_spritz = (w_spritz + 2) % 256
+    a_spritz = 0
+
+def absorb_nibble_spritz(x):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz == 240:
+        shuffle_spritz()
+    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
+    a_spritz = a_spritz + 1
+
+def absorb_byte_spritz(b):
+    absorb_nibble_spritz(b % 16)
+    absorb_nibble_spritz(b / 16)
+
+def squeeze_spritz(out, outlen):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz != 0:
+        shuffle_spritz()
+    for v in range(outlen):
+        out.append(output_spritz())
+
 def readNumber(fnam):
   f = open(fnam, 'rb')
   n = 0
@@ -34,6 +70,20 @@ n4 = hextxt2num("04 8E1D43F2 93469E31 7F7ED728 F6B8E6F1")
 # replaced by random multiple of point
 xx = 784483531216899904315246249432289225643
 yy = 557910831689947807019241149783247956726
+
+def h(x):
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
+  for c in x:
+     absorb_byte_spritz(ord(c)) 
+  res = []
+  squeeze_spritz(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (n4)
   
 def inv(b,m):
   s = 0
@@ -51,12 +101,6 @@ def inv(b,m):
     t = t + m
   return t
 
-def h(x):
-  dx1 = hashlib.sha256(x).digest()
-  res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % n4
 
 def genP(x,a,b):
    while pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:

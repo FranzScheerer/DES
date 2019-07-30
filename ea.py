@@ -1,5 +1,41 @@
 import random, math, hashlib, sys
 
+def update_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    i_spritz = (i_spritz + w_spritz) % 256
+    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
+    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
+
+def output_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    update_spritz()
+    return s_spritz[j_spritz]
+
+def shuffle_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    for v in range(256):
+        update_spritz()    
+    w_spritz = (w_spritz + 2) % 256
+    a_spritz = 0
+
+def absorb_nibble_spritz(x):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz == 240:
+        shuffle_spritz()
+    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
+    a_spritz = a_spritz + 1
+
+def absorb_byte_spritz(b):
+    absorb_nibble_spritz(b % 16)
+    absorb_nibble_spritz(b / 16)
+
+def squeeze_spritz(out, outlen):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz != 0:
+        shuffle_spritz()
+    for v in range(outlen):
+        out.append(output_spritz())
+
 def gcd(a,b):
   while b > 0:
     a,b = b,a % b
@@ -71,6 +107,20 @@ def h(x):
   for cx in (dx1):
     res = (res<<8) ^ ord(cx)
   return res % hsize
+
+def h(x):
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
+  for c in x:
+     absorb_byte_spritz(ord(c)) 
+  res = []
+  squeeze_spritz(res, 32)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (hsize)
 
 def addP(P,Q):
   x1 = P[0]

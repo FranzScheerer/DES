@@ -1,6 +1,8 @@
 import sys
 
 nrabin = 1275574687529707052360270181001777089671167672089082721378211835809946265943774704298829077228926639950048281145477004890301800135170057571586644210706829514984111130118296710578328836619124873204558928730791403673479088571255223740478384830455590280922940539854528127509L
+afactor = 8
+bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -70,16 +72,16 @@ def num2code(x):
   return res
 
   
-def root(m, p, q):
+def signrabin(m, p, q):
   x = h(m)
-  a = 8
-  b = 3
+  a = afactor
+  b = bfactor
   if pow(x, (p-1)/2, p) > 1:
     x *= a
   if pow(x, (q-1)/2, q) > 1:
     x *= b
-#  print pow(x, (q-1)/2, q)
-#  print pow(x, (p-1)/2, p)
+  if pow(x, (q-1)/2, q) != 1 or pow(x, (p-1)/2, p) != 1:
+    return "ERRRORRRRRRRRRRRR"
   return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
 
 def readNumber(fnam):
@@ -100,22 +102,13 @@ def sF(fnam):
   q = readNumber("q")
 
   f = open(fnam,'r')
-  s = root (f.read(), p, q)
+  print "calculate signature of file ", fnam
+  s = signrabin (f.read(), p, q)
   f.close()
   return s
 
  
-print "\n\n rabin signature - copyright Scheerer Software 2018 - all rights reserved\n\n"
-print "First parameter is V (Verify) or S (Sign)\n\n"
-print "\n\n verify signature (2 parameters):"
-print "   > python rabin.py V <digital signature> "
-
-print " create signature S (2 parameter):"
-print "   > python rabin.py S <filename> \n\n"
-
-print " number of parameters is " + str(len(sys.argv)-1)
-print " "
-print " "
+print "\n\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
 
 if len(sys.argv) == 3 and sys.argv[1] == "S":
   print " digital signature:\n " + num2code(sF(sys.argv[2]))

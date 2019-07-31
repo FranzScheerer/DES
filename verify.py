@@ -1,6 +1,8 @@
 import sys
 
 nrabin = 1275574687529707052360270181001777089671167672089082721378211835809946265943774704298829077228926639950048281145477004890301800135170057571586644210706829514984111130118296710578328836619124873204558928730791403673479088571255223740478384830455590280922940539854528127509L
+afactor = 8
+bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -67,39 +69,13 @@ def code2num(x):
        res = (res << 6) + 63
   return res
 
-def num2code(x):
-  res = ''
-  while x > 0:
-    y = x % 64
-    if y < 10:
-       res = chr( y + 48 ) + res
-    elif y < 36:
-       res = chr( y + 55 ) + res
-    elif y < 62:
-       res = chr( y + 61 ) + res 
-    elif y == 62:
-       res = '#' + res 
-    elif y == 63:
-       res = '/' + res 
-    x /= 64
-  return res
-
 def hF(fnam):
   f = open(fnam,'r')
   return h(f.read())
 
-def sF(fnam):
-  p = readNumber("p")
-  q = readNumber("q")
-
-  f = open(fnam,'r')
-  s = root (f.read(), p, q)
-  f.close()
-  return s
-
 def vF(s, fnam):
-  a = 8
-  b = 3
+  a = afactor
+  b = bfactor
   h0 = hF(fnam)
   ha = (a*h0) % nrabin
   hb = (b*h0) % nrabin

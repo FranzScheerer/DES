@@ -1,6 +1,10 @@
 import sys
 
-nrabin = 25302183731423747650508355249029472947810042355271195312752995692927963863884263270232442749220225372545708044913704541890402525768253099334618911855983083102310177770859858094820441053409466501669504192604036343682216797454627609345747192257822652896967263260335663413573615817372245111604789499753077
+crabin =  'bo28swx2ykYRrK3yNH8PA638YaPzwh#6xl3fH#nP5JyfI67mS'
+crabin += 'EXP6ZtEtQAUm8mNzqeKjXHeEE#FS91GP4Xlq'
+crabin += 'RosMS#yXNQKsjmhhc1gPlzEmlI2pol/0Sz9UP#ctJ9bU5nGvLB'
+crabin += 'FbUSsSAydTaYUUvsyjDQt#qEQe4LaN9r'
+
 afactor = 8
 bfactor = 5
 
@@ -105,6 +109,8 @@ def code2num(x):
      if c == '/': 
        res = (res << 6) + 63
   return res
+
+nrabin = code2num(crabin)
 
 def num2code(x):
   res = ''
@@ -240,3 +246,5 @@ if len(sys.argv) == 3 and sys.argv[1] == "G":
   print "nrabin = ", (p * q) 
   print "afactor = ", f_ab(p,q)[0]             
   print "bfactor = ", f_ab(p,q)[1]             
+
+print "nrabin as code \n",num2code(nrabin)

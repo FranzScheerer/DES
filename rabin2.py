@@ -1,6 +1,8 @@
 import sys
 
-nrabin = 1275574687529707052360270181001777089671167672089082721378211835809946265943774704298829077228926639950048281145477004890301800135170057571586644210706829514984111130118296710578328836619124873204558928730791403673479088571255223740478384830455590280922940539854528127509L
+nrabin = 25302183731423747650508355249029472947810042355271195312752995692927963863884263270232442749220225372545708044913704541890402525768253099334618911855983083102310177770859858094820441053409466501669504192604036343682216797454627609345747192257822652896967263260335663413573615817372245111604789499753077
+afactor = 8
+bfactor = 5
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -122,8 +124,6 @@ def num2code(x):
   return res
 
 def gcd(a,b):
-  if b > a:
-    a,b = b,a
   while b > 0:
     a,b = b,a % b
   return a
@@ -131,27 +131,27 @@ def gcd(a,b):
 def nextPrime(p):
  while p % 4 != 3:
    p = p + 1
- return nextPrime_3(p)
+ return nextPrime_(p)
   
-def nextPrime_3(p):
-  m_ = 3*5*7*11*13*17*19*23*29
+def nextPrime_(p):
+  m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
   while gcd(p,m_) != 1:
     p = p + 4 
   if (pow(2,p-1,p) != 1):
-      return nextPrime_3(p + 4)
+      return nextPrime_(p + 4)
   if (pow(3,p-1,p) != 1):
-      return nextPrime_3(p + 4)
+      return nextPrime_(p + 4)
   if (pow(5,p-1,p) != 1):
-      return nextPrime_3(p + 4)
+      return nextPrime_(p + 4)
   if (pow(17,p-1,p) != 1):
-      return nextPrime_3(p + 4)
+      return nextPrime_(p + 4)
   return p
   
 
 def root(m, p, q):
   x = h(m)
-  a = 5
-  b = 3
+  a = afactor
+  b = bfactor
   if pow(x, (p-1)/2, p) > 1:
     x *= a
   if pow(x, (q-1)/2, q) > 1:
@@ -179,48 +179,38 @@ def readNumber(fnam):
   f.close()
   return n
 
-def random512():
-  md = hashlib.sha512("RANDOM-SEED")
-  md.update('large key value for generation of random number')
-  md.update( str(random.random()) )
-  md.update( str(random.random()) )
-  result = 0
-  largestr = md.digest()
-  for i in range(len(largestr)):
-      result = (result << 8) ^ ord(largestr[i])
-  return result
-
-def random1024():
-  return random512() * random512()
-
 def hF(fnam):
   f = open(fnam,'r')
   return h(f.read())
 
 def sF(fnam):
-  p = readNumber("p")
-  q = readNumber("q")
+  p = readNumber("p_")
+  q = readNumber("q_")
 
   f = open(fnam,'r')
   s = root (f.read(), p, q)
   f.close()
   return s
 
-def ssign(p):
-  res = 3
-  while pow(res, (p-1)/2, p) == 1:
-    res = res + 1
+# find factors a and b from primes p,q
+def f_ab(p,q):
+  res = [3,3]
+  while pow(res[0], (p-1)/2, p) == 1 or pow(res[0], (q-1)/2, q) != 1:
+    res[0] = res[0] + 1
+  while pow(res[1], (p-1)/2, p) != 1 or pow(res[1], (q-1)/2, q) == 1:
+    res[1] = res[1] + 1
   return res
 
 def vF(s, fnam):
-  a = 5
-  b = 3
+  a = afactor
+  b = bfactor
   h0 = hF(fnam)
   ha = (a*h0) % nrabin
   hb = (b*h0) % nrabin
   hab = (a*b*h0) % nrabin
 
   sq = (s * s) % nrabin
+
   return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
 print "\n\n rabin signature - copyright Scheerer Software 2018 - all rights reserved\n\n"
@@ -240,5 +230,13 @@ if  len(sys.argv) == 4 and sys.argv[1] == "V":
 
 if len(sys.argv) == 3 and sys.argv[1] == "S":
   print " digital signature:\n " + num2code(sF(sys.argv[2]))
-     
-                     
+
+if len(sys.argv) == 3 and sys.argv[1] == "G":
+  print " generate primes ... "
+  p = nextPrime( h(sys.argv[2]) % (2**501 + 1) )  
+  q = nextPrime( h(sys.argv[2] + '0') % (2**501 + 1) )  
+  writeNumber(p, 'p_')                     
+  writeNumber(q, 'q_')     
+  print "nrabin = ", (p * q) 
+  print "afactor = ", f_ab(p,q)[0]             
+  print "bfactor = ", f_ab(p,q)[1]             

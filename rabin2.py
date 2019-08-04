@@ -1,12 +1,11 @@
 import sys
 
-crabin =  'bo28swx2ykYRrK3yNH8PA638YaPzwh#6xl3fH#nP5JyfI67mS'
-crabin += 'EXP6ZtEtQAUm8mNzqeKjXHeEE#FS91GP4Xlq'
-crabin += 'RosMS#yXNQKsjmhhc1gPlzEmlI2pol/0Sz9UP#ctJ9bU5nGvLB'
-crabin += 'FbUSsSAydTaYUUvsyjDQt#qEQe4LaN9r'
+crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
+crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
+crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
 
-afactor = 8
-bfactor = 5
+afactor = 41
+bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -244,7 +243,9 @@ if len(sys.argv) == 3 and sys.argv[1] == "G":
   writeNumber(p, 'p_')                     
   writeNumber(q, 'q_')     
   print "nrabin = ", (p * q) 
+  print "\ncrabin = \n", num2code(p * q) 
   print "afactor = ", f_ab(p,q)[0]             
   print "bfactor = ", f_ab(p,q)[1]             
 
+print ""
 print "nrabin as code \n",num2code(nrabin)

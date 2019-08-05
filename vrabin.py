@@ -8,9 +8,17 @@ bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-    i_spritz = (i_spritz + w_spritz) % 256
-    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
-    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
+    i_spritz = i_spritz + w_spritz
+    if i_spritz > 255:
+       i_spritz = i_spritz - 256
+    j_spritz = j_spritz + s_spritz[ i_spritz ]
+    if j_spritz > 255:
+      j_spritz = s_spritz[ j_spritz - 256 ]
+    else:
+      j_spritz = s_spritz[ j_spritz ]
+    tsum = s_spritz[i_spritz] + s_spritz[ j_spritz ] 
+    s_spritz[ i_spritz ] = tsum - s_spritz[ i_spritz ] 
+    s_spritz[ j_spritz ] = tsum - s_spritz[ j_spritz ] 
 
 def output_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz

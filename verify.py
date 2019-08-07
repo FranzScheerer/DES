@@ -1,7 +1,9 @@
 import sys
 
-crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
-crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
+crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCME'
+crabin += 'Th15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
+crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynf'
+crabin += 'bDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
 crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
 
 afactor = 41
@@ -17,7 +19,7 @@ def update_spr():
       j_spr = s_spr[ j_spr - 256 ]
     else:
       j_spr = s_spr[ j_spr ]
-    tsum = s_spr[i_spr] + s_spr[ j_spr ] 
+    tsum = s_spr[ i_spr ] + s_spr[ j_spr ] 
     s_spr[ i_spr ] = tsum - s_spr[ i_spr ] 
     s_spr[ j_spr ] = tsum - s_spr[ j_spr ] 
 
@@ -30,11 +32,13 @@ def shuffle_spr():
     global a_spr, i_spr, j_spr, w_spr, s_spr
     for v in range(256):
         update_spr()    
-    w_spr = (w_spr + 2) % 256
+    w_spr = w_spr + 2
+    if w_spr == 255:
+       w_spr = 1
     a_spr = 0
 
 def absorb_nibble_spr(x):
-    global a_spr,i_spr,j_spr,w_spr,s_spr
+    global a_spr, i_spr, j_spr, w_spr, s_spr
     if a_spr == 240:
         shuffle_spr()
     tsum = s_spr[a_spr] + s_spr[240 + x] 

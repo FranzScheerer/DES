@@ -2,6 +2,7 @@ import random, math, hashlib, sys
 
 #p = 6668014432879854274079851790721257797144758322315908160396257811764037237817632071521432200871554290742929910593433240445888801654119365080363356052330830046095157579514014558463078285911814024728965016135886601981690748037476461291164275339
 p = 2*(1416461893 + 10**500) + 1
+g = 3
 def gcd(a,b):
   while b > 0:
     a,b = b,a % b
@@ -34,7 +35,13 @@ px = (p-1)/2
 print "check (p-1)/2 ", pow(11,px-1,px) == 1
 print "\n", p                    
 
-g = 2134143854854758971
-while pow(g,(p-1)/2,p) != 1:
-  g = g + 1
-print "We found a generator ",g
+alice = 2134143854854758971
+bob = 2994143854854754312412
+Pa = pow(g,alice,p) 
+Pb = pow(g,bob,p) 
+print "Public key send form Alice to Bob\n", Pa 
+print "Public key send form Bob to Alice\n", Pb
+kab = pow(Pb,alice,p)
+kba = pow(Pa,bob,p)
+ 
+print "Are the keys equal? We check it: ", kab == kba

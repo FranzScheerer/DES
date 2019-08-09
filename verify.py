@@ -1,73 +1,57 @@
 import sys
 
-crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCME'
-crabin += 'Th15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
-crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynf'
-crabin += 'bDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
+crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
+crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
 crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
 
 afactor = 41
 bfactor = 3
 
-def update_spr():
-    global a_spr, i_spr, j_spr, w_spr, s_spr
-    i_spr = i_spr + w_spr
-    if i_spr > 255:
-       i_spr = i_spr - 256
-    j_spr = j_spr + s_spr[ i_spr ]
-    if j_spr > 255:
-      j_spr = s_spr[ j_spr - 256 ]
-    else:
-      j_spr = s_spr[ j_spr ]
-    tsum = s_spr[ i_spr ] + s_spr[ j_spr ] 
-    s_spr[ i_spr ] = tsum - s_spr[ i_spr ] 
-    s_spr[ j_spr ] = tsum - s_spr[ j_spr ] 
+def update_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    i_spritz = (i_spritz + w_spritz) % 256
+    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
+    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
 
-def output_spr():
-    global a_spr, i_spr, j_spr, w_spr, s_spr
-    update_spr()
-    return s_spr[ j_spr ]
+def output_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    update_spritz()
+    return s_spritz[j_spritz]
 
-def shuffle_spr():
-    global a_spr, i_spr, j_spr, w_spr, s_spr
+def shuffle_spritz():
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
     for v in range(256):
-        update_spr()    
-    w_spr = w_spr + 2
-    if w_spr == 255:
-       w_spr = 1
-    a_spr = 0
+        update_spritz()    
+    w_spritz = (w_spritz + 2) % 256
+    a_spritz = 0
 
-def absorb_nibble_spr(x):
-    global a_spr, i_spr, j_spr, w_spr, s_spr
-    if a_spr == 240:
-        shuffle_spr()
-    tsum = s_spr[a_spr] + s_spr[240 + x] 
-    s_spr[ 240 + x ] = tsum - s_spr[ 240 + x ]
-    s_spr[ a_spr ]   = tsum - s_spr[ a_spr ]
-    a_spr = a_spr + 1
+def absorb_nibble_spritz(x):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz == 240:
+        shuffle_spritz()
+    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
+    a_spritz = a_spritz + 1
 
-def absorb_byte_spr(b):
-    absorb_nibble_spr(b % 16)
-    absorb_nibble_spr(b / 16)
+def absorb_byte_spritz(b):
+    absorb_nibble_spritz(b % 16)
+    absorb_nibble_spritz(b / 16)
 
-def squeeze_spr(out, outlen):
-    global a_spr, i_spr, j_spr, w_spr, s_spr
-    if a_spr != 0:
-        shuffle_spr()
+def squeeze_spritz(out, outlen):
+    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    if a_spritz != 0:
+        shuffle_spritz()
     for v in range(outlen):
-        out.append(output_spr())
+        out.append(output_spritz())
 
 def h(x):
-  global a_spr, i_spr, j_spr, w_spr, s_spr
-  j_spr = i_spr = a_spr = 0
-  w_spr = 1
-  s_spr = range(256)
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
   for c in x:
-     absorb_byte_spr(ord(c)) 
-
+     absorb_byte_spritz(ord(c)) 
   res = []
-  squeeze_spr(res, 128)
-
+  squeeze_spritz(res, 128)
   out = 0 
   for bx in res:
     out = (out<<8) + bx
@@ -88,10 +72,21 @@ def code2num(x):
      if c == '/': 
        res = (res << 6) + 63
   return res
-#
-# calculate number from code value
-#
+
 nrabin = code2num(crabin)
+  
+def root(m, p, q):
+  x = h(m)
+  a = afactor
+  b = bfactor
+  if pow(x, (p-1)/2, p) > 1:
+    x *= a
+  if pow(x, (q-1)/2, q) > 1:
+    x *= b
+#  print pow(x, (q-1)/2, q)
+#  print pow(x, (p-1)/2, p)
+  return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
+
 
 def readNumber(fnam):
   f = open(fnam, 'rb')
@@ -118,8 +113,10 @@ def vF(s, fnam):
 
   return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
-print "\n\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
-print "First parameter is V (Verify) or S (Sign)\n\n"
+print "\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
+print "First parameter is V (Verify)\n\n"
+
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
   print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
+

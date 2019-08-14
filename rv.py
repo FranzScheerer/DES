@@ -1,13 +1,10 @@
 import sys
 
-crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh'
-crabin += '6jrMwIAaJ6WkM4wP2#UhybruIq'
-crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48'
-crabin += 'wrBxxP9J9diydrL6BfYA5FOXB'
-crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
+crabin = '1xjvKGdmzH8sIIE0/JLhXgqob#jcFL#oCte3nxZ0vf12XdximPJocu95jCotNxosbezIJMdK20KjpOjcAfJ#ZZuijh98cou5zQjO6zYdcL5Imkx5IhDkWveAPzt31L9UepDi/hs3dLa13aPxrKcpq8KLl2ZbQX1fxVEvf2b'
+afactor =  3
+bfactor =  7
 
-afactor = 41
-bfactor = 3
+
 
 def update_h():
     global a_h,i_h,j_h,w_h,s_h

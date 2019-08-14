@@ -1,14 +1,8 @@
 import sys
-crabin = 'Hw8c458q2CS3DxIn3sNuVoblk4OnIIPJxdBU0YCiI2vfmb5a259HeDFGx1zr4fqSI/zAnlNKXEw2g4xOdy3q5x0wQyrIKLbZMHJDla9LMdANNZk7fMmzBC14L5LBXENDGv5SyfVdIrcXoweYWpJD#X0WIXMs3Bwb7lAd3l5'
-afactor =  6
-bfactor =  5
+crabin = '1xjvKGdmzH8sIIE0/JLhXgqob#jcFL#oCte3nxZ0vf12XdximPJocu95jCotNxosbezIJMdK20KjpOjcAfJ#ZZuijh98cou5zQjO6zYdcL5Imkx5IhDkWveAPzt31L9UepDi/hs3dLa13aPxrKcpq8KLl2ZbQX1fxVEvf2b'
+afactor =  3
+bfactor =  7
 
-#crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
-#crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
-#crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
-
-#afactor = 41
-#bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -45,6 +39,20 @@ def squeeze_spritz(out, outlen):
         shuffle_spritz()
     for v in range(outlen):
         out.append(output_spritz())
+
+def hg(x):
+  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+  j_spritz = i_spritz = a_spritz = 0
+  w_spritz = 1
+  s_spritz = range(256)
+  for c in x:
+     absorb_byte_spritz(ord(c)) 
+  res = []
+  squeeze_spritz(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (2**1000)
 
 def h(x):
   global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
@@ -241,8 +249,8 @@ if len(sys.argv) == 3 and sys.argv[1] == "S":
 
 if len(sys.argv) == 3 and sys.argv[1] == "G":
   print " generate primes ... "
-  p = nextPrime( h(sys.argv[2]) % (2**501 + 1) )  
-  q = nextPrime( h(sys.argv[2] + '0') % (2**501 + 1) )  
+  p = nextPrime( hg(sys.argv[2]) % (2**501 + 1) )  
+  q = nextPrime( hg(sys.argv[2] + '0') % (2**501 + 1) )  
   writeNumber(p, 'p_')                     
   writeNumber(q, 'q_')     
   print "nrabin = ", (p * q) 

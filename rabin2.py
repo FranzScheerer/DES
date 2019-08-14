@@ -1,11 +1,14 @@
 import sys
+crabin = 'Hw8c458q2CS3DxIn3sNuVoblk4OnIIPJxdBU0YCiI2vfmb5a259HeDFGx1zr4fqSI/zAnlNKXEw2g4xOdy3q5x0wQyrIKLbZMHJDla9LMdANNZk7fMmzBC14L5LBXENDGv5SyfVdIrcXoweYWpJD#X0WIXMs3Bwb7lAd3l5'
+afactor =  6
+bfactor =  5
 
-crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
-crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
-crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
+#crabin =  '658ak9OxOEUcONnbDo9BfSREHPsSCCMETh15Mh6jrMwIAaJ6WkM4wP2#UhybruIq'
+#crabin += 'IoOaa6s7NrXf1bJgcHk7A#SYbhjTEoynfbDGnP48wrBxxP9J9diydrL6BfYA5FOXB'
+#crabin += 'i44bNJ2y5moKvJIhowkzO6GvydQ6AQBkR5goZP'
 
-afactor = 41
-bfactor = 3
+#afactor = 41
+#bfactor = 3
 
 def update_spritz():
     global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz

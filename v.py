@@ -5,6 +5,9 @@ afactor =  3
 bfactor =  7
 
 
+def swap_h(x,y):
+    global a_h,i_h,j_h,w_h,s_h
+    s_h[x],s_h[y] = s_h[y],s_h[x]
 
 def update_h():
     global a_h,i_h,j_h,w_h,s_h
@@ -16,9 +19,7 @@ def update_h():
       j_h = s_h[ j_h - 256 ]
     else:
       j_h = s_h[ j_h ]
-    t = s_h[i_h] + s_h[j_h] 
-    s_h[ j_h ] = t - s_h[ j_h ]
-    s_h[ i_h ] = t - s_h[ i_h ]
+    swap_h(i_h, j_h)
 
 def output_h():
     global a_h,i_h,j_h,w_h,s_h
@@ -36,7 +37,7 @@ def absorb_nibble_h(x):
     global a_h,i_h,j_h,w_h,s_h
     if a_h == 240:
         shuffle_h()
-    s_h[a_h], s_h[240 + x] = s_h[240 + x], s_h[a_h]
+    swap_h(a_h, 240 + x)
     a_h = a_h + 1
 
 def absorb_byte_h(b):
@@ -90,8 +91,9 @@ def root(m, p, q):
     x *= a
   if pow(x, (q-1)/2, q) > 1:
     x *= b
-#  print pow(x, (q-1)/2, q)
-#  print pow(x, (p-1)/2, p)
+  if pow(x, (q-1)/2, q) != 1 or pow(x, (p-1)/2, p) != 1:
+    print "Errrrrrrrrrrrrrrrrrrror"
+    return -1
   return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
 
 

@@ -1,4 +1,99 @@
-import math, hashlib, sys
+import sys
+
+crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+afactor =  3
+bfactor =  7
+
+
+
+def update_h():
+    global a_h,i_h,j_h,w_h,s_h
+    i_h = i_h + w_h 
+    if i_h > 255:
+       i_h = i_h - 256
+    j_h = j_h + s_h[ i_h ]
+    if j_h > 255:
+      j_h = s_h[ j_h - 256 ]
+    else:
+      j_h = s_h[ j_h ]
+    t = s_h[i_h] + s_h[j_h] 
+    s_h[ j_h ] = t - s_h[ j_h ]
+    s_h[ i_h ] = t - s_h[ i_h ]
+
+def output_h():
+    global a_h,i_h,j_h,w_h,s_h
+    update_h()
+    return s_h[j_h]
+
+def shuffle_h():
+    global a_h,i_h,j_h,w_h,s_h
+    for v in range(256):
+        update_h()    
+    w_h = (w_h + 2) % 256
+    a_h = 0
+
+def absorb_nibble_h(x):
+    global a_h,i_h,j_h,w_h,s_h
+    if a_h == 240:
+        shuffle_h()
+    s_h[a_h], s_h[240 + x] = s_h[240 + x], s_h[a_h]
+    a_h = a_h + 1
+
+def absorb_byte_h(b):
+    absorb_nibble_h(b % 16)
+    absorb_nibble_h(b / 16)
+
+def squeeze_h(out, outlen):
+    global a_h,i_h,j_h,w_h,s_h
+    if a_h != 0:
+        shuffle_h()
+    for v in range(outlen):
+        out.append(output_h())
+
+def h(x):
+  global a_h,i_h,j_h,w_h,s_h
+  j_h = i_h = a_h = 0
+  w_h = 1
+  s_h = range(256)
+  for c in x:
+     absorb_byte_h(ord(c)) 
+  res = []
+  squeeze_h(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrabin)
+
+
+def code2num(x):
+  res = 0
+  for c in x:
+     if ord(c) >= 48 and ord(c) < 58:
+       res = (res << 6) + ord(c) - 48
+     if ord(c) >= 65 and ord(c) < 91:
+       res = (res << 6) + ord(c) - 55
+     if ord(c) >= 97 and ord(c) < 123:
+       res = (res << 6) + ord(c) - 61
+     if c == '#': 
+       res = (res << 6) + 62
+     if c == '/': 
+       res = (res << 6) + 63
+  return res
+
+nrabin = code2num(crabin)
+  
+def root(m, p, q):
+  x = h(m)
+  a = afactor
+  b = bfactor
+  if pow(x, (p-1)/2, p) > 1:
+    x *= a
+  if pow(x, (q-1)/2, q) > 1:
+    x *= b
+#  print pow(x, (q-1)/2, q)
+#  print pow(x, (p-1)/2, p)
+  return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
+
 
 def readNumber(fnam):
   f = open(fnam, 'rb')
@@ -9,110 +104,26 @@ def readNumber(fnam):
   f.close()
   return n
 
-def hextxt2num(x):
-  res = 0
-  for c in x:
-    if ord(c) < 58 and ord(c) >= 48:
-       res = (res<<4) + ord(c) - 48
-    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
-       res = (res<<4) + ord(c) - 55
-  return res
+def hF(fnam):
+  f = open(fnam,'r')
+  return h(f.read())
 
-prime = 1393796574908163946345982392040522594173643
-h_ = 1
-n = (prime + 0)/(h_)
-b = 0
-a = 0
+def vF(s, fnam):
+  a = afactor
+  b = bfactor
+  h0 = hF(fnam)
+  ha = (a*h0) % nrabin
+  hb = (b*h0) % nrabin
+  hab = (a*b*h0) % nrabin
 
+  sq = (s * s) % nrabin
 
-def inv(b,m):
-  s = 0
-  t = 1
-  a = m
-  while b != 1:
-    q = a/b
-    aa = b 
-    b = a % b
-    a = aa
-    ss = t
-    t = s - q*t
-    s = ss
-  if t < 0:
-    t = t + m
-  return t
-
-def h(x):
-  dx1 = hashlib.sha256(x).digest()
-  res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % n
-
-def genP(x,a,b):
-   while (pow(x**3 + a*x + b, (prime - 1) / 2, prime) != 1):
-     x = x + 1
-   y = pow(x**3 + a*x + b, (prime + 1) / 4, prime)
-   return [(x) % prime, (y) % prime]
-
-def addP(P,Q):
-  x1 = P[0]
-  x2 = Q[0]
-  y1 = P[1] 
-  y2 = Q[1] 
-  while x1 < x2:
-     x1 = x1 + prime
-  if x1 == x2:
-     s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
-  else:  
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = s**2 - x1 - x2
-  yr = s * (x1-xr) - y1 
-  return [xr % prime, yr % prime]
-
-def mulP(P,n):
-  isFirst = True
-  resP = P
-  if n < 0:
-    resP[1] = prime - resP[1]
-    n = (-1)*n 
-  PP = resP
-  while n > 0:
-     if (n % 2 != 0):   
-         if isFirst:
-            resP = PP
-            isFirst = False
-         else:
-            resP = addP(resP,PP)
-     PP = addP(PP, PP) 
-     n = n / 2
-  return resP
-
-def verify(G,s,Y,e,m):
-  return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
-
-def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], n)
-  hh = h(m + str(S[1]))
-  u1 = (si * hh) % n
-  u2 = (si * S[1]) % n
-  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
+  return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
+ 
+print "\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
+print "First parameter is V (Verify)\n\n"
 
 
-#P = genP(34,a,b)
-#P = mulP(P,h_)
-P = [1,1]
+if  len(sys.argv) == 4 and sys.argv[1] == "V":
+  print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
 
-f = open(sys.argv[1], 'r')
-message = f.read()
-f.close()
-
-y = [readNumber('y0'), readNumber('y1')]
-sig = [readNumber('s0'), readNumber('s1')]
-
-print "Public key: X: ", y[0] % prime
-print "Public key: Y: ", y[1] % prime
-print "Sigature    X: ", sig[0]
-print "Sigature    y: ", sig[1]
-print ""
-print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)

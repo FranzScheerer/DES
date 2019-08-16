@@ -1,71 +1,85 @@
 import sys
-crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+# ******************************************************************************
+# PUBLIC KEY
+#
+crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
+crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
+crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+
 afactor =  3
 bfactor =  7
 
+# *******************************************************************************
+# HASH FUNCTION WITH SPRITZ
+# *******************************************************************************
 
-def update_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-    i_spritz = (i_spritz + w_spritz) % 256
-    j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
-    s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
+def updateSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    iSPZ = (iSPZ + wSPZ) % 256
+    jSPZ = sSPZ[(jSPZ + sSPZ[ iSPZ ]) % 256]
+    sSPZ[ iSPZ ], sSPZ[ jSPZ ] = sSPZ[ jSPZ ], sSPZ[ iSPZ ]
 
-def output_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-    update_spritz()
-    return s_spritz[j_spritz]
+def outputSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    updateSPZ()
+    return sSPZ[jSPZ]
 
-def shuffle_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+def shuffleSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
     for v in range(256):
-        update_spritz()    
-    w_spritz = (w_spritz + 2) % 256
-    a_spritz = 0
+        updateSPZ()    
+    wSPZ = (wSPZ + 2) % 256
+    aSPZ = 0
 
-def absorb_nibble_spritz(x):
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-    if a_spritz == 240:
-        shuffle_spritz()
-    s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
-    a_spritz = a_spritz + 1
+def absorb_nibbleSPZ(x):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    if aSPZ == 240:
+        shuffleSPZ()
+    sSPZ[aSPZ], sSPZ[240 + x] = sSPZ[240 + x], sSPZ[aSPZ]
+    aSPZ = aSPZ + 1
 
-def absorb_byte_spritz(b):
-    absorb_nibble_spritz(b % 16)
-    absorb_nibble_spritz(b / 16)
+def absorb_byteSPZ(b):
+    absorb_nibbleSPZ(b % 16)
+    absorb_nibbleSPZ(b / 16)
 
-def squeeze_spritz(out, outlen):
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-    if a_spritz != 0:
-        shuffle_spritz()
+def squeezeSPZ(out, outlen):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    if aSPZ != 0:
+        shuffleSPZ()
     for v in range(outlen):
-        out.append(output_spritz())
+        out.append( outputSPZ() )
 
 def hg(x):
-  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-  j_spritz = i_spritz = a_spritz = 0
-  w_spritz = 1
-  s_spritz = range(256)
+  global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  jSPZ = iSPZ = aSPZ = 0
+  wSPZ = 1
+  sSPZ = range(256)
   for c in x:
-     absorb_byte_spritz(ord(c)) 
+     absorb_byteSPZ(ord(c)) 
   res = []
-  squeeze_spritz(res, 128)
+  squeezeSPZ(res, 128)
   out = 0 
   for bx in res:
     out = (out<<8) + bx
   return out % (2**1000)
 
-def h(x):
-  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-  j_spritz = i_spritz = a_spritz = 0
-  w_spritz = 1
-  s_spritz = range(256)
-  for c in x:
-     absorb_byte_spritz(ord(c)) 
+def h( arg ):
+  global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  jSPZ = iSPZ = aSPZ = 0
+  wSPZ = 1
+  sSPZ = range(256)
+
+  for c in arg:
+     absorb_byteSPZ( ord(c) ) 
+
   res = []
-  squeeze_spritz(res, 128)
+
+  squeezeSPZ(res, 128)
+
   out = 0 
   for bx in res:
     out = (out<<8) + bx
+
   return out % (nrabin)
 
 def bin2num(x):
@@ -229,17 +243,8 @@ def vF(s, fnam):
 
   return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
-print "\n\n rabin signature - copyright Scheerer Software 2018 - all rights reserved\n\n"
-print "First parameter is V (Verify) or S (Sign)\n\n"
-print "\n\n verify signature (2 parameters):"
-print "   > python rabin.py V <digital signature> "
-
-print " create signature S (2 parameter):"
-print "   > python rabin.py S <filename> \n\n"
-
-print " number of parameters is " + str(len(sys.argv)-1)
-print " "
-print " "
+print "\n\n RABIN SIGNATURE - copyright Scheerer Software 2019 - all rights reserved\n\n"
+print "First parameter is V (Verify) or S (Sign) or G (Generate) \n\n"
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
   print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
@@ -258,5 +263,3 @@ if len(sys.argv) == 3 and sys.argv[1] == "G":
   print "afactor = ", f_ab(p,q)[0]             
   print "bfactor = ", f_ab(p,q)[1]             
 
-print ""
-print "nrabin as code \n",num2code(nrabin)

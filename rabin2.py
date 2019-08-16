@@ -186,8 +186,9 @@ def root(m, p, q):
     x *= a
   if pow(x, (q-1)/2, q) > 1:
     x *= b
-#  print pow(x, (q-1)/2, q)
-#  print pow(x, (p-1)/2, p)
+  if pow(x, (q-1)/2, q) != 1 or pow(x, (p-1)/2, p) != 1:
+     print 'ERROR'
+     return -1
   return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
 
 

@@ -1,25 +1,25 @@
 import random, math, hashlib, sys
 
 def update_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
     i_spritz = (i_spritz + w_spritz) % 256
     j_spritz = s_spritz[(j_spritz + s_spritz[i_spritz]) % 256]
     s_spritz[i_spritz], s_spritz[j_spritz] = s_spritz[j_spritz], s_spritz[i_spritz]
 
 def output_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
     update_spritz()
     return s_spritz[j_spritz]
 
 def shuffle_spritz():
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
     for v in range(256):
         update_spritz()    
     w_spritz = (w_spritz + 2) % 256
     a_spritz = 0
 
 def absorb_nibble_spritz(x):
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
     if a_spritz == 240:
         shuffle_spritz()
     s_spritz[a_spritz], s_spritz[240 + x] = s_spritz[240 + x], s_spritz[a_spritz]
@@ -30,7 +30,7 @@ def absorb_byte_spritz(b):
     absorb_nibble_spritz(b / 16)
 
 def squeeze_spritz(out, outlen):
-    global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
+    global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
     if a_spritz != 0:
         shuffle_spritz()
     for v in range(outlen):
@@ -41,6 +41,9 @@ def gcd(a,b):
     a,b = b,a % b
   return a
 
+#
+# p and (p+1)/12 are primes
+#
 def nextPrime(p):
  while p % 12 != 11:
    p = p + 1
@@ -55,7 +58,6 @@ def nextPrime_odd(p):
       p = p + 12
       continue
     return p
-
 
 def readNumber(fnam):
   f = open(fnam, 'rb')
@@ -78,9 +80,11 @@ def hextxt2num(x):
   return res
 
 prime = nextPrime(12 * 2**161)
+
 print "A prime greater than 12 times 2^161 \np = ", prime
+
 a = 0
-b = prime - 3
+b = prime - 3 # b = -3 modulo prime
  
 r = (prime + 1) / 12
 hsize = 2**100 + 7
@@ -102,21 +106,18 @@ def inv(b,a):
   return t
 
 def h(x):
-  dx1 = hashlib.sha256(x).digest()
-  res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % hsize
-
-def h(x):
-  global a_spritz,i_spritz,j_spritz,w_spritz,s_spritz
-  j_spritz = i_spritz = a_spritz = 0
+  global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
+  i_spritz = j_spritz = a_spritz = 0
   w_spritz = 1
   s_spritz = range(256)
+  #
+  # absorb all bytes
+  #
   for c in x:
      absorb_byte_spritz(ord(c)) 
+
   res = []
-  squeeze_spritz(res, 32)
+  squeeze_spritz(res, 32) # 8*32 = 256 bits
   out = 0 
   for bx in res:
     out = (out<<8) + bx
@@ -172,6 +173,9 @@ y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
 P = [x % prime, y % prime]
 P = mulP(P, 12)
 
+#
+# read message from file 
+#
 f = open(sys.argv[1], 'r')
 message = f.read()
 f.close()
@@ -206,12 +210,12 @@ def wa(number, fnam):
   f.close()
 
 def signSchnorr(G,m,x):
-  k = h(m + 'kk1')
+  k = h(m + 'key value') # differs if m is different
   R = mulP(G,k)
   e = h(str(R[0]) + m)
   return [(k - x*e) % r, e]
 
-hxx = h('kk1_' + str(777*random.random()))
+hxx = h('key values_' + str(777*random.random()))
 sig = signSchnorr(P, message, hxx)
 y = mulP(P, hxx)
 writeNumber(sig[0],'s0')

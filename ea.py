@@ -215,8 +215,9 @@ def signSchnorr(G,m,x):
   e = h(str(R[0]) + m)
   return [(k - x*e) % r, e]
 
-hxx = h('key values_' + str(777*random.random()))
-sig = signSchnorr(P, message, hxx)
+hxx = h('password ABC123')           # private key
+sig = signSchnorr(P, message, hxx)   # digital signature
+
 y = mulP(P, hxx)
 writeNumber(sig[0],'s0')
 writeNumber(sig[1],'s1')
@@ -224,24 +225,24 @@ writeNumber(y[0],'y0')
 writeNumber(y[1],'y1')
 
  
-lb = r
-cx = 0
-while lb > 0:
-  lb = lb/2
-  cx = cx + 1
-print "Bitlength ", cx
-print "\nChallenege: a = 0, b = p - 3, \n p = ", prime, "\n check prime    ", pow(7,prime-1,prime) == 1
-q = r
-print " check (p+1)/12 ", pow(7,q-1,q) == 1
-print " check order    ", mulP(P,q+1) == P
-print "\n\nPx ", P[0]
-print "Py ", P[1]
+#lb = r
+#cx = 0
+#while lb > 0:
+#  lb = lb/2
+#  cx = cx + 1
+#print "Bitlength ", cx
+#print "\nChallenege: a = 0, b = p - 3, \n p = ", prime, "\n check prime    ", pow(7,prime-1,prime) == 1
+#q = r
+#print " check (p+1)/12 ", pow(7,q-1,q) == 1
+#print " check order    ", mulP(P,q+1) == P
+#print "\n\nPx ", P[0]
+#print "Py ", P[1]
 
-Q = mulP(P, random.randint(2,prime-2) )
-print "\n\nQx ", Q[0]
-print "Qy ", Q[1]
-print "\n\nWin 10,000 Dollars "
-print "Challenge: Find d, Q = d P "
+#Q = mulP(P, random.randint(2,prime-2) )
+#print "\n\nQx ", Q[0]
+#print "Qy ", Q[1]
+#print "\n\nWin 10,000 Dollars "
+#print "Challenge: Find d, Q = d P "
 
 #prime = nextPrime(100)
 #print "\n prime = ", prime

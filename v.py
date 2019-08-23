@@ -1,14 +1,14 @@
-import sys
-crabin = 'PMmPC1Ghzisi6UVQAidfKfw9qrEQAzgx#uYAuxHJyJZ9cO#EfKjrb3r1YKUw/3mSr/Nxc/BvYJBSf2dHC3HEnvxTLbIITwzC8Q9YhCeG2hswUPF9YmGvR4Fqt9N1kiz10XYDGBYo6f#gGXRi51VneO4kFwlF9fGogatU14L'
-afactor =  3
-bfactor =  7
+import sys, hashlib
+#crabin = 'PMmPC1Ghzisi6UVQAidfKfw9qrEQAzgx#uYAuxHJyJZ9cO#EfKjrb3r1YKUw/3mSr/Nxc/BvYJBSf2dHC3HEnvxTLbIITwzC8Q9YhCeG2hswUPF9YmGvR4Fqt9N1kiz10XYDGBYo6f#gGXRi51VneO4kFwlF9fGogatU14L'
+#afactor =  3
+#bfactor =  7
 
 #crabin = 'e5ROvXYsiG5cazuQD5iZjFnMnD#xhsD2yo/0NS2Hj0sLGVJwX2DYl3gLqMgyzyqolx3oU47Q5TqXE4xVF6lfmB1NWAPRqljSyxrce2vWjb6Jl9suKT281gA/RAs0sutXhF0SB5vK1Aq#7bF3Zh2ORrc6XiWicZtN28MSf41'
 #afactor =  5
 #bfactor =  3
-#crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
-#afactor =  3
-#bfactor =  7
+crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+afactor =  3
+bfactor =  7
 
 #crabin = 'g7YB1743P2dblx2oqa7FGNj2LsvhK9ei04NrvNgEt30OE/#XJ1cgRvcnUHy4bW/7wax/8NsmInEYi7X2mDKu3yUI9sd/#7cx/G7He3b6vb87/ouYoOJGE3ZJCTyM1MHE7YuAcTIPjILgAX4FLQvvXxjzn/r6MOL8XTS4M2v'
 #afactor =  14
@@ -60,19 +60,28 @@ def squeeze_h(out, outlen):
     for v in range(outlen):
         out.append(output_h())
 
-def h(x):
-  global a_h,i_h,j_h,w_h,s_h
-  j_h = i_h = a_h = 0
-  w_h = 1
-  s_h = range(256)
-  for c in x:
-     absorb_byte_h(ord(c)) 
-  res = []
-  squeeze_h(res, 128)
+def h( arg ):
+  cstr_ =  hashlib.sha256(arg).digest()
   out = 0 
-  for bx in res:
-    out = (out<<8) + bx
-  return out % (nrabin)
+  for c in cstr_:
+    out = (out<<8) + ord(c)
+
+  return (out << 750) % (nrabin)
+
+
+#def h(x):
+#  global a_h,i_h,j_h,w_h,s_h
+#  j_h = i_h = a_h = 0
+#  w_h = 1
+#  s_h = range(256)
+#  for c in x:
+#     absorb_byte_h(ord(c)) 
+#  res = []
+#  squeeze_h(res, 128)
+#  out = 0 
+#  for bx in res:
+#    out = (out<<8) + bx
+#  return out % (nrabin)
 
 
 def code2num(x):

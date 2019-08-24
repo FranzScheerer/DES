@@ -1,4 +1,4 @@
-import sys
+import sys, hashlib
 # ******************************************************************************
 # PUBLIC KEY
 #
@@ -63,23 +63,26 @@ def hg(x):
     out = (out<<8) + bx
   return out % (2**1000)
 
-def h( arg ):
+#def h( arg ):
+#  cstr_ =  hashlib.sha256(arg).digest()
+#  out = 0 
+#  for c in cstr_:
+#    out = (out<<8) + ord(c)
+
+#  return (out << 750) % (nrabin)
+
+def h(x):
   global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
   jSPZ = iSPZ = aSPZ = 0
   wSPZ = 1
   sSPZ = range(256)
-
-  for c in arg:
-     absorb_byteSPZ( ord(c) ) 
-
+  for c in x:
+     absorb_byteSPZ(ord(c)) 
   res = []
-
   squeezeSPZ(res, 128)
-
   out = 0 
   for bx in res:
     out = (out<<8) + bx
-
   return out % (nrabin)
 
 def bin2num(x):

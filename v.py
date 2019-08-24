@@ -60,28 +60,28 @@ def squeeze_h(out, outlen):
     for v in range(outlen):
         out.append(output_h())
 
-def h( arg ):
-  cstr_ =  hashlib.sha256(arg).digest()
-  out = 0 
-  for c in cstr_:
-    out = (out<<8) + ord(c)
-
-  return (out << 750) % (nrabin)
-
-
-#def h(x):
-#  global a_h,i_h,j_h,w_h,s_h
-#  j_h = i_h = a_h = 0
-#  w_h = 1
-#  s_h = range(256)
-#  for c in x:
-#     absorb_byte_h(ord(c)) 
-#  res = []
-#  squeeze_h(res, 128)
+#def h( arg ):
+#  cstr_ =  hashlib.sha256(arg).digest()
 #  out = 0 
-#  for bx in res:
-#    out = (out<<8) + bx
-#  return out % (nrabin)
+#  for c in cstr_:
+#    out = (out<<8) + ord(c)
+
+#  return (out << 750) % (nrabin)
+
+
+def h(x):
+  global a_h,i_h,j_h,w_h,s_h
+  j_h = i_h = a_h = 0
+  w_h = 1
+  s_h = range(256)
+  for c in x:
+     absorb_byte_h(ord(c)) 
+  res = []
+  squeeze_h(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrabin)
 
 
 def code2num(x):

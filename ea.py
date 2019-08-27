@@ -215,8 +215,11 @@ def signSchnorr(G,m,x):
   e = h(str(R[0]) + m)
   return [(k - x*e) % r, e]
 
-hxx = h('password ABC123_0815')           # private key
-sig = signSchnorr(P, message, hxx)   # digital signature
+#
+# Change the password to generate the private key 
+#
+hxx = h('please chance this password ABC123_0815')   # private key
+sig = signSchnorr(P, message, hxx)                   # digital signature
 
 y = mulP(P, hxx)
 writeNumber(sig[0],'s0')

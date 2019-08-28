@@ -14,9 +14,13 @@ import sys, hashlib
 #afactor =  14
 #bfactor =  7
 
-crabin = 'Nl4XmFkjNQyN#lipJBp/2s1qstnpPyuCJ/iRQ7yxkRpo0rDXHOlTT3Wn/mw48C1mGCHwvvA9HUbLNJz#2JcC8xGqOZVMBZJSr3ygdGfnAtVLGtSRPszPUTxHoVfEyllmLDT1ilMTKuFByV7dlvmr3fSs1Yb79YMaNAREeO1'
-afactor =  5
-bfactor =  10
+#crabin = 'Nl4XmFkjNQyN#lipJBp/2s1qstnpPyuCJ/iRQ7yxkRpo0rDXHOlTT3Wn/mw48C1mGCHwvvA9HUbLNJz#2JcC8xGqOZVMBZJSr3ygdGfnAtVLGtSRPszPUTxHoVfEyllmLDT1ilMTKuFByV7dlvmr3fSs1Yb79YMaNAREeO1'
+#afactor =  5
+#bfactor =  10
+
+crabin = '1CdHQXQ3vrLhlV3035GQvMuYr97SVF/1M#UjP7ZUthdZJInFMy7SstjqZCY62C8mS8gyWlGxdFEM3KKXPStXFCfmluH2qKPuLmkoEiecbnjMNF2yu3BK65zmMuouJCyF0NIDMiuYxdEwXNJJaPUC6fFx7O9rVfPYtYBgVbP'
+afactor =  21
+bfactor =  3
 
 def swap_h(x,y):
     global a_h,i_h,j_h,w_h,s_h
@@ -78,6 +82,9 @@ def h(x):
   j_h = i_h = a_h = 0
   w_h = 1
   s_h = range(256)
+  px = "change this value ..."
+  for c in px:
+     absorb_byte_h(ord(c)) 
   for c in x:
      absorb_byte_h(ord(c)) 
   res = []

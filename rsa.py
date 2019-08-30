@@ -1,6 +1,57 @@
 import random, hashlib, sys
 
-nrsa =  19118832000105763637938157152850467974273167818828649375827825148849964309807866314390379881226224652434132598287639675152101593061907171227851105919168683025350974887841508141070136389244359833771900938550228403669389043766459235557858070265875058027244065551
+nrsa = 29746358878928083861237817222954677677152481785351811006421449568488007506618838431501380761939331839202115522100484371951305362698541726995193181514480854479235870344802990899716815205765298780141729114308584093033967074038423933744823970683410211257431791252652117523816679871100597902024086062137064382361
+
+def updateSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    iSPZ = (iSPZ + wSPZ) % 256
+    jSPZ = sSPZ[(jSPZ + sSPZ[ iSPZ ]) % 256]
+    sSPZ[ iSPZ ], sSPZ[ jSPZ ] = sSPZ[ jSPZ ], sSPZ[ iSPZ ]
+
+def outputSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    updateSPZ()
+    return sSPZ[jSPZ]
+
+def shuffleSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    for v in range(256):
+        updateSPZ()    
+    wSPZ = (wSPZ + 2) % 256
+    aSPZ = 0
+
+def absorb_nibbleSPZ(x):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    if aSPZ == 240:
+        shuffleSPZ()
+    sSPZ[aSPZ], sSPZ[240 + x] = sSPZ[240 + x], sSPZ[aSPZ]
+    aSPZ = aSPZ + 1
+
+def absorb_byteSPZ(b):
+    absorb_nibbleSPZ(b % 16)
+    absorb_nibbleSPZ(b / 16)
+
+def squeezeSPZ(out, outlen):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    if aSPZ != 0:
+        shuffleSPZ()
+    for v in range(outlen):
+        out.append( outputSPZ() )
+
+def h(x):
+  global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  jSPZ = iSPZ = aSPZ = 0
+  wSPZ = 1
+  sSPZ = range(256)
+  for c in x:
+     absorb_byteSPZ(ord(c)) 
+  res = []
+  squeezeSPZ(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrsa)
+
 
 def bin2num(x):
   res = 0
@@ -164,17 +215,6 @@ def random512():
 def random1024():
   return random512() * random512()
 
-def h(x):
-  dx1 = hashlib.sha512(x).digest()
-  dx2 = hashlib.sha512(dx1+x).digest()
-  dx3 = hashlib.sha512(x+dx2).digest()
-  dx4 = hashlib.sha512(x+dx3).digest()
-  dx5 = hashlib.sha512(x+dx4).digest()
-  res = 0
-  for cx in (dx1+dx2+dx3+dx4+dx5):
-    res = (res<<8) ^ ord(cx)
-  return res % (nrsa)
-
 def hF(fnam):
   f = open(fnam,'r')
   return h(f.read())
@@ -211,12 +251,12 @@ n = 1321586649687684907829608477990154060366507677792774599213798978675666795877
 #>>> readNumber('e')
 e = 3705065645512927316321462305254520982876035314505654008283722719433928258945868606816193707934157371759177881042853386436215164383893639793003538863209251L
 #>>> 
-rsa129 = 114381625757888867669235779976146612010218296721242362562561842935706935245733897830597123563958705058989075147599290026879543541
-p1 = 3490529510847650949147849619903898133417764638493387843990820577
-p2 = 32769132993266709549961988190834461413177642967992942539798288533
+#rsa129 = 114381625757888867669235779976146612010218296721242362562561842935706935245733897830597123563958705058989075147599290026879543541
+#p1 = 3490529510847650949147849619903898133417764638493387843990820577
+#p2 = 32769132993266709549961988190834461413177642967992942539798288533
+rsa129 = 2**127 - 1
 
-
-print "\n\n rsacrypt - copyright Scheerer Software 2017 - all rights reserved\n\n"
+print "\n\n rsacrypt - copyright Scheerer Software 2017 - 2019 all rights reserved\n\n"
 print "First parameter is V,S,E or D\n\n"
 print "\n\n verify signature (3 parameters):"
 print "   > python rsacrypt.py V <filename> <digital signature> "
@@ -261,7 +301,7 @@ if len(sys.argv) == 3 and sys.argv[1] == "S":
 #p2 = nextPrime(random512())
 #n = p1*p2
 #e = rsa129
-#d = inv(e,(p1-1)*(p2-1)) 
+#d = inv(e,( (p1-1)*(p2-1) )/gcd(p1-1,p2-1)) 
 #writeNumber(d,'gxxx')
 #writeNumber(n,'nrsa')
-#pubkey('1Franz','3Scheerer')   
+#print "n = ", n

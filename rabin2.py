@@ -217,9 +217,12 @@ def hF(fnam):
   f = open(fnam,'r')
   return h(f.read())
 
-def sF(fnam):
-  p = readNumber("p_")
-  q = readNumber("q_")
+def sF(fnam, pw):
+  print " generate primes ... "
+  p = nextPrime( hg(pw) % (2**501 + 1) )  
+  q = nextPrime( hg(pw + '0') % (2**501 + 1) )  
+#  p = readNumber("p_")
+#  q = readNumber("q_")
 
   f = open(fnam,'r')
   s = root (f.read(), p, q)
@@ -253,8 +256,8 @@ print "First parameter is V (Verify) or S (Sign) or G (Generate) \n\n"
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
   print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
 
-if len(sys.argv) == 3 and sys.argv[1] == "S":
-  print " digital signature:\n " + num2code(sF(sys.argv[2]))
+if len(sys.argv) == 4 and sys.argv[1] == "S":
+  print " digital signature:\n " + num2code(sF(sys.argv[2], sys.argv[3]))
 
 if len(sys.argv) == 3 and sys.argv[1] == "G":
   print " generate primes ... "

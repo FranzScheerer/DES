@@ -1,4 +1,4 @@
-import sys, hashlib
+import sys, getpass
 # ******************************************************************************
 # PUBLIC KEY
 #
@@ -256,8 +256,9 @@ print "First parameter is V (Verify) or S (Sign) or G (Generate) \n\n"
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
   print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
 
-if len(sys.argv) == 4 and sys.argv[1] == "S":
-  print " digital signature:\n " + num2code(sF(sys.argv[2], sys.argv[3]))
+if len(sys.argv) == 3 and sys.argv[1] == "S":
+  pword = getpass.getpass()
+  print " digital signature:\n " + num2code(sF(sys.argv[2], pword))
 
 if len(sys.argv) == 3 and sys.argv[1] == "G":
   print " generate primes ... "

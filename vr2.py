@@ -2,12 +2,17 @@ import sys, hashlib
 # ******************************************************************************
 # PUBLIC KEY
 #
-crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
-crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
-crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+crabin = 'YRIHHp5r2jMo0lGlz9eZH2HouQ6OcKmO#4dDQpDpoSqQELliuS1zbhRFxhPs7zFGG2nOl7dWwc2xInW5lNfY9as0nGLhKe16BoC3wDMKx5OHChOR3RLdHE1W9QfJG/FgldeZz07Y6mzfF5wqQpuN06/uib0gLP6QPXqpIWn'
+afactor =  6
+bfactor =  3
 
-afactor =  3
-bfactor =  7
+#crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
+#crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
+#crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+
+#afactor =  3
+#bfactor =  7
+
 
 # *******************************************************************************
 # HASH FUNCTION WITH SPRITZ

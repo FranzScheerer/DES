@@ -2,12 +2,21 @@ import sys, getpass
 # ******************************************************************************
 # PUBLIC KEY
 #
-crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
-crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
-crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+#crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
+#crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
+#crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
+#crabin = '8jw3IidQnfTeODQbJVF0r3yxF6BMhRhpuJ43FU1eVjC3QaWPfWKOBIEu0gssvKEx16388HlpjAuBIekqjx1URs7QutupFK2OuGuU3dmrOqpNZ0126jmcKhislTIbdqQNlPsLJIWGPniKzLd1tK1v3tFFmF0JE/KxxA5SHJv'
+#afactor =  3
+#bfactor =  5
 
-afactor =  3
-bfactor =  7
+#crabin = 'KuJfTeO/gggXIQNtKbYWZY33ggmHp343MCrN443tLO4AwEYkosmacqlnjlZNIjUoVm6RNycJAs/UaBeMIS7/OMUbIT#r6bSJaAX18MpT93u2PJsJO9U2v7i6VskxXa#DDaJyYsB3Jvd4Ca/vmKbZ#VFomZz8TlAZ9AvbzL'
+#afactor =  3
+#bfactor =  13
+
+#crabin = 'YRIHHp5r2jMo0lGlz9eZH2HouQ6OcKmO#4dDQpDpoSqQELliuS1zbhRFxhPs7zFGG2nOl7dWwc2xInW5lNfY9as0nGLhKe16BoC3wDMKx5OHChOR3RLdHE1W9QfJG/FgldeZz07Y6mzfF5wqQpuN06/uib0gLP6QPXqpIWn'
+#afactor =  6
+#bfactor =  3
+
 
 # *******************************************************************************
 # HASH FUNCTION WITH SPRITZ
@@ -73,6 +82,7 @@ def hg(x):
 
 def h(x):
   global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  global nrabin
   jSPZ = iSPZ = aSPZ = 0
   wSPZ = 1
   sSPZ = range(256)
@@ -137,7 +147,7 @@ def code2num(x):
        res = (res << 6) + 63
   return res
 
-nrabin = code2num(crabin)
+#nrabin = code2num(crabin)
 
 def num2code(x):
   res = ''
@@ -180,11 +190,22 @@ def nextPrime_(p):
       return nextPrime_(p + 4)
   return p
   
+# find factors a and b from primes p,q
+def f_ab(p,q):
+  res = [3,3]
+  while pow(res[0], (p-1)/2, p) == 1 or pow(res[0], (q-1)/2, q) != 1:
+    res[0] = res[0] + 1
+  while pow(res[1], (p-1)/2, p) != 1 or pow(res[1], (q-1)/2, q) == 1:
+    res[1] = res[1] + 1
+  return res
 
 def root(m, p, q):
+  global nrabin
   x = h(m)
-  a = afactor
-  b = bfactor
+  ab = f_ab(p,q)
+  a = ab[0]
+  b = ab[1]
+  nrabin = p * q
   if pow(x, (p-1)/2, p) > 1:
     x *= a
   if pow(x, (q-1)/2, q) > 1:
@@ -218,37 +239,17 @@ def hF(fnam):
   return h(f.read())
 
 def sF(fnam, pw):
+  global nrabin
   print " generate primes ... "
   p = nextPrime( hg(pw) % (2**501 + 1) )  
   q = nextPrime( hg(pw + '0') % (2**501 + 1) )  
-#  p = readNumber("p_")
-#  q = readNumber("q_")
+  nrabin = p * q
 
   f = open(fnam,'r')
   s = root (f.read(), p, q)
   f.close()
   return s
 
-# find factors a and b from primes p,q
-def f_ab(p,q):
-  res = [3,3]
-  while pow(res[0], (p-1)/2, p) == 1 or pow(res[0], (q-1)/2, q) != 1:
-    res[0] = res[0] + 1
-  while pow(res[1], (p-1)/2, p) != 1 or pow(res[1], (q-1)/2, q) == 1:
-    res[1] = res[1] + 1
-  return res
-
-def vF(s, fnam):
-  a = afactor
-  b = bfactor
-  h0 = hF(fnam)
-  ha = (a*h0) % nrabin
-  hb = (b*h0) % nrabin
-  hab = (a*b*h0) % nrabin
-
-  sq = (s * s) % nrabin
-
-  return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
 print "\n\n RABIN SIGNATURE - copyright Scheerer Software 2019 - all rights reserved\n\n"
 print "First parameter is V (Verify) or S (Sign) or G (Generate) \n\n"

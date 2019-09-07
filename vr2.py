@@ -2,9 +2,9 @@ import sys, hashlib
 # ******************************************************************************
 # PUBLIC KEY
 #
-crabin = 'YRIHHp5r2jMo0lGlz9eZH2HouQ6OcKmO#4dDQpDpoSqQELliuS1zbhRFxhPs7zFGG2nOl7dWwc2xInW5lNfY9as0nGLhKe16BoC3wDMKx5OHChOR3RLdHE1W9QfJG/FgldeZz07Y6mzfF5wqQpuN06/uib0gLP6QPXqpIWn'
-afactor =  6
-bfactor =  3
+#crabin = 'YRIHHp5r2jMo0lGlz9eZH2HouQ6OcKmO#4dDQpDpoSqQELliuS1zbhRFxhPs7zFGG2nOl7dWwc2xInW5lNfY9as0nGLhKe16BoC3wDMKx5OHChOR3RLdHE1W9QfJG/FgldeZz07Y6mzfF5wqQpuN06/uib0gLP6QPXqpIWn'
+#afactor =  6
+#bfactor =  3
 
 #crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
 #crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
@@ -13,7 +13,13 @@ bfactor =  3
 #afactor =  3
 #bfactor =  7
 
+#crabin = '3peYeoomxFJ2i4tDMficQRJN1n6Tfv5Lj4gFvrwZw2pe3Y6eVgiD7sDRWKNGWDFkDg#Ujpmg7MH5MbuicpKA35rlqsh#KIpJ/EijdjXLU/cwENt1hJCGYrxJ4s6YN5aqQlkoGoJ7Ex6IMhZAYu7L7Vq#ASseGIUD5HVg8c9'
+#afactor =  11
+#bfactor =  33
 
+crabin = 'FyQkptYMNODa9fz/zwTi0vIumF0xYl5JBIY2dvARGrFlPXkUk#wGBF4MjEX/r1cuI1eh3BZxb1ZQzF#URpK6Yqjwpiyqg3RXDrw5nE05sq6Rzg72Q5RE0pZf8ib7p3Z2Fdx4Nd90X5LX/iro57N3/nwtYADmZQb49h22ks1'
+afactor =  5
+bfactor =  3
 # *******************************************************************************
 # HASH FUNCTION WITH SPRITZ
 # *******************************************************************************

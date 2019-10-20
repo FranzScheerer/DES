@@ -1,27 +1,8 @@
 import sys, getpass
-# ******************************************************************************
-# PUBLIC KEY
-#
-#crabin =  '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeW'
-#crabin += 'BnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/i'
-#crabin += 'pmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
-#crabin = '8jw3IidQnfTeODQbJVF0r3yxF6BMhRhpuJ43FU1eVjC3QaWPfWKOBIEu0gssvKEx16388HlpjAuBIekqjx1URs7QutupFK2OuGuU3dmrOqpNZ0126jmcKhislTIbdqQNlPsLJIWGPniKzLd1tK1v3tFFmF0JE/KxxA5SHJv'
-#afactor =  3
-#bfactor =  5
-
-#crabin = 'KuJfTeO/gggXIQNtKbYWZY33ggmHp343MCrN443tLO4AwEYkosmacqlnjlZNIjUoVm6RNycJAs/UaBeMIS7/OMUbIT#r6bSJaAX18MpT93u2PJsJO9U2v7i6VskxXa#DDaJyYsB3Jvd4Ca/vmKbZ#VFomZz8TlAZ9AvbzL'
-#afactor =  3
-#bfactor =  13
-
-#crabin = 'YRIHHp5r2jMo0lGlz9eZH2HouQ6OcKmO#4dDQpDpoSqQELliuS1zbhRFxhPs7zFGG2nOl7dWwc2xInW5lNfY9as0nGLhKe16BoC3wDMKx5OHChOR3RLdHE1W9QfJG/FgldeZz07Y6mzfF5wqQpuN06/uib0gLP6QPXqpIWn'
-#afactor =  6
-#bfactor =  3
-
 
 # *******************************************************************************
 # HASH FUNCTION WITH SPRITZ
 # *******************************************************************************
-
 def updateSPZ():
     global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
     iSPZ = (iSPZ + wSPZ) % 256
@@ -42,7 +23,7 @@ def shuffleSPZ():
 
 def absorb_nibbleSPZ(x):
     global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
-    if aSPZ == 240:
+    if aSPZ == 241:
         shuffleSPZ()
     sSPZ[aSPZ], sSPZ[240 + x] = sSPZ[240 + x], sSPZ[aSPZ]
     aSPZ = aSPZ + 1
@@ -71,14 +52,6 @@ def hg(x):
   for bx in res:
     out = (out<<8) + bx
   return out % (2**1000)
-
-#def h( arg ):
-#  cstr_ =  hashlib.sha256(arg).digest()
-#  out = 0 
-#  for c in cstr_:
-#    out = (out<<8) + ord(c)
-
-#  return (out << 750) % (nrabin)
 
 def h(x):
   global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ

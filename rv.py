@@ -1,10 +1,8 @@
 import sys
 
-crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
-afactor =  3
-bfactor =  7
-
-
+crabin = '4BHc94p6cZohh5KfZfvWfF1Pr8nRK77kpzdGhihgG/I2mmqlGWapPh2KvMxa825MFSiUrv2lShyKt4uadqEcDPimmRha2/8xqSi8Icp1k/T38sV109xGsoOPZEf2b5zJEkjpUtkgmOuRXRJvukbLNDdyLCkaJLV2DzmZhKT'
+afactor =  5
+bfactor =  3
 
 def update_h():
     global a_h,i_h,j_h,w_h,s_h
@@ -34,7 +32,7 @@ def shuffle_h():
 
 def absorb_nibble_h(x):
     global a_h,i_h,j_h,w_h,s_h
-    if a_h == 240:
+    if a_h == 241:
         shuffle_h()
     s_h[a_h], s_h[240 + x] = s_h[240 + x], s_h[a_h]
     a_h = a_h + 1

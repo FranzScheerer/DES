@@ -237,8 +237,6 @@ if len(sys.argv) == 3 and sys.argv[1] == "G":
   print " generate primes ... "
   p = nextPrime( hg(sys.argv[2] + 'x') % (2**501 + 1) )  
   q = nextPrime( hg(sys.argv[2] + '0') % (2**501 + 1) )  
-  writeNumber(p, 'p_')                     
-  writeNumber(q, 'q_')     
   print "nrabin = ", (p * q) 
   print "\ncrabin = \n", num2code(p * q) 
   print "afactor = ", f_ab(p,q)[0]             

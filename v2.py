@@ -1,7 +1,15 @@
 import sys
 
-crabin = 'CMRiCgHhn0#4zWuE8iXudlfzt#DarMnGcMOc9oZ2IGh6jHnd#JQjwwQHrT#sWXJmKq98rctaMP/jd94WDKF9TUWqI/hyupQNrXe/Ae1G1X0F#gJLcsNhYproJxQfRwkDz6Z4Rabwz7GR/jahI4dE/5IKSdpWWEVxOvDvtPr'
-afactor =  8
+
+crabin =   '24O49OhPkEt6wGslwOgkwNylcjeagSyqFp8cFS'
+crabin +=  'azODDI9s4/I'
+crabin +=  '#TYR9OYfvTY49lXCOugd88UBaLOX6u3ryeLfjG'
+crabin +=  'bpHe7ib18rYC2M160hp'
+crabin +=  '04dwRIeDH9L9mvwXOUTdtGyaufZ'
+crabin +=  'NRRCTX4#tXf'
+crabin +=  'EaWCtL2HJIa9XDv7gq7pg9X'
+
+afactor =  3
 bfactor =  6
 
 def update_h():

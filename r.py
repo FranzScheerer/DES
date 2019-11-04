@@ -1,6 +1,73 @@
-import random, hashlib, sys
+import sys, getpass
 
-nrsa =  8284015538174814135997242610544215527362202014017606381076441090415038132615613055381112302045616732409200392584779780125847345105949428544819779983644597050691588372679845743740937470807860044235800220925014111170938378470875163257764011091602290233319725407975607899112435785516834527963464502593365987727
+# *******************************************************************************
+# HASH FUNCTION WITH SPRITZ
+# *******************************************************************************
+def updateSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    iSPZ = (iSPZ + wSPZ) % 256
+    jSPZ = sSPZ[(jSPZ + sSPZ[ iSPZ ]) % 256]
+    sSPZ[ iSPZ ], sSPZ[ jSPZ ] = sSPZ[ jSPZ ], sSPZ[ iSPZ ]
+
+def outputSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    updateSPZ()
+    return sSPZ[jSPZ]
+
+def shuffleSPZ():
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    for v in range(256):
+        updateSPZ()    
+    wSPZ = (wSPZ + 2) % 256
+    aSPZ = 0
+
+def absorb_nibbleSPZ(x):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+    if aSPZ == 241:
+        shuffleSPZ()
+    sSPZ[aSPZ], sSPZ[240 + x] = sSPZ[240 + x], sSPZ[aSPZ]
+    aSPZ = aSPZ + 1
+
+def absorb_byteSPZ(b):
+    absorb_nibbleSPZ(b % 16)
+    absorb_nibbleSPZ(b / 16)
+
+def squeezeSPZ(out, outlen):
+    global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+#    if aSPZ != 0:
+#        shuffleSPZ()
+    shuffleSPZ()
+    for v in range(outlen):
+        out.append( outputSPZ() )
+
+def hg(x):
+  global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  jSPZ = iSPZ = aSPZ = 0
+  wSPZ = 1
+  sSPZ = range(256)
+  for c in x:
+     absorb_byteSPZ(ord(c)) 
+  res = []
+  squeezeSPZ(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (2**1000)
+
+def h(x):
+  global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
+  global nrabin
+  jSPZ = iSPZ = aSPZ = 0
+  wSPZ = 1
+  sSPZ = range(256)
+  for c in x:
+     absorb_byteSPZ(ord(c)) 
+  res = []
+  squeezeSPZ(res, 128)
+  out = 0 
+  for bx in res:
+    out = (out<<8) + bx
+  return out % (nrabin)
 
 def bin2num(x):
   res = 0
@@ -29,6 +96,14 @@ def hextxt2num(x):
        res = (res<<4) + ord(c) - 48
     elif ord(c) <= ord('f') and ord(c) >= ord('a'):
        res = (res<<4) + ord(c) - 87
+  return res
+
+def num2hextxt(x):
+  res = ''
+  h__ = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
+  while x > 0:
+    res = h__[x % 16] + res
+    x /= 16
   return res
 
 def code2num(x):
@@ -63,206 +138,84 @@ def num2code(x):
     x /= 64
   return res
 
-
-def num2hextxt(x):
-  res = ''
-  h__ = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
-  while x > 0:
-    res = h__[x % 16] + res
-    x /= 16
-  return res
-
 def gcd(a,b):
   while b > 0:
     a,b = b,a % b
   return a
 
-def issmooth(n,m):
-  g = gcd(n,m)
-  while True:
-    n = n / g
-    g = gcd(n,m)
-    if g == 1:
-      break
-  return n == 1
-
-def pp(x):
- i = ii = 1
- while i < x:
-   i = i + 1
-   if gcd(ii,i) == 1:
-     ii = i * ii
- return ii
- 
 def nextPrime(p):
- if p % 2 == 0:
+ while p % 4 != 3:
    p = p + 1
- return nextPrime_odd(p)
-
-def nextPrime_odd(p):
+ return nextPrime_(p)
+  
+def nextPrime_(p):
   m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
   while gcd(p,m_) != 1:
-    p = p + 2 
+    p = p + 4 
   if (pow(2,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+      return nextPrime_(p + 4)
   if (pow(3,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+      return nextPrime_(p + 4)
   if (pow(5,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+      return nextPrime_(p + 4)
   if (pow(17,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+      return nextPrime_(p + 4)
   return p
-
-def nextP(r,limit):
-  while r < limit: 
-     r = r * 7
-  return nextPrime(r)
-
-def wgxxx():
-  p = nextP(1689398, 2**400)
-  q = nextP(49611, 2**401)
-  writeNumber(inv(rsa129,(p-1)*(q-1)),'gxxx')
-  print "nrsa = ", p*q
   
-def pubkey(k1,k2):
-  p = nextPrime(bin2num(k1) * 2**400)
-  q = nextPrime(bin2num(k2) * 2**400)
-  print "nrsa = ", p*q
-  d =  inv(rsa129,(p-1)*(q-1))
-  print "e = ", d
-  writeNumber(inv(rsa129,(p-1)*(q-1)),'gxxx')
-   
-def writeNumber(number, fnam):
-  f = open(fnam, 'wb')
-  n = number
-  while n > 0:
-    byte = n % 256
-    n = n / 256
-    f.write(chr(byte))
-  f.close()
+# find factors a and b from primes p,q
+def f_ab(p,q):
+  res = [3,3]
+  while pow(res[0], (p-1)/2, p) == 1 or pow(res[0], (q-1)/2, q) != 1:
+    res[0] = res[0] + 1
+  while pow(res[1], (p-1)/2, p) != 1 or pow(res[1], (q-1)/2, q) == 1:
+    res[1] = res[1] + 1
+  return res
 
-def readNumber(fnam):
-  f = open(fnam, 'rb')
-  n = 0
-  snum = f.read()
-  for i in range(len(snum)):
-    n = (n << 8) ^ ord(snum[len(snum)-i-1])   
-  f.close()
-  return n
+def root(m, p, q):
+  global nrabin
+  x = h(m)
+  ab = f_ab(p,q)
+  a = ab[0]
+  b = ab[1]
+  nrabin = p * q
+  if pow(x, (p-1)/2, p) > 1:
+    x *= a
+  if pow(x, (q-1)/2, q) > 1:
+    x *= b
+  if pow(x, (q-1)/2, q) != 1 or pow(x, (p-1)/2, p) != 1:
+     print 'ERROR'
+     return -1
+  return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
 
-def random512():
-  md = hashlib.sha512("RANDOM-SEED")
-  md.update('large key value for generation of random number')
-  md.update( str(random.random()) )
-  md.update( str(random.random()) )
-  result = 0
-  largestr = md.digest()
-  for cx in largestr:
-      result = (result << 8) ^ ord(cx)
-  return result
 
-def random1024():
-  return random512() * random512()
+def sF(txt, pw):
+  global nrabin
+  print " generate primes ... "
+  p = nextPrime( hg(pw + 'xxx') % (2**501 + 1) )  
+  q = nextPrime( hg(pw + '000') % (2**501 + 1) )  
+  nrabin = p * q
 
-def h(x):
-  dx1 = hashlib.sha512(x).digest()
-  dx2 = hashlib.sha512(dx1+x).digest()
-  dx3 = hashlib.sha512(x+dx2).digest()
-  dx4 = hashlib.sha512(x+dx3).digest()
-  dx5 = hashlib.sha512(x+dx4).digest()
-  res = 0
-  for cx in (dx1+dx2+dx3+dx4+dx5):
-    res = (res<<8) ^ ord(cx)
-  return res % (nrsa)
+  s = root (txt, p, q)
 
-def hF(fnam):
-  f = open(fnam,'r')
-  return h(f.read())
-
-def sF(fnam):
-  f = open(fnam,'r')
-  s = pow (h(f.read()), readNumber('gxxx'), nrsa)
-  f.close()
   return s
 
-def vF(fnam,s):
-  f = open(fnam,'r')
-  return  h(f.read()) == pow (s, rsa129, nrsa)
  
-def inv(b,m):
-  s = 0
-  t = 1
-  a = m
-  while b != 1:
-    q = a/b
-    aa = b
-    b = a % b
-    a = aa
-    ss = t
-    t = s - q*t
-    s = ss
-  if t < 0:
-    t = t + m
-  return t
-
-# My public key
-#>>> readNumber('n')
-n = 132158664968768490782960847799015406036650767779277459921379897867566679587724524521987896737725523269165395751923267303738641975289767617733673183719848122664620561025225091299282924584871878765772994798839194882625865916048662867255808940326382392925259371837094024054492616735167070129273991602554868281260403078931758978042320828712406521136768937860224472073584018384229887268232999555522044285586888065207215194190028245326972822338830044710482833241494104291299248101801097861695990218731328867880865825220780717582330616093628187888772860304794060649785037872959663106341572544892592180043533578078543073813L
-#>>> readNumber('e')
-e = 3705065645512927316321462305254520982876035314505654008283722719433928258945868606816193707934157371759177881042853386436215164383893639793003538863209251L
-#>>> 
-rsa129 = 114381625757888867669235779976146612010218296721242362562561842935706935245733897830597123563958705058989075147599290026879543541
-p1 = 3490529510847650949147849619903898133417764638493387843990820577
-p2 = 32769132993266709549961988190834461413177642967992942539798288533
-
-
-print "\n\n rsacrypt - copyright Scheerer Software 2017 - all rights reserved\n\n"
-print "First parameter is V,S,E or D\n\n"
-print "\n\n verify signature (3 parameters):"
-print "   > python rsacrypt.py V <filename> <digital signature> "
-
-print " create signature S (2 parameter):"
-print "   > python rsacrypt.py S <filename> \n\n"
-print " encrypt E (2 parameter):"
-print "   > python rsacrypt.py E <text> \n\n"
-print " decrypt D (2 parameter):"
-print "   > python rsacrypt.py D <bigInteger> \n\n"
-
-print " number of parameters is " + str(len(sys.argv)-1)
-print " "
-print " "
-
-if len(sys.argv) == 3 and sys.argv[1] == "E":
-  print "encrypted text: \n" + str (pow(bin2num(sys.argv[2]), readNumber('gxxx'), nrsa))
-
-if len(sys.argv) == 3 and sys.argv[1] == "D":
-  print " decrypt text:\n " + num2bin(pow (digital2num(sys.argv[2]),rsa129,nrsa)) 
+print "\n\n RABIN SIGNATURE - copyright Scheerer Software 2019 - all rights reserved\n\n"
+print "First parameter is V (Verify) or S (Sign) or G (Generate) \n\n"
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
-  print "result of verification: " + str(vF(sys.argv[2], code2num(sys.argv[3])))
+  print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
 
 if len(sys.argv) == 3 and sys.argv[1] == "S":
-  print " digital signature:\n " + num2code(sF(sys.argv[2]))
-     
-#m = pp(25000)
-#x = 2**50
-#for i in range(25):
-#  cnt = 0
-#  x = x * 2
-#  for j in range(600000):
-#    if issmooth(x+j,m):
-#      cnt = cnt + 1
-#  print x, " - ", cnt
+  pword = getpass.getpass()
+  print " digital signature:\n " + num2code(sF(sys.argv[2], pword))
 
+if len(sys.argv) == 3 and sys.argv[1] == "G":
+  print " generate primes ... "
+  p = nextPrime( hg(sys.argv[2] + 'xxx') % (2**501 + 1) )  
+  q = nextPrime( hg(sys.argv[2] + '000') % (2**501 + 1) )  
+  print "nrabin = ", (p * q) 
+  print "\ncrabin = \n", num2code(p * q) 
+  print "afactor = ", f_ab(p,q)[0]             
+  print "bfactor = ", f_ab(p,q)[1]             
 
-#print np(random512())
- 
-#p1 = nextPrime(random512())
-#p2 = nextPrime(random512())
-#n = p1*p2
-#e = rsa129
-#d = inv(e,(p1-1)*(p2-1)) 
-#writeNumber(d,'gxxx')
-#writeNumber(n,'nrsa')
-#print "nrsa = ", n
-#pubkey('1Franz','3Scheerer')

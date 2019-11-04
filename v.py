@@ -1,30 +1,16 @@
-import sys, hashlib
-#crabin = 'PMmPC1Ghzisi6UVQAidfKfw9qrEQAzgx#uYAuxHJyJZ9cO#EfKjrb3r1YKUw/3mSr/Nxc/BvYJBSf2dHC3HEnvxTLbIITwzC8Q9YhCeG2hswUPF9YmGvR4Fqt9N1kiz10XYDGBYo6f#gGXRi51VneO4kFwlF9fGogatU14L'
-#afactor =  3
-#bfactor =  7
+import sys
 
-#crabin = 'e5ROvXYsiG5cazuQD5iZjFnMnD#xhsD2yo/0NS2Hj0sLGVJwX2DYl3gLqMgyzyqolx3oU47Q5TqXE4xVF6lfmB1NWAPRqljSyxrce2vWjb6Jl9suKT281gA/RAs0sutXhF0SB5vK1Aq#7bF3Zh2ORrc6XiWicZtN28MSf41'
-#afactor =  5
-#bfactor =  3
-#crabin = '4zmx8OD7vbXz#YssGea#JF/sdw4RyixR2KokAvbSeCPk6/M74A3ymvRr8GfKcAHxAOeWBnvA10kQyOM1BfTckS8ZxU#QoddVlzKKeJWIOUDYuJIpGJ#N4djuLGdhSM9RQfnU6A/ipmn/#LvH/C#ezSrvGGTBlVsXaY8vJ#L'
-#afactor =  3
-#bfactor =  7
 
-#crabin = 'g7YB1743P2dblx2oqa7FGNj2LsvhK9ei04NrvNgEt30OE/#XJ1cgRvcnUHy4bW/7wax/8NsmInEYi7X2mDKu3yUI9sd/#7cx/G7He3b6vb87/ouYoOJGE3ZJCTyM1MHE7YuAcTIPjILgAX4FLQvvXxjzn/r6MOL8XTS4M2v'
-#afactor =  14
-#bfactor =  7
+crabin =   '24O49OhPkEt6wGslwOgkwNylcjeagSyqFp8cFS'
+crabin +=  'azODDI9s4/I'
+crabin +=  '#TYR9OYfvTY49lXCOugd88UBaLOX6u3ryeLfjG'
+crabin +=  'bpHe7ib18rYC2M160hp'
+crabin +=  '04dwRIeDH9L9mvwXOUTdtGyaufZ'
+crabin +=  'NRRCTX4#tXf'
+crabin +=  'EaWCtL2HJIa9XDv7gq7pg9X'
 
-#crabin = 'Nl4XmFkjNQyN#lipJBp/2s1qstnpPyuCJ/iRQ7yxkRpo0rDXHOlTT3Wn/mw48C1mGCHwvvA9HUbLNJz#2JcC8xGqOZVMBZJSr3ygdGfnAtVLGtSRPszPUTxHoVfEyllmLDT1ilMTKuFByV7dlvmr3fSs1Yb79YMaNAREeO1'
-#afactor =  5
-#bfactor =  10
-
-crabin = '1CdHQXQ3vrLhlV3035GQvMuYr97SVF/1M#UjP7ZUthdZJInFMy7SstjqZCY62C8mS8gyWlGxdFEM3KKXPStXFCfmluH2qKPuLmkoEiecbnjMNF2yu3BK65zmMuouJCyF0NIDMiuYxdEwXNJJaPUC6fFx7O9rVfPYtYBgVbP'
-afactor =  21
-bfactor =  3
-
-def swap_h(x,y):
-    global a_h,i_h,j_h,w_h,s_h
-    s_h[x],s_h[y] = s_h[y],s_h[x]
+afactor =  3
+bfactor =  6
 
 def update_h():
     global a_h,i_h,j_h,w_h,s_h
@@ -36,7 +22,9 @@ def update_h():
       j_h = s_h[ j_h - 256 ]
     else:
       j_h = s_h[ j_h ]
-    swap_h(i_h, j_h)
+    t = s_h[i_h] + s_h[j_h] 
+    s_h[ j_h ] = t - s_h[ j_h ]
+    s_h[ i_h ] = t - s_h[ i_h ]
 
 def output_h():
     global a_h,i_h,j_h,w_h,s_h
@@ -52,39 +40,28 @@ def shuffle_h():
 
 def absorb_nibble_h(x):
     global a_h,i_h,j_h,w_h,s_h
-    if a_h == 240:
+    if a_h == 241:
         shuffle_h()
-    swap_h(a_h, 240 + x)
+    s_h[a_h], s_h[240 + x] = s_h[240 + x], s_h[a_h]
     a_h = a_h + 1
 
 def absorb_byte_h(b):
     absorb_nibble_h(b % 16)
-    absorb_nibble_h(b / 16)
+    absorb_nibble_h(int(b / 16))
 
 def squeeze_h(out, outlen):
     global a_h,i_h,j_h,w_h,s_h
-    if a_h != 0:
-        shuffle_h()
+    shuffle_h()
     for v in range(outlen):
         out.append(output_h())
-
-#def h( arg ):
-#  cstr_ =  hashlib.sha256(arg).digest()
-#  out = 0 
-#  for c in cstr_:
-#    out = (out<<8) + ord(c)
-
-#  return (out << 750) % (nrabin)
-
 
 def h(x):
   global a_h,i_h,j_h,w_h,s_h
   j_h = i_h = a_h = 0
   w_h = 1
-  s_h = range(256)
-  px = "change this value ..."
-  for c in px:
-     absorb_byte_h(ord(c)) 
+  s_h = []
+  for ix in range(256):
+    s_h.append(ix)
   for c in x:
      absorb_byte_h(ord(c)) 
   res = []
@@ -112,37 +89,10 @@ def code2num(x):
 
 nrabin = code2num(crabin)
   
-def root(m, p, q):
-  x = h(m)
+def vF(s, txt):
   a = afactor
   b = bfactor
-  if pow(x, (p-1)/2, p) > 1:
-    x *= a
-  if pow(x, (q-1)/2, q) > 1:
-    x *= b
-  if pow(x, (q-1)/2, q) != 1 or pow(x, (p-1)/2, p) != 1:
-    print "Errrrrrrrrrrrrrrrrrrror"
-    return -1
-  return (pow(p,q-2,q) * p * pow(x,(q+1)/4,q) + pow(q,p-2,p) * q * pow(x,(p+1)/4,p)) % (nrabin) 
-
-
-def readNumber(fnam):
-  f = open(fnam, 'rb')
-  n = 0
-  snum = f.read()
-  for i in range(len(snum)):
-    n = (n << 8) ^ ord(snum[len(snum)-i-1])   
-  f.close()
-  return n
-
-def hF(fnam):
-  f = open(fnam,'r')
-  return h(f.read())
-
-def vF(s, fnam):
-  a = afactor
-  b = bfactor
-  h0 = hF(fnam)
+  h0 = h(txt)
   ha = (a*h0) % nrabin
   hb = (b*h0) % nrabin
   hab = (a*b*h0) % nrabin
@@ -151,10 +101,10 @@ def vF(s, fnam):
 
   return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
-print "\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n"
-print "First parameter is V (Verify)\n\n"
+print ("\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n")
+print ("First parameter is V (Verify)\n\n")
 
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
-  print "result of verification: " + str(vF(code2num(sys.argv[3]),sys.argv[2]))
+  print ("result of verification: " + str(vF(code2num(sys.argv[3]), sys.argv[2])))
 

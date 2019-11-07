@@ -12,6 +12,23 @@ crabin +=  'EaWCtL2HJIa9XDv7gq7pg9X'
 afactor =  3
 bfactor =  6
 
+def num2code(x):
+  res = ''
+  while x > 0:
+    y = x % 64
+    if y < 10:
+       res = chr( y + 48 ) + res
+    elif y < 36:
+       res = chr( y + 55 ) + res
+    elif y < 62:
+       res = chr( y + 61 ) + res 
+    elif y == 62:
+       res = '#' + res 
+    elif y == 63:
+       res = '/' + res 
+    x /= 64
+  return res
+
 def update_h():
     global a_h,i_h,j_h,w_h,s_h
     i_h = i_h + w_h 
@@ -101,10 +118,16 @@ def vF(s, txt):
 
   return (h0 == sq) or (ha == sq) or (hb == sq) or (hab == sq)
  
+def hF(txt):
+  h0 = h(txt)
+  return num2code(h0)[0:40]
+ 
 print ("\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n")
-print ("First parameter is V (Verify)\n\n")
+print ("First parameter is V (Verify) or H (hash) \n\n")
 
 
 if  len(sys.argv) == 4 and sys.argv[1] == "V":
   print ("result of verification: " + str(vF(code2num(sys.argv[3]), sys.argv[2])))
 
+if  len(sys.argv) == 3 and sys.argv[1] == "H":
+  print ("hash: " + hF(sys.argv[2]))

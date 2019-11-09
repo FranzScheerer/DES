@@ -19,11 +19,11 @@ def num2code(x):
     y_ = str(x)
     y = 0
 #    print (y_)
-    for ix in range(len(y_)):
+    for c in y_:
       y *= 10
-      c = y_[ix]
-      y += ord(c) - 48
-      y %= 0x40
+      y = (10*y) + ord(c) - 48
+      y %= 64
+#    print (y)
     if y < 10:
        res = chr( int(y + 48) ) + res
     elif y < 36:
@@ -34,7 +34,7 @@ def num2code(x):
        res = '#' + res 
     elif y == 63:
        res = '/' + res 
-    x = int(x / 64)
+    x = int(x >> 6)
   return res
 
 def update_h():
@@ -128,7 +128,7 @@ def vF(s, txt):
  
 def hF(txt):
   h0 = h(txt)
-  return str(h0)[0:80]
+  return num2code(h0)[0:42]
  
 print ("\n rabin signature - copyright Scheerer Software 2019 - all rights reserved\n\n")
 print ("First parameter is V (Verify) or H (hash) \n\n")
@@ -139,3 +139,5 @@ if  len(sys.argv) == 4 and sys.argv[1] == "V":
 
 if  len(sys.argv) == 3 and sys.argv[1] == "H":
   print ("hash: " + hF(sys.argv[2]))
+
+#print (num2code(113233435454543534545))

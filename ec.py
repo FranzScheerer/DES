@@ -118,8 +118,8 @@ def addP(P,Q):
 
 def mulP(P,n):
   isFirst = True
-  resP = P
-  PP = resP
+  resP = 'NONE'
+  PP = P
   while n > 0:
      if (n % 2 != 0):   
          if isFirst:

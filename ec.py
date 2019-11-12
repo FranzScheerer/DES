@@ -27,7 +27,7 @@ def absorb_nibble_spritz(x):
 
 def absorb_byte_spritz(b):
     absorb_nibble_spritz(b % 16)
-    absorb_nibble_spritz(b // 16)
+    absorb_nibble_spritz(b >> 4)
 
 def squeeze_spritz(out, outlen):
     global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
@@ -65,22 +65,6 @@ prime = nextPrime(12 * 2**131)
 
 print ("A prime greater than 12 times 2^131 \np = ", prime)
 
-def inv(b,a):
-  m = a
-  s = 0
-  t = 1
-  while b != 1:
-    q = a//b
-    a_tmp = b
-    b = a % b
-    a = a_tmp
-    s_tmp = t
-    t = s - q*t
-    s = s_tmp
-  if t < 0:
-    t = t + m
-  return t
-
 def h(x):
   global a_spritz, i_spritz, j_spritz, w_spritz, s_spritz
   i_spritz = j_spritz = a_spritz = 0
@@ -107,11 +91,11 @@ def addP(P,Q):
   y1 = P[1] 
   y2 = Q[1] 
   if x1 == x2:
-     s = (3*(x1**2) * inv(2*y1, prime)) % prime
+     s = (3 * x1*x1 * pow(2*y1, prime-2, prime)) % prime
   else:  
      if x1 < x2:
         x1 = x1 + prime
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
+     s = ((y1-y2) * pow(x1-x2, prime-2, prime)) % prime
   xr = s**2 - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
@@ -120,7 +104,7 @@ def mulP(P,n):
   isFirst = True
   resP = 'NONE'
   PP = P
-  while n > 0:
+  while n != 0:
      if (n % 2 != 0):   
          if isFirst:
             resP = PP
@@ -128,7 +112,7 @@ def mulP(P,n):
          else:
             resP = addP(resP,PP)
      PP = addP(PP, PP) 
-     n = n // 2
+     n >>= 1 
   return resP
 
 def signSchnorr(G, m, x):
@@ -140,9 +124,9 @@ def signSchnorr(G, m, x):
 
 #Generate the base point
 x = 1234567
-while pow(x**3 + 1, (prime-1)//2, prime) != 1:
+while pow(x**3 + 1, (prime-1)>>1, prime) != 1:
    x = x + 1
-y = pow(x**3 + 1, (prime+1)//4, prime)
+y = pow(x**3 + 1, (prime+1)>>2, prime)
 P = [x % prime, y % prime]
 
 
@@ -153,7 +137,7 @@ print("\n\n Read message to sign from file: ", fo.name)
 message = fo.read()
 fo.close()
 
-privateKey = h('mypassword')
+privateKey = h( getpass.getpass() )
 
 sig = signSchnorr(P, message, privateKey)
 print("The signature is: ",sig)

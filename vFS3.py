@@ -84,6 +84,22 @@ def hb(x):
     out = (out<<8) + bx
   return out % (nrabin)
 
+def num2code(x):
+  res = ''
+  while x > 0:
+    y = x % 64
+    if y < 10:
+       res = chr( y + 48 ) + res
+    elif y < 36:
+       res = chr( y + 55 ) + res
+    elif y < 62:
+       res = chr( y + 61 ) + res 
+    elif y == 62:
+       res = '#' + res 
+    elif y == 63:
+       res = '/' + res 
+    x >>= 6
+  return res
 
 def code2num(x):
   res = 0

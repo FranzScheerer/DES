@@ -102,6 +102,14 @@ def code2num(x):
 
 nrabin = code2num(crabin)
   
+def writeNumber(n, fnam):
+  f = open(fnam, 'wb')
+  while n > 0:
+    b = n & 0xFF
+    n >>= 8
+    f.write(bytes([b]))
+  f.close()
+
 def readNumber(fnam):
   f = open(fnam, 'rb')
   n = 0

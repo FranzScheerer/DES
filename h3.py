@@ -53,7 +53,7 @@ def h(x):
     out = (out<<8) + bx
   return out 
 
-def hb(x):
+def hF(fnam):
   global aSPZ, iSPZ, jSPZ, wSPZ, sSPZ
   jSPZ = iSPZ = aSPZ = 0
   wSPZ = 1
@@ -62,10 +62,12 @@ def hb(x):
   while ix < 256:
      sSPZ.append(ix)
      ix += 1
-  for c in x:
-     absorb_byteSPZ(c) 
+  f = open(fnam, 'rb')
+  for c in f.read():
+     absorb_byteSPZ(c)
+  f.close() 
   res = []
-  squeezeSPZ(res, 32)
+  squeezeSPZ(res, 128)
   out = 0 
   for bx in res:
     out = (out<<8) + bx
@@ -127,25 +129,17 @@ def gcd(a,b):
   return a
  
 def nextPrime(p):
- if p % 2 == 0:
+ while p % 6 != 5:
    p = p + 1
- return nextPrime_odd(p)
+ return nextPrime_e3(p)
 
-def nextPrime_odd(p):
-  m_ = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
-  while gcd(p,m_) != 1:
-    p = p + 2 
-  if (pow(2,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
-  if (pow(3,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+def nextPrime_e3(p):
+  m = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29
+  while gcd(p,m) != 1:
+    p = p + 6 
   if (pow(5,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
-  if (pow(17,p-1,p) != 1):
-      return nextPrime_odd(p + 2)
+      return nextPrime_e3(p + 6)
   return p
-
-
    
 def writeNumber(n, fnam):
   f = open(fnam, 'wb')
@@ -163,9 +157,21 @@ def readNumber(fnam):
   f.close()
   return n
 
-def hF(fnam):
-  f = open(fnam,'rb')
-  return hb(f.read())
+def inv(b,m):
+  s = 0
+  t = 1
+  a = m
+  while b != 1:
+    q = a//b
+    aa = b
+    b = a % b
+    a = aa
+    ss = t
+    t = s - q*t
+    s = ss
+  if t < 0:
+    t = t + m
+  return t
 
 print ("\n\n hash h241 - copyright Scheerer Software 2019 all rights reserved\n\n")
 print ("First parameter is H\n\n")
@@ -174,4 +180,4 @@ if len(sys.argv) == 3 and sys.argv[1] == "H":
   print ("hash of file centent:\n " + num2code(hF(sys.argv[2])))
      
 hash = h("The quick brown fox jumps over the lazy dog")
-print ("\n\nThe quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
+print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))

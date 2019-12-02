@@ -173,8 +173,23 @@ def inv(b,m):
     t = t + m
   return t
 
+def rsakeys():
+  global nrsa, drsa
+  a = 2
+  b = 2**512
+  p = nextPrime(random.randint(a,b))
+  q = nextPrime(random.randint(a,b))
+  drsa = inv(3, (p-1)*(q-1)//gcd(p-1,q-1) )
+  nrsa = p * q
+  print("n = \n", p*q)
+  print("e = 3, \nd = ", drsa)
+
+
 print ("\n\n hash h241 - copyright Scheerer Software 2019 all rights reserved\n\n")
 print ("First parameter is H\n\n")
+
+print("Random RSA keys are generated ...\n")
+rsakeys()
 
 if len(sys.argv) == 3 and sys.argv[1] == "H":
   print ("hash of file centent:\n " + num2code(hF(sys.argv[2])))

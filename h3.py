@@ -181,6 +181,10 @@ def h256(fnam):
   f.close()
   return res
 
+def hS(x):
+  y = x.encode(encoding = 'UTF-8',errors = 'strict')
+  return hashlib.sha256(y).hexdigest()
+
 def rsakeys():
   global nrsa, drsa
   a = 2
@@ -192,15 +196,29 @@ def rsakeys():
   print("n = \n", p*q)
   print("e = 3, \nd = ", drsa)
 
+def mykeys(password):
+  global nrsa, drsa
+  a = h(password + 'A')
+  a *= h(password + 'B') 
+  b = h(password + 'AA')
+  b *= h(password + 'BB') 
+  p = nextPrime(a)
+  q = nextPrime(b)
+  drsa = inv(3, (p-1)*(q-1)//gcd(p-1,q-1) )
+  nrsa = p * q
+  print("n = \n", p*q)
+  print("e = 3, \nd = ", drsa)
+
 
 print ("\n\n hash h241 - copyright Scheerer Software 2019 all rights reserved\n\n")
 print ("First parameter is H\n\n")
 
 print("Random RSA keys are generated ...\n")
-rsakeys()
+mykeys('franZ63...34')
 
 if len(sys.argv) == 3 and sys.argv[1] == "H":
   print ("hash of file centent:\n " + num2code(hF(sys.argv[2])))
      
 hash = h("The quick brown fox jumps over the lazy dog")
 print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
+print ("SHA256: ", hS("The quick brown fox jumps over the lazy dog"))

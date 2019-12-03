@@ -173,6 +173,14 @@ def inv(b,m):
     t = t + m
   return t
 
+def h256(fnam):
+  f=open(fnam,'rb')
+  res = 0
+  for c in hashlib.sha256(f.read()).digest():
+     res = (res<<8) + c
+  f.close()
+  return res
+
 def rsakeys():
   global nrsa, drsa
   a = 2

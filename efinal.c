@@ -31,21 +31,20 @@ void absorb_nibble(int x)
 
 void absorb_byte(int b)
 {
-    j = j ^ b;
+    j = (j + b) % 256;
     absorb_nibble(b % 16);
     absorb_nibble(b / 16);
 }
-
 
 void squeeze(char *out, size_t outlen)
 {
    int v;
    for (v = 0; v < 256; v++) 
-       update();
+      update();
    w = (w + 2) % 256;
    a = 0;
    for (v = 0; v < outlen; v++) 
-       out[v] = output();
+      out[v] = output();
 }
 
 int main(){
@@ -53,7 +52,7 @@ int main(){
   unsigned char key[] = "PLEASE CHANGE THE KEY VALUE";
   unsigned char out[32];
   
-  fprintf(stderr,"hash ");
+  fprintf(stderr,"\n");
 
   for (int v = 0; v < 256; v++) 
       s[v] = v;

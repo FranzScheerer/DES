@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     FILE *fp1;
     char buf [5000]; 
     int c, cnt = 0;
-    int i   = 0;
+    int i = 0;
      
     if( argc != 1 )
     {
@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
     cnt = 0; 
     while( (c = fgetc(fp1)) != -1 )
     {
-        buf[cnt] = c;
-        cnt++;
+        buf[cnt++] = c;
         if (cnt == sizeof(buf)){
            while (cnt > 0){
               cnt--;

@@ -7,37 +7,15 @@
 
   Copyright (c) Scheerer Software 2019 - all rights reserved 
 ''' 
+
 import sys, hashlib
 
-def writeNumber(number, fnam):
-  f = open(fnam, 'w')
-  f.write(str(number))
-  f.close()
-
-def readNumber(fnam):
-  f = open(fnam, 'r')
-  n = 0
-  snum = f.read()
-  for c in snum:
-    n = (n * 10) + ord(c) - 48   
-  f.close()
-  return n
-
-import hashlib
 def h(x):
   y = x.encode(encoding = 'UTF-8',errors = 'strict')
   out = 0 
   for bx in hashlib.sha256(y).digest():
     out = (out<<8) + bx
   return out
-
-def num2hextxt(x):
-  res = ''
-  h__ = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
-  while x > 0:
-    res = h__[x % 16] + res
-    x >>= 4
-  return res
 
 def hF(x):
   f = open(x, "rb")
@@ -127,14 +105,16 @@ def signSchnorr(G, m, x):
 x = 1234567
 if pow(x**3 - x, (prime-1)>>1, prime) != 1:
    x = prime - x 
-y = pow( x**3 - x, (prime+1)>>2, prime)
+y = pow( x**3 - x, (prime+1)//4, prime)
 P = [ x % prime, y % prime ]
-
-
+#
+# Choose P is in a subgrooup of order (p+1)//4
+#
 P = mulP(P, 4)
 
 f = open(sys.argv[1],"rb")
 message = hashlib.sha256(f.read()).hexdigest()
+f.close()
 
 privateKey = h( 'passwordX' ) # some random number
 print("The base point is: ")
@@ -157,5 +137,3 @@ R = addP(mulP(P, sig[0]), mulP(publicKey, sig[1]))
 check = h(str(R[0])+message) % ((prime+1)>>2) == sig[1]
 print("\nResult of verification ", check)
 
-hash = h("The quick brown fox jumps over the lazy dog")
-print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))

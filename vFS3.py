@@ -1,9 +1,10 @@
 import sys
 
-crabin =   '24O49OhPkEt6wGslwOgkwNylcjeagSyqFp8cFSazODDI9s4/I#TYR9OYfvTY49'
-crabin +=  'lXCOugd88UBaLOX6u3ryeLfjGbpHe7ib18rYC2M160hp04dwRIeDH9L9mvwXOUTdt'
-crabin +=  'GyaufZNRRCTX4#tXfEaWCtL2HJIa9XDv7gq7pg9X'
-afactor =  3
+crabin = 'PqqSzNsYIQL2j1YMcbsdln4iAjhD1RmsapUcEMK6Qs5R7eWI'
+crabin += 'DVgTcgxuuDnT33aZAU/V8kV4aDe4UTiGu48zGMhZYJf4BU8T2'
+crabin += 'xs7cimFCKt28KDzKgZlK49ujSNVsOgi5j95Rr93q1gYjny5Yp'
+crabin += 'vNlf7nHmwN7rZn6M8PUxr'
+afactor =  5
 bfactor =  6
 
 def update_h():
@@ -76,7 +77,7 @@ def hb(x):
     s_h.append(ix)
 
   for c in x:
-     absorb_byte_h(c) 
+    absorb_byte_h(c) 
   res = []
   squeeze_h(res, 128)
   out = 0 

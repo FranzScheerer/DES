@@ -13,7 +13,7 @@ print("Hello World")
   Simple curve: y^2 = x^3 - x (modulo prime)
   Hash h241 
   PYthon 3
-  Message in line ###
+  Message in line 177
   Copyright (c) Scheerer Software 2019 - all rights reserved 
 ''' 
 

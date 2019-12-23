@@ -1,235 +1,202 @@
-import random, math, hashlib, sys
+'''
+  Schnorr Signature 
+  Secure
+  Simple curve: y^2 = x^3 - x (modulo prime)
+  Hash h241 
+  PYthon 3
+  Message in line 177
+  Copyright (c) Scheerer Software 2019 - all rights reserved 
+''' 
 
+def update241():
+    global a241, i241, j241, w241, s241
+    i241 = (i241 + w241) % 256
+    j241 = s241[(j241 + s241[i241]) % 256]
+    s241[i241], s241[j241] = s241[j241], s241[i241]
+
+def output241():
+    global a241, i241, j241, w241, s241
+    update241()
+    return s241[j241]
+
+def shuffle241():
+    global a241, i241, j241, w241, s241
+    for v in range(256):
+        update241()    
+    w241 = (w241 + 2) % 256
+    a241 = 0
+
+def absorb_nibble241(x):
+    global a241, i241, j241, w241, s241
+    if a241 == 241:
+        shuffle241()
+    s241[a241], s241[240 + x] = s241[240 + x], s241[a241]
+    a241 = a241 + 1
+
+def absorb_byte241(b):
+    absorb_nibble241(b % 16)
+    absorb_nibble241(b >> 4)
+
+def h(x):
+  global a241, i241, j241, w241, s241
+  i241 = j241 = a241 = 0
+  w241 = 1
+  s241 = []
+  for ix in range(256):
+    s241.append(ix)
+  for c in x.encode():
+     absorb_byte241(c) 
+  shuffle241()
+  out = 0 
+  for bx in range(32):
+    out = (out<<8) + output241()
+  return out
+
+def num2hextxt(x):
+  res = ''
+  h__ =  ['0','1','2','3','4','5','6','7','8','9']
+  h__ += ['a','b','c','d','e','f']
+  while x > 0:
+    res = h__[x % 16] + res
+    x >>= 4
+  return res
+
+
+'''
+ p and (p+1) divied by 4 are primes
+ There are (p+1) points on the curve.
+ https://math.stackexchange.com/questions/319742/order-of-elliptic-curve-y2-x3-x-defined-over-f-p-where-p-equiv-3-m
+'''
 def gcd(a,b):
   while b > 0:
     a,b = b,a % b
   return a
 
 def nextPrime(p):
- while p % 12 != 11:
+ while p % 12 != 7:
    p = p + 1
- return nextPrime_odd(p)
+ return nextPrime_(p)
 
-def nextPrime_odd(p):
+def nextPrime_(p):
   m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p, m_) != 1 or gcd((p+1)/12, m_) != 1:
+    while gcd(p, m_) != 1 or gcd((p+1)>>2, m_) != 1:
       p = p + 12 
-    if (pow(7,p-1,p) != 1 or pow(7, (p+1)/12 - 1, (p+1)/12) != 1):
+    if (pow(7,p-1,p) != 1 or pow(7, ((p+1)>>2) - 1, (p+1)>>2) != 1):
       p = p + 12
       continue
     return p
 
+'''
+ The numbers prime and (prime+1) divided by 4 
+ are both primes.
+'''
+maxx = 131 * 2**141
+prime = nextPrime( h('Franz Scheerer') % maxx )
+'''
+ This prime is safe
+''' 
+print ("A prime greater than 2^141 \np = ", prime)
 
-def readNumber(fnam):
-  f = open(fnam, 'rb')
-  n = 0
-  snum = f.read()
-  for i in range(len(snum)):
-    n = (n << 8) ^ ord(snum[len(snum)-i-1])   
-  f.close()
-  return n
-
-def hextxt2num(x):
-  res = 0
-  for c in x:
-    if ord(c) < 58 and ord(c) >= 48:
-       res = (res<<4) + ord(c) - 48
-    elif ord(c) <= ord('f') and ord(c) >= ord('a'):
-       res = (res<<4) + ord(c) - 87
-    elif ord(c) <= ord('F') and ord(c) >= ord('A'):
-       res = (res<<4) + ord(c) - 55
-  return res
-
-prime = nextPrime(12 * 2**161)
-print "A prime greater than 12 times 2^161 \np = ", prime
-a = 0
-b = prime - 3
- 
-r = (prime + 1) / 12
-hsize = 2**100 + 7
- 
-def inv(b,a):
-  m = a
-  s = 0
-  t = 1
-  while b != 1:
-    q = a/b
-    a_tmp = b
-    b = a % b
-    a = a_tmp
-    s_tmp = t
-    t = s - q*t
-    s = s_tmp
-  if t < 0:
-    t = t + m
-  return t
-
-def h(x):
-  dx1 = hashlib.sha256(x).digest()
-  res = 0
-  for cx in (dx1):
-    res = (res<<8) ^ ord(cx)
-  return res % hsize
-
+'''
+ Add point P and Q 
+ P and Q are Points 
+ on the elliptic curve
+'''
 def addP(P,Q):
   x1 = P[0]
   x2 = Q[0]
   y1 = P[1] 
   y2 = Q[1] 
   if x1 == x2:
-     s = ((3*(x1**2) + a) * inv(2*y1, prime)) % prime
+     s = ((3*x1*x1 - 1) * pow(2*y1, prime-2, prime)) % prime
   else:  
      if x1 < x2:
         x1 = x1 + prime
-     s = ((y1-y2) * inv(x1-x2, prime)) % prime
-  xr = s**2 - x1 - x2
+     s = ((y1-y2) * pow(x1-x2, prime-2, prime)) % prime
+  xr =  (s*s) - x1 - x2
   yr = s * (x1-xr) - y1 
   return [xr % prime, yr % prime]
 
+'''
+ n times the point P 
+ P + P + P + P + P + P --- 
+ is calculated using double and add.
+'''
 def mulP(P,n):
-  isFirst = True
-  resP = P
-  if n < 0:
-    resP[1] = prime - resP[1]
-    n = (-1)*n 
-  PP = resP
-  while n > 0:
+  global prime
+  resP = 'ZERO'
+  PP = P
+  while n != 0:
      if (n % 2 != 0):   
-         if isFirst:
+         if resP == 'ZERO':
             resP = PP
-            isFirst = False
          else:
             resP = addP(resP,PP)
      PP = addP(PP, PP) 
-     n = n / 2
+     n >>= 1 
   return resP
 
-def verify(G,s,Y,e,m):
-  return e == h(str(addP(mulP(G,s),mulP(Y,e))[0]) + m)
-
-def ecdsa_v(G,m,S,Y):
-  si = inv(S[0], r)
-  hh = h(m + str(S[1]))
-  u1 = (si * hh) % r
-  u2 = (si * S[1]) % r
-  return addP( mulP(G, u1), mulP(Y, u2) )[0] == S[1]
-
-x = 1
-while pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:
-   x = x + 1
-y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
-P = [x % prime, y % prime]
-P = mulP(P, 12)
-
-f = open(sys.argv[1], 'r')
-message = f.read()
-f.close()
-
-y = [readNumber('y0'), readNumber('y1')]
-sig = [readNumber('s0'), readNumber('s1')]
-
-print "Public key: X: ", y[0] % prime
-print "Public key: Y: ", y[1] % prime
-print "Sigature    X: ", sig[0]
-print "Sigature    y: ", sig[1]
-print ""
-print "The verification of signature ", verify(P, sig[0], y, sig[1], message)
-#print "The verification of ecdsa signature ", ecdsa_v(P,message,sig, y)
-
-def writeNumber(number, fnam):
-  f = open(fnam, 'wb')
-  n = number
-  while n > 0:
-    byte = n % 256
-    n = n / 256
-    f.write(chr(byte))
-  f.close()
-
-def wa(number, fnam):
-  f = open(fnam, 'a')
-  n = number
-  while n > 0:
-    byte = n % 256
-    n = n / 256
-    f.write(chr(byte))
-  f.close()
-
-def signSchnorr(G,m,x):
-  k = h(m + 'kk1')
+def signSchnorr(G, m, x):
+  global prime
+  # k is different if message m is different
+  k = h(m + 'key value') 
   R = mulP(G,k)
-  e = h(str(R[0]) + m)
-  return [(k - x*e) % r, e]
+  e = h(str(R[0]) + m) % ((prime+1)>>2)
+  return [(k - x*e) % ((prime+1)>>2), e]
 
-hxx = h('kk1_' + str(777*random.random()))
-sig = signSchnorr(P, message, hxx)
-y = mulP(P, hxx)
-writeNumber(sig[0],'s0')
-writeNumber(sig[1],'s1')
-writeNumber(y[0],'y0')
-writeNumber(y[1],'y1')
+#Generate the base point
+x = 1234567
+if pow(x**3 - x, (prime-1)>>1, prime) != 1:
+   x = prime - x 
+y = pow( x**3 - x, (prime+1)>>2, prime)
+P = [ x % prime, y % prime ]
+# To get a base point with prime order
+P = mulP(P, 4)
 
- 
-lb = r
-cx = 0
-while lb > 0:
-  lb = lb/2
-  cx = cx + 1
-print "Bitlength ", cx
+message = '''
+Elliptische Kurven über dem Körper der reellen Zahlen können als die Menge 
+aller (affinen) Punkte 
 
-#prime = nextPrime(100)
-#print "\n prime = ", prime
-#b = prime - 3
-#x = 1
-#if pow(x**3 + a*x + b, (prime - 1)/2, prime) != 1:
-#   x = prime - x
-#y = pow(x**3 + a*x + b, (prime + 1)/4, prime)
-#P = [x % prime, y % prime]
-#P = mulP(P, 12)
+{\displaystyle (x,y)\in \mathbb {R} ^{2}} (x,y)\in {\mathbb  {R}}^{2} angesehen werden, 
+die die Gleichung
 
-#r = (prime + 1)/12
-#for i in range(r/3):
-#  print mulP(P,3*i+1), mulP(P,3*i+2), mulP(P,3*i+3) 
+{\displaystyle y^{2}=x^{3}+ax+b} y^{2}=x^{3}+ax+b
 
+erfüllen, zusammen mit einem sogenannten Punkt im Unendlichen 
+(notiert als {\displaystyle \infty } \infty  oder {\displaystyle {\mathcal {O}}} {\mathcal  O}).
+Die (reellen) Koeffizienten {\displaystyle a} a und {\displaystyle b} b müssen 
+dabei die Bedingung erfüllen, dass für die Diskriminante des kubischen Polynoms 
+in {\displaystyle x} x auf der rechten Seite 
+{\displaystyle -4a^{3}-27b^{2}\neq 0} {\displaystyle -4a^{3}-27b^{2}\neq 0} gilt,
+ um Singularitäten auszuschließen 
+(die Wurzeln des Polynoms sind dann paarweise verschieden, 
+die Kurve hat keine Doppelpunkte oder andere Singularitäten).
+'''
 
-P = [ pow(24, inv(3,prime-1), prime), 5]
+privateKey = h( 'passwordX' ) # some random number
+print("The base point is: ")
+print("x: ",P[0])
+print("y: ",P[1])
 
-print "P = ", P
-print "verify point P ", pow( P[0], 3, prime ) == 24
+publicKey = mulP(P, privateKey)
 
-print "\n multiply P by 12 "
-P = mulP(P,12)
-print "P = ", P
+print("The public key is the point: ")
+print("x: ",publicKey[0])
+print("y: ",publicKey[1])
 
-print "\nChallenege: a = 0, b = 1, \n p = ", prime, "\n check prime    ", pow(7,prime-1,prime) == 1
-q = (prime + 1) / 12
-print " check (p+1)/12 ", pow(7,q-1,q) == 1
-print " check order    ", mulP(P,q+1) == P
-print "\n\nPx ", P[0]
-print "Py ", P[1]
+sig = signSchnorr(P, message, privateKey)
+print("The signature is: ")
+print("s: ",sig[0])
+print("e: ",sig[1])
 
-Q = mulP(P, random.randint(2,prime-2) )
-print "\n\nQx ", Q[0]
-print "Qy ", Q[1]
-print "\n\nWin 10,000 Dollars "
-print "Challenge: Find d, Q = d P "
+#Verification
+R = addP(mulP(P, sig[0]), mulP(publicKey, sig[1]))
+check = h(str(R[0])+message) % ((prime+1)>>2) == sig[1]
+print("\nResult of verification ", check)
 
-x = h("Alice")**2
-Q = mulP(P, x )
-print "\n\n My public key, a randomly choosen point on the curve. "
-print "\n\nmyPx ", Q[0]
-print "myPy ", Q[1] % prime
-#print P
+hash = h("The quick brown fox jumps over the lazy dog")
+print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
 
-#for x in range(100):
-#  wa(mulP(Q,x+2)[1],'test') 
-#  wa(mulP(Q,x+2)[0],'test') 
+print("The next prime\n", nextPrime(3**100))
 
-e = random.randint(2,(prime+1)/12-2)
-print "Bob sends number e to Alice to verify her identity\n", e
-k = random.randint(2,(prime+1)/12-2)
-R = mulP(P,k)
-s = (k + x*e) % ((prime+1)/12)
-print "Alice calculate and sends to Bob point R and the number s\n", R, "\n", s 
-
-print "Bob verifies identity ", addP(R, mulP(Q,e)) == mulP(P,s)

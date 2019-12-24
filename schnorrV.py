@@ -108,30 +108,16 @@ def mulP(P,n):
   return resP
 
 message = '''
-Wikipedia 2019 
+In cryptography, a Schnorr signature is a digital signature
+produced by the Schnorr signature algorithm that was described 
+by Claus Schnorr. It is a digital signature scheme known for its
+simplicity,[1] among the first whose security is based on the 
+intractability of certain discrete logarithm problems.[1] 
 
-Die Schnorr-Signatur ist ein 1989/1991 vom 
-deutschen Mathematikprofessor Claus-Peter Schnorr 
-entworfenes kryptographisches Schema 
-für digitale Signaturen. Es leitet sich aus der 
-Schnorr-Identifikation ab,
-indem wie bei der Fiat-Shamir-Identifikation die 
-Interaktion durch den Einsatz einer 
-kryptographischen Hashfunktion ersetzt wird. 
+It is efficient and generates short signatures.[1]
 
-Die Sicherheit beruht auf der Komplexität 
-des Diskreten Logarithmus in endlichen Gruppen.
-
-Das Verfahren ist von Schnorr patentiert[1][2],
-die Schutzfrist ist inzwischen jedoch abgelaufen. 
-Es ist exklusiv an RSA lizenziert 
-(Siemens hat aber eine nicht-exklusive Lizenz). 
-
-Schnorr warf im Rahmen der Standardisierung IEEE P1363 
-der NIST vor, 
-mit dem von ihr entwickelten Signatur-Verfahren 
-Digital Signature Algorithm,
-kurz DSA, sein Patent zu verletzen.[3]'''
+It was covered by U.S. Patent 4,995,082 which expired in February 2008.
+'''
 
 P = [233732100584156704872253479128995381436279825]
 P.append(100381480487303697389898792062782541391754903)
@@ -140,14 +126,16 @@ print("x: ",P[0])
 print("y: ",P[1])
 
 
-publicKey = [100979136531575180417606819986092376219612918]
-publicKey.append(183736627514541634395430962528019329021853594)
+publicKey = [1365980310789738850776807563504970164719808]
+publicKey.append(8570338689453206975840082610152026678357526)
 print("The public key is the point: ")
 print("x: ",publicKey[0])
 print("y: ",publicKey[1])
-
-sig = [19053087314947258498044381589627815557873229]
-sig.append(38176880812593900277654738807580333175168198)
+'''
+  Insert the signature, s and e 
+'''
+sig = [45253720191432296454298011829343821337037309]
+sig.append(11246055374866181080732304687990008310661320)
 print("The signature is: ")
 print("s: ",sig[0])
 print("e: ",sig[1])

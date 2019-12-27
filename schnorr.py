@@ -1,13 +1,4 @@
 '''
-
-                            Online Python Compiler.
-                Code, Compile, Run and Debug python program online.
-Write your code in this editor and press "Run" button to execute it.
-
-'''
-
-print("Hello World")
-'''
   Schnorr Signature 
   Secure
   Simple curve: y^2 = x^3 - x (modulo prime)
@@ -46,12 +37,6 @@ def absorb_byte241(b):
     absorb_nibble241(b % 16)
     absorb_nibble241(b >> 4)
 
-def squeeze241(out, outlen):
-    global a241, i241, j241, w241, s241
-    shuffle241()
-    for v in range(outlen):
-        out.append(output241())
-
 def h(x):
   global a241, i241, j241, w241, s241
   i241 = j241 = a241 = 0
@@ -59,17 +44,12 @@ def h(x):
   s241 = []
   for ix in range(256):
     s241.append(ix)
-  '''
-  absorb all bytes
-  of the encoded message
-  '''
   for c in x.encode():
      absorb_byte241(c) 
-  res = []
-  squeeze241(res, 32) # 8*32 = 256 bits
+  shuffle241()
   out = 0 
-  for bx in res:
-    out = (out<<8) + bx
+  for bx in range(32):
+    out = (out<<8) + output241()
   return out
 
 def num2hextxt(x):
@@ -98,9 +78,10 @@ def nextPrime(p):
  return nextPrime_(p)
 
 def nextPrime_(p):
-  m_ =  5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47
+  m =  5 * 7 * 11 * 13 * 17 * 19 * 23
+  m *= 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p, m_) != 1 or gcd((p+1)>>2, m_) != 1:
+    while gcd(p, m) != 1 or gcd((p+1)>>2, m) != 1:
       p = p + 12 
     if (pow(7,p-1,p) != 1 or pow(7, ((p+1)>>2) - 1, (p+1)>>2) != 1):
       p = p + 12
@@ -175,30 +156,34 @@ P = [ x % prime, y % prime ]
 P = mulP(P, 4)
 
 message = '''
-Wikipedia 2019 
+In cryptography, a Schnorr signature is a digital signature
+produced by the Schnorr signature algorithm that was described 
+by Claus Schnorr. It is a digital signature scheme known for its
+simplicity,[1] among the first whose security is based on the 
+intractability of certain discrete logarithm problems.[1] 
 
-Die Schnorr-Signatur ist ein 1989/1991 vom 
-deutschen Mathematikprofessor Claus-Peter Schnorr 
-entworfenes kryptographisches Schema 
-für digitale Signaturen. Es leitet sich aus der 
-Schnorr-Identifikation ab,
-indem wie bei der Fiat-Shamir-Identifikation die 
-Interaktion durch den Einsatz einer 
-kryptographischen Hashfunktion ersetzt wird. 
+It is efficient and generates short signatures.[1]
 
-Die Sicherheit beruht auf der Komplexität 
-des Diskreten Logarithmus in endlichen Gruppen.
+It was covered by U.S. Patent 4,995,082 which expired in February 2008.
 
-Das Verfahren ist von Schnorr patentiert[1][2],
-die Schutzfrist ist inzwischen jedoch abgelaufen. 
-Es ist exklusiv an RSA lizenziert 
-(Siemens hat aber eine nicht-exklusive Lizenz). 
+OUTPUT:
+A prime greater than 2^141                                               
+p =  248359970965070966100215621849780240684422603                       
+The base point is:                                                       
+[x,y]:                                                                   
+ [213754921596700185067212257272351079152087106,
+ 184543119823406368705642531585330069262456675]                                                 
+The public key is the point: 
+x:  100979136531575180417606819986092376219612918
+y:  183736627514541634395430962528019329021853594
+                                                                         
+Result of verification  True                                             
+The quick brown fox jumps over the lazy dog:                             
+ h =  30e0c479a075a25de6af2e52a7f2ab7120b36b68bc7643ba4c26aa6b6e54c4c    
+The next prime                                                           
+ 515377520732011331036461129765621272702107569243                        
 
-Schnorr warf im Rahmen der Standardisierung IEEE P1363 
-der NIST vor, 
-mit dem von ihr entwickelten Signatur-Verfahren 
-Digital Signature Algorithm,
-kurz DSA, sein Patent zu verletzen.[3]'''
+'''
 
 privateKey = h( 'passwordX' ) # some random number
 print("The base point is: ")
@@ -225,4 +210,3 @@ hash = h("The quick brown fox jumps over the lazy dog")
 print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
 
 print("The next prime\n", nextPrime(3**100))
-

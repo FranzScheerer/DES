@@ -146,15 +146,6 @@ def signSchnorr(G, m, x):
   e = h(str(R[0]) + m) % ((prime+1)>>2)
   return [(k - x*e) % ((prime+1)>>2), e]
 
-#Generate the base point
-x = 1234567
-if pow(x**3 - x, (prime-1)>>1, prime) != 1:
-   x = prime - x 
-y = pow( x**3 - x, (prime+1)>>2, prime)
-P = [ x % prime, y % prime ]
-# To get a base point with prime order
-P = mulP(P, 4)
-
 message = '''
 In cryptography, a Schnorr signature is a digital signature
 produced by the Schnorr signature algorithm that was described 
@@ -184,8 +175,20 @@ The next prime
  515377520732011331036461129765621272702107569243                        
 
 '''
-
+#
+# From this password the private key
+# is calculated here
+#
 privateKey = h( 'passwordX' ) # some random number
+#Generate the base point
+x = 1234567
+if pow(x**3 - x, (prime-1)>>1, prime) != 1:
+   x = prime - x 
+y = pow( x**3 - x, (prime+1)>>2, prime)
+P = [ x % prime, y % prime ]
+# To get a base point with prime order
+P = mulP(P, 4)
+
 print("The base point is: ")
 print("x: ",P[0])
 print("y: ",P[1])
@@ -195,7 +198,14 @@ publicKey = mulP(P, privateKey)
 print("The public key is the point: ")
 print("x: ",publicKey[0])
 print("y: ",publicKey[1])
-
+#
+# The signature is calculatet as function of
+#
+# Base pont P
+# the message to sign
+# and the private Key 
+# that must be kept secret 
+# 
 sig = signSchnorr(P, message, privateKey)
 print("The signature is: ")
 print("s: ",sig[0])

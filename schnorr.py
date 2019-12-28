@@ -87,9 +87,11 @@ def nextPrime_(p):
   m =  5 * 7 * 11 * 13 * 17 * 19 * 23
   m *= 29 * 31 * 37 * 41 * 43 * 47
   while True:
-    while gcd(p, m) != 1 or gcd((p+1)>>2, m) != 1:
+    q = (p+1)//4
+    while gcd(p, m) != 1 or gcd(q, m) != 1:
       p = p + 12 
-    if (pow(7,p-1,p) != 1 or pow(7, ((p+1)>>2) - 1, (p+1)>>2) != 1):
+      q = q + 3
+    if (pow(7,p-1,p) != 1 or pow(7, q - 1, q) != 1):
       p = p + 12
       continue
     return p
@@ -227,3 +229,21 @@ hash = h("The quick brown fox jumps over the lazy dog")
 print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
 
 print("The next prime\n", nextPrime(3**100))
+ecc_a = 0
+ecc_b = 7
+ecc_prime = 2**256 - 2**32 - 977
+ecc_n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+#Generate the base point
+x = 1234567
+while pow(x**3 + ecc_a*x + ecc_b, (ecc_prime-1)//2, ecc_prime) != 1:
+   x = x + 1 
+y = pow( x**3 + ecc_a*x + ecc_b, (ecc_prime+1)//4, ecc_prime)
+P = [ x , y ]
+#print(mulP(P,ecc_n + 1))
+#print(P)
+sig = signSchnorr(P, message, privateKey)
+#Verification
+publicKey = mulP(P,privateKey)
+R = addP(mulP(P, sig[0]), mulP(publicKey, sig[1]))
+check = h(str(R[0])+message) % ecc_n == sig[1]
+print("\nResult of verification ", check)

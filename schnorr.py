@@ -7,6 +7,10 @@
   Message in line 177
   Copyright (c) Scheerer Software 2019 - all rights reserved 
 ''' 
+ecc_a = -1
+ecc_n = 1
+ecc_b = 0
+ecc_prime = 0
 
 def update241():
     global a241, i241, j241, w241, s241
@@ -46,6 +50,8 @@ def h(x):
     s241.append(ix)
   for c in x.encode():
      absorb_byte241(c) 
+  shuffle241()
+  shuffle241()
   shuffle241()
   out = 0 
   for bx in range(32):
@@ -93,11 +99,12 @@ def nextPrime_(p):
  are both primes.
 '''
 maxx = 131 * 2**141
-prime = nextPrime( h('Franz Scheerer') % maxx )
+ecc_prime = nextPrime( h('Franz Scheerer') % maxx )
+ecc_n = (ecc_prime + 1)//4
 '''
  This prime is safe
 ''' 
-print ("A prime greater than 2^141 \np = ", prime)
+print ("A prime greater than 2^141 \np = ", ecc_prime)
 
 '''
  Add point P and Q 
@@ -105,19 +112,20 @@ print ("A prime greater than 2^141 \np = ", prime)
  on the elliptic curve
 '''
 def addP(P,Q):
+  global ecc_prime, ecc_a
   x1 = P[0]
   x2 = Q[0]
   y1 = P[1] 
   y2 = Q[1] 
   if x1 == x2:
-     s = ((3*x1*x1 - 1) * pow(2*y1, prime-2, prime)) % prime
+     s = ((3*x1*x1 + ecc_a) * pow(2*y1, ecc_prime-2, ecc_prime)) % ecc_prime
   else:  
      if x1 < x2:
-        x1 = x1 + prime
-     s = ((y1-y2) * pow(x1-x2, prime-2, prime)) % prime
+        x1 = x1 + ecc_prime
+     s = ((y1-y2) * pow(x1-x2, ecc_prime-2, ecc_prime)) % ecc_prime
   xr =  (s*s) - x1 - x2
   yr = s * (x1-xr) - y1 
-  return [xr % prime, yr % prime]
+  return [xr % ecc_prime, yr % ecc_prime]
 
 '''
  n times the point P 
@@ -125,7 +133,6 @@ def addP(P,Q):
  is calculated using double and add.
 '''
 def mulP(P,n):
-  global prime
   resP = 'ZERO'
   PP = P
   while n != 0:
@@ -139,12 +146,12 @@ def mulP(P,n):
   return resP
 
 def signSchnorr(G, m, x):
-  global prime
+  global ecc_prime, ecc_n  
   # k is different if message m is different
   k = h(m + 'key value') 
   R = mulP(G,k)
-  e = h(str(R[0]) + m) % ((prime+1)>>2)
-  return [(k - x*e) % ((prime+1)>>2), e]
+  e = h(str(R[0]) + m) % ecc_n
+  return [(k - x*e) % ecc_n, e]
 
 message = '''
 In cryptography, a Schnorr signature is a digital signature
@@ -182,10 +189,10 @@ The next prime
 privateKey = h( 'passwordX' ) # some random number
 #Generate the base point
 x = 1234567
-if pow(x**3 - x, (prime-1)>>1, prime) != 1:
-   x = prime - x 
-y = pow( x**3 - x, (prime+1)>>2, prime)
-P = [ x % prime, y % prime ]
+while pow(x**3 + ecc_a*x + ecc_b, (ecc_prime-1)//2, ecc_prime) != 1:
+   x = x + 1 
+y = pow( x**3 + ecc_a*x + ecc_b, (ecc_prime+1)//4, ecc_prime)
+P = [ x , y ]
 # To get a base point with prime order
 P = mulP(P, 4)
 
@@ -213,7 +220,7 @@ print("e: ",sig[1])
 
 #Verification
 R = addP(mulP(P, sig[0]), mulP(publicKey, sig[1]))
-check = h(str(R[0])+message) % ((prime+1)>>2) == sig[1]
+check = h(str(R[0])+message) % ((ecc_prime+1)>>2) == sig[1]
 print("\nResult of verification ", check)
 
 hash = h("The quick brown fox jumps over the lazy dog")

@@ -32,7 +32,7 @@ def shuffle241():
 
 def absorb_nibble241(x):
     global a241, i241, j241, w241, s241
-    if a241 == 241:
+    if a241 == 63:
         shuffle241()
     s241[a241], s241[240 + x] = s241[240 + x], s241[a241]
     a241 = a241 + 1

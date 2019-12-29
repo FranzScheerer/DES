@@ -247,7 +247,7 @@ print("\nResult of verification ", check)
 hash = h("The quick brown fox jumps over the lazy dog")
 print ("The quick brown fox jumps over the lazy dog:\n h = ", num2hextxt(hash))
 
-print("The next prime greater than 2^300 is\n", nextPrime(3**100))
+print("The next prime greater than 3^100 is\n", nextPrime(3**100))
 '''
   secp256k1 - just to check it!
 '''  

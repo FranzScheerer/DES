@@ -149,9 +149,6 @@ The quick brown fox jumps over the lazy dog
 # PLEASE CHANGE - PLEASE CHANGE - PLEASE CHANGE
 #
 
-#Generate the private key from a password
-#privateKey = h( 'passwordX' ) 
-
 #Generate the base 
 
 P = [0x2942b8228093955f3857f765d8dfbf60dc977,                            

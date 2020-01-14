@@ -1,0 +1,81 @@
+class RSA:
+  def gcd(a,b):
+     while b > 0:
+        a,b = b,a % b
+     return a
+    
+  def RSAFindPrime(p):
+     while p % 6 != 5:
+        p = p + 1
+     m_ =  5 * 7 * 11 * 13 * 17 * 19
+     m_ *= 23 * 29 * 31 * 37 * 41 * 43 * 47
+     while True:
+        while RSA.gcd(p, m_) != 1:
+            p = p + 6 
+        if (pow(7,p-1,p) != 1):
+           p = p + 6
+           continue
+        return p
+
+  def inv(b,m):
+     s = 0
+     t = 1
+     a = m
+     while b != 1:
+       q = a//b
+       a, b = b, a - q*b
+       s, t = t, s - q*t
+     if t < 0:
+       t = t + m
+     return t
+
+def RSA_Prime(p):
+   return RSA.RSAFindPrime(p)
+   
+import hashlib
+def h512(x):
+    md = hashlib.md5("my password".encode())
+    out = 0 
+    r = 0 
+    while r < 4:
+       r += 1    
+       md.update(x.encode())    
+       for b in md.digest():
+          out = 256*out + b 
+    return out    
+'''
+   PLEASE CHANGE THE TWO PASSWORDS
+'''   
+p1 = RSA_Prime( h512('p1 first password') )
+p2 = RSA_Prime( h512('p2 second password') )
+d =  RSA.inv(3, 
+     ((p1-1)*(p2-1)) // RSA.gcd(p1-1,p2-1))
+print ("The public key is e = 3 and RSA_Modul:") 
+print ("n = ", p1 * p2)
+print ("The private key is n and \nd = ", d)
+
+message = '''
+Supernova = Gravistionsline
+
+Stehen zwei Sterne und der Beobachter exakt auf einer 
+Geraden, wird das Licht des vermeintlich verdeckten Sterns
+tatsächlich verstärkt, denn die Querschnittsfläche wird 
+zu einem Kreis aufgeweitet (siehe Gravitationsline). 
+
+Dies ist die wahre Ursache für Supernovae und 
+ferne Galaxien. Es handelt sich um nichts anderes als 
+Sternenbedeckungen.
+ 
+'''
+
+#
+# Calculated signature sig and public key n
+#
+n = p1 * p2
+sig = pow(h512(message), d, n)
+print('sig = ', sig)
+#
+# Verify using public key
+#
+print("Result of verification: ", pow(sig, 3, n) == h512(message))
+

@@ -128,7 +128,7 @@ I. Die klassische Berechnung
 Die Sonne, eine Punktmasse befinde sich im Ursrung
 unseres Koordinatensystems.
 
-Das Lichtteilchen bewege sich in froßer Entfernung x0
+Das Lichtteilchen bewege sich in großer Entfernung x0
 zur Sonne in x Richtung auf die Sonne zu. Mit der Licht-
 geschwingkeit c.
 

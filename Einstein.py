@@ -128,9 +128,12 @@ I. Die klassische Berechnung
 Die Sonne, eine Punktmasse befinde sich im Ursrung
 unseres Koordinatensystems.
 
-Das Lichtteilchen bewege sich in Entfernung a0 zur
-Sonne in x Richtung auf die Sonne zu. Mit der Licht-
+Das Lichtteilchen bewege sich in froßer Entfernung x0
+zur Sonne in x Richtung auf die Sonne zu. Mit der Licht-
 geschwingkeit c.
+
+Der Abstand zur y-Achse Y0 = R sei der Sonnenrandius
+und in guter Nährerung konstanr.
 
 Wir berechnen die Winkeländerung (Bogenmaß) entlang
 einer kurzen Wegstrecke dx. Das Licht legt die Strecke dx 
@@ -138,9 +141,9 @@ in der Zeit dt zurück.
 
 dt = dx/c 
 
-Dazu berechnen wir die jetzt Kraft auf das 
-Lichtteilchens senkrecht zu Strahlrichtung 
-also in y-Richtung. Durch Division durch die Masse 
+Dazu berechnen wir die jetzt Kraft nach Newtons Lraftgesetz
+auf das Lichtteilchens senkrecht zu Strahlrichtung 
+(y-Richtung). Durch Division durch die Masse 
 des Lichtteilchens könnten wir die Masse aus der 
 Energie E des Lichtteilchens berechnen.
 
@@ -150,20 +153,21 @@ Wir brauchen die Masse m tatsächlich gar nicht
 kennen, weil sie sich bei der Berechnung der 
 Geschschwingitkeitsänderung, der Beschleunigung
 herauskürzt. Aus den Beschleunigung können die 
-Geschwingkeitsänderung dv berechnen und daraus
-schließlich die Winkeländerung d(phi):
+Geschwingkeitsänderung dv denkrecht zur x-Axhse 
+berechnen und daraus schließlich die Winkeländerung 
 
 d(phi) = (1/c) ((GM)/r^2) (y/r) (dx/c)
 
        = ((GM)/c^2) y/r^3 dx
 
-Dabei ist r der Abstand des Leichtteilchens zur 
+Dabei ist r der Abstand des Lichtteilchens zur 
 Sonne.
   
-               r = sqrt ( x^2 + y^2 )
+               r = sqrt ( x*x + y*y )
                
 G ist die Gravitationskonstante und M die Masse 
-der Sonne.
+der Sonne. Die Abkürzung sqrt steht für square 
+root also die Quadratwurzel.
 
 Den Wert von y können wir in sehr guter Näherung 
 als konstant ansehen, da sich das Teilchen senkrecht 
@@ -171,7 +175,7 @@ dazu bewegt und die Winkeländerung nur minimal ist.
 
 Um den Wert der Ablenkung aus großer Entfernung zur 
 Sonne bis wieder in großer Entfernung zur Sonne zu 
-berechnen müssen wir die Winkeländerungen addieren.
+berechnen, müssen wir die Winkeländerungen addieren.
 
 Mathematisch läuft dies auf die Integration von 
 minus unendlich (-infty) bis plus unendlich (+infty)
@@ -182,8 +186,10 @@ https://www.wolframalpha.com
 Ergebnis der klassischen Berechnung:
 
 Winkelabweichung im Bogenmaß  
-(1 rad = 1° pi/180 = Bogensekunde * pi/(180 * (60*60))
+(1 rad = 1° mal pi/180 = Bogensekunde * pi/(180 * (60*60))
 pi = 3.1415.... die berühmte Kreiszahl
+
+Die gesamte Winkeländerung nach Integration:
 
 Delata phi  = 2 * (GM/c^2) / R
 

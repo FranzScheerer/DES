@@ -60,6 +60,53 @@ class ECHASH:
         p = p + 12
         continue
       return p
+      
+  def addP(P,Q):
+    global ecc_prime     
+    x1 = P[0]
+    x2 = Q[0]
+    y1 = P[1] 
+    y2 = Q[1] 
+    if x1 == x2:
+       s = ((3*x1*x1 - 1) * pow(2*y1, ecc_prime-2, 
+       ecc_prime)) % ecc_prime
+    else:  
+       if x1 < x2:
+          x1 = x1 + ecc_prime
+       s = ((y1-y2) * pow(x1-x2, ecc_prime-2, 
+       ecc_prime)) % ecc_prime
+    xr =  (s*s) - x1 - x2
+    yr = s * (x1-xr) - y1 
+    return [xr % ecc_prime, yr % ecc_prime]
+
+  def mulP(P,n):
+    global ecc_prime     
+    resP = 'ZERO'
+    PP = P
+    while n != 0:
+       if (n % 2 != 0):   
+         if resP == 'ZERO':
+            resP = PP
+         else:
+            resP = ECHASH.addP(resP,PP)
+       PP = ECHASH.addP(PP, PP) 
+       n >>= 1 
+    return resP
+
+  def signSchnorr(G, m, x):
+    global ecc_n     
+    k = h('password X' + m + 'key value') 
+    R = ECHASH.mulP(G,k) 
+    e = h(str(R[0]) + m) % ecc_n
+    return {'s': (k - x*e) % ecc_n, 'e': e}
+
+  def ECDSA_N(G, m, x):
+    global ecc_n     
+    k = h('password X' + m + 'key value') 
+    r = ECHASH.mulP(G,k)[0] % ecc_n     # the NONCE
+    kinv = pow(k, ecc_n-2, ecc_n)
+    z = h(m + str(r)) % ecc_n
+    return {'s': (kinv*(z + x*r)) % ecc_n, 'r': r}
     
 # 20 Bytes output like in SHA-1
 def h(x):
@@ -75,50 +122,6 @@ print ("p = ", ecc_prime)
 assert(ecc_prime > 2**141)
 
 ecc_n = (ecc_prime + 1)//4
-ecc_a = -1 
-ecc_b = 0 
-def addP(P,Q):
-  x1 = P[0]
-  x2 = Q[0]
-  y1 = P[1] 
-  y2 = Q[1] 
-  if x1 == x2:
-     s = ((3*x1*x1 + ecc_a) * pow(2*y1, ecc_prime-2, 
-     ecc_prime)) % ecc_prime
-  else:  
-     if x1 < x2:
-        x1 = x1 + ecc_prime
-     s = ((y1-y2) * pow(x1-x2, ecc_prime-2, 
-     ecc_prime)) % ecc_prime
-  xr =  (s*s) - x1 - x2
-  yr = s * (x1-xr) - y1 
-  return [xr % ecc_prime, yr % ecc_prime]
-
-def mulP(P,n):
-  resP = 'ZERO'
-  PP = P
-  while n != 0:
-     if (n % 2 != 0):   
-         if resP == 'ZERO':
-            resP = PP
-         else:
-            resP = addP(resP,PP)
-     PP = addP(PP, PP) 
-     n >>= 1 
-  return resP
-
-def signSchnorr(G, m, x):
-  k = h('password X' + m + 'key value') 
-  R = mulP(G,k) 
-  e = h(str(R[0]) + m) % ecc_n
-  return {'s': (k - x*e) % ecc_n, 'e': e}
-
-def ECDSA_N(G, m, x):
-  k = h('password X' + m + 'key value') 
-  r = mulP(G,k)[0] % ecc_n     # the NONCE
-  kinv = pow(k, ecc_n-2, ecc_n)
-  z = h(m + str(r)) % ecc_n
-  return {'s': (kinv*(z + x*r)) % ecc_n, 'r': r}
 
 message = '''
           DIE LICHTABLENKUNG DURCH SCHWERKRAFT
@@ -215,28 +218,26 @@ privateKey = h( 'passwordX' )
 
 #Generate the base point from another password
 x = h("password 1234567")
-if pow(x**3 + ecc_a*x + ecc_b, (ecc_prime-1)//2, 
-   ecc_prime) != 1:
+if pow(x**3 - x, (ecc_prime-1)//2, ecc_prime) != 1:
    x = ecc_prime - x 
-y = pow( x**3 + ecc_a*x + ecc_b, (ecc_prime+1)//4,
-    ecc_prime)
+y = pow( x**3 -x, (ecc_prime+1)//4, ecc_prime)
 P = [ x , y ]
 # To get a base point with prime order
-P = mulP(P, 4)
+P = ECHASH.mulP(P, 4)
 
 print("The base point is: \n P = ", P)
 
-publicKey = mulP(P, privateKey)
+publicKey = ECHASH.mulP(P, privateKey)
 
 print("The public key is the point: ")
 print ("publicKey = ", publicKey)
-sig = signSchnorr(P, message, privateKey)
+sig = ECHASH.signSchnorr(P, message, privateKey)
 print("The signature is: ")
 print("sig = ", sig)
 #Verification
-P1 = mulP(P, sig['s'])
-P2 = mulP(publicKey, sig['e'])
-r = addP(P1, P2)[0]
+P1 = ECHASH.mulP(P, sig['s'])
+P2 = ECHASH.mulP(publicKey, sig['e'])
+r  = ECHASH.addP(P1, P2)[0]
 assert(h(str(r)+message) % ecc_n == sig['e'])
 '''
    ECDSA_N with sig['r'] used as NONCE
@@ -254,14 +255,14 @@ assert(h(str(r)+message) % ecc_n == sig['e'])
    They can also be useful as initialization vectors and in
    cryptographic hash functions.
 '''
-sig = ECDSA_N(P, message, privateKey)
+sig = ECHASH.ECDSA_N(P, message, privateKey)
 print("The signature is: ")
 print("sig = ",  sig)
 
 #Verification
 z = h(message + str(sig['r'])) 
 sinv = pow(sig['s'], ecc_n-2, ecc_n)
-P1 = mulP(P, sinv * z)
-P2 = mulP(publicKey, sinv * sig['r'])
-r = addP(P1, P2)[0]
+P1 = ECHASH.mulP(P, sinv * z)
+P2 = ECHASH.mulP(publicKey, sinv * sig['r'])
+r = ECHASH.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )

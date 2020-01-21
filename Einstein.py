@@ -186,7 +186,9 @@ https://www.wolframalpha.com
 Ergebnis der klassischen Berechnung:
 
 Winkelabweichung im Bogenmaß  
-(1 rad = 1° mal pi/180 = Bogensekunde * pi/(180 * (60*60))
+(1 rad = 1° mal pi/180 
+
+1'' = Bogensekunde = pi / (180 * (60*60))
 pi = 3.1415.... die berühmte Kreiszahl
 
 Die gesamte Winkeländerung nach Integration:

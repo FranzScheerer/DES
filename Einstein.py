@@ -1,4 +1,14 @@
-class ECHASH:
+'''
+  Diese Klasse ist total genial, deshalb heißt sie 
+
+  EINSTEIN
+  
+  Copyright (c) 2020 Scheerer Software 
+  All rights reserved - alle Rechte vorbehalten 
+'''
+
+class EINSTEIN:
+
   def update(H):
     H.i = (H.i + H.w) % 256
     H.j = H.s[(H.j + H.s[H.i]) % 256]
@@ -6,32 +16,32 @@ class ECHASH:
 
   def shuffle(H):
     for v in range(256):
-        ECHASH.update(H)    
+        EINSTEIN.update(H)    
     H.w = (H.w + 2) % 256
     H.a = 0
 
   def absorb_nibble(H,x):
     if H.a == 63:
-        ECHASH.shuffle(H)
+        EINSTEIN.shuffle(H)
     H.s[H.a], H.s[240 + x] = H.s[240 + x], H.s[H.a]
     H.a = H.a + 1
 
   def absorb_byte(H,b):
-    ECHASH.absorb_nibble(H, b % 16)
-    ECHASH.absorb_nibble(H, b >> 4)
+    EINSTEIN.absorb_nibble(H, b % 16)
+    EINSTEIN.absorb_nibble(H, b >> 4)
 
   def h(H, msg, outlen):
     H.s = list(range(256))   
     H.a = H.i = H.j = 0
     H.w = 1
     for c in msg.encode():
-       ECHASH.absorb_byte(H,c)
-    ECHASH.shuffle(H)
-    ECHASH.shuffle(H)
-    ECHASH.shuffle(H)
+       EINSTEIN.absorb_byte(H,c)
+    EINSTEIN.shuffle(H)
+    EINSTEIN.shuffle(H)
+    EINSTEIN.shuffle(H)
     out = 0
     for v in range(outlen):
-        ECHASH.update(H)
+        EINSTEIN.update(H)
         out = (out << 8) + H.s[H.j]
     return out   
 
@@ -47,13 +57,13 @@ class ECHASH:
     m *= 29 * 31 * 37 * 41 * 43 * 47
     while True:
       q = (p+1)//4
-      x1 = ECHASH.gcd(p, m)
-      x2 = ECHASH.gcd(q, m)
+      x1 = EINSTEIN.gcd(p, m)
+      x2 = EINSTEIN.gcd(q, m)
       while x1 != 1 or x2 != 1:
         p = p + 12 
         q = q + 3
-        x1 = ECHASH.gcd(p, m)
-        x2 = ECHASH.gcd(q, m)
+        x1 = EINSTEIN.gcd(p, m)
+        x2 = EINSTEIN.gcd(q, m)
       x1 = pow(7, p-1, p)    
       x2 = pow(7, q-1, q)    
       if (x1 != 1 or x2 != 1):
@@ -88,34 +98,38 @@ class ECHASH:
          if resP == 'ZERO':
             resP = PP
          else:
-            resP = ECHASH.addP(resP,PP)
-       PP = ECHASH.addP(PP, PP) 
+            resP = EINSTEIN.addP(resP,PP)
+       PP = EINSTEIN.addP(PP, PP) 
        n >>= 1 
     return resP
 
   def signSchnorr(G, m, x):
     global ecc_n     
     k = h('password X' + m + 'key value') 
-    R = ECHASH.mulP(G,k) 
+    R = EINSTEIN.mulP(G,k) 
     e = h(str(R[0]) + m) % ecc_n
     return {'s': (k - x*e) % ecc_n, 'e': e}
 
   def ECDSA_N(G, m, x):
     global ecc_n     
     k = h('password X' + m + 'key value') 
-    r = ECHASH.mulP(G,k)[0] % ecc_n     # the NONCE
+    r = EINSTEIN.mulP(G,k)[0] % ecc_n     # the NONCE
     kinv = pow(k, ecc_n-2, ecc_n)
     z = h(m + str(r)) % ecc_n
     return {'s': (kinv*(z + x*r)) % ecc_n, 'r': r}
-    
-# 20 Bytes output like in SHA-1
+
+#    
+# The hash has 20 Bytes, 160 Bits output like 
+# the most famous hash function of the world 
+# SHA-1
+#
 def h(x):
-  ha = ECHASH()
-  return ECHASH.h(ha,x,20)     
+  ha = EINSTEIN()
+  return EINSTEIN.h(ha, x, 20)     
 
 maxx = 131 * 2**141
 h0 = h('generate prime X')
-ecc_prime = ECHASH.nextPrime( h0 % maxx )
+ecc_prime = EINSTEIN.nextPrime( h0 % maxx )
 ''' Yes, the prime is large enough'''
 print ("A prime greater than 2^141") 
 print ("p = ", ecc_prime)
@@ -182,7 +196,8 @@ berechnen, müssen wir die Winkeländerungen addieren.
 
 Mathematisch läuft dies auf die Integration von 
 minus unendlich (-infty) bis plus unendlich (+infty)
-hinaus. Das Ergbnis finden wir mit Wolfram Alpha:
+hinaus. Das Ergbnis finden wir zum Beispiel mit 
+Wolfram Alpha:
 
 https://www.wolframalpha.com
 
@@ -223,21 +238,21 @@ if pow(x**3 - x, (ecc_prime-1)//2, ecc_prime) != 1:
 y = pow( x**3 -x, (ecc_prime+1)//4, ecc_prime)
 P = [ x , y ]
 # To get a base point with prime order
-P = ECHASH.mulP(P, 4)
+P = EINSTEIN.mulP(P, 4)
 
 print("The base point is: \n P = ", P)
 
-publicKey = ECHASH.mulP(P, privateKey)
+publicKey = EINSTEIN.mulP(P, privateKey)
 
 print("The public key is the point: ")
 print ("publicKey = ", publicKey)
-sig = ECHASH.signSchnorr(P, message, privateKey)
+sig = EINSTEIN.signSchnorr(P, message, privateKey)
 print("The signature is: ")
 print("sig = ", sig)
 #Verification
-P1 = ECHASH.mulP(P, sig['s'])
-P2 = ECHASH.mulP(publicKey, sig['e'])
-r  = ECHASH.addP(P1, P2)[0]
+P1 = EINSTEIN.mulP(P, sig['s'])
+P2 = EINSTEIN.mulP(publicKey, sig['e'])
+r  = EINSTEIN.addP(P1, P2)[0]
 assert(h(str(r)+message) % ecc_n == sig['e'])
 '''
    ECDSA_N with sig['r'] used as NONCE
@@ -255,14 +270,14 @@ assert(h(str(r)+message) % ecc_n == sig['e'])
    They can also be useful as initialization vectors and in
    cryptographic hash functions.
 '''
-sig = ECHASH.ECDSA_N(P, message, privateKey)
+sig = EINSTEIN.ECDSA_N(P, message, privateKey)
 print("The signature is: ")
 print("sig = ",  sig)
 
 #Verification
 z = h(message + str(sig['r'])) 
 sinv = pow(sig['s'], ecc_n-2, ecc_n)
-P1 = ECHASH.mulP(P, sinv * z)
-P2 = ECHASH.mulP(publicKey, sinv * sig['r'])
-r = ECHASH.addP(P1, P2)[0]
+P1 = EINSTEIN.mulP(P, sinv * z)
+P2 = EINSTEIN.mulP(publicKey, sinv * sig['r'])
+r = EINSTEIN.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )

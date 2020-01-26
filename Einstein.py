@@ -156,17 +156,19 @@ in der Zeit dt zurück.
 
 dt = dx/c 
 
-Dazu berechnen wir die jetzt Kraft nach Newtons 
-Kraftgesetz auf das Teilchens senkrecht zu Strahlrichtung 
+Dazu berechnen wir die jetzt die Kraft nach Newtons 
+Kraftgesetz auf das Teilchens senkrecht zur Strahlrichtung 
 Durch Division durch die Masse  des Teilchens könnten wir 
 die Masse aus der Energie E des Lichtteilchens berechnen.
 
-m = E/c^2
+Die Masse des Photons:
+
+                      m = E/c^2
 
 Wir brauchen die Masse m tatsächlich gar nicht
 kennen, weil sie sich bei der Berechnung der 
 Geschschwingitkeitsänderung, der Beschleunigung
-herauskürzt. Aus den Beschleunigung können die 
+herauskürzt. Aus den Beschleunigung können wir die 
 Geschwingkeitsänderung dv denkrecht zur x-Axhse 
 berechnen und daraus schließlich die Winkeländerung 
 
@@ -174,10 +176,9 @@ d(phi) = dv/c = (1/c) ((GM)/r^2) (R/r) (dx/c)
 
        = ((GM)/c^2) R/r^3 dx
 
-Dabei ist r der Abstand des Lichtteilchens zur 
-Sonne.
+Dabei ist r der Abstand des Teilchens zur Sonne.
   
-               r = sqrt ( x*x + y*y )
+               r = sqrt ( x*x + R*R )
                
 G ist die Gravitationskonstante und M die Masse 
 der Sonne. Die Abkürzung sqrt steht für square 

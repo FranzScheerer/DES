@@ -118,12 +118,7 @@ class EINSTEIN:
     z = h(m + str(r)) % ecc_n
     return {'s': (kinv*(z + x*r)) % ecc_n, 'r': r}
 
-#    
-# The hash has 20 Bytes, 160 Bits output like 
-# the most famous hash function of the world 
-# SHA-1
-#
-def h(x):
+def h(x):         # output 20 bytes is enough with nonce 
   ha = EINSTEIN()
   return EINSTEIN.h(ha, x, 20)     
 
@@ -149,8 +144,11 @@ Das Lichtteilchen bewege sich in großer Entfernung x0
 zur Sonne in x Richtung auf die Sonne zu. Mit der Licht-
 geschwingkeit c.
 
-Der Abstand zur y-Achse Y0 = R sei der Sonnenrandius
-und in guter Nährerung konstanr.
+Der Abstand zur y-Achse 
+
+y = Y0 = R 
+
+sei der Sonnenrandius und in guter Nährerung konstant.
 
 Wir berechnen die Winkeländerung (Bogenmaß) entlang
 einer kurzen Wegstrecke dx. Das Licht legt die Strecke dx 
@@ -158,11 +156,10 @@ in der Zeit dt zurück.
 
 dt = dx/c 
 
-Dazu berechnen wir die jetzt Kraft nach Newtons Lraftgesetz
-auf das Lichtteilchens senkrecht zu Strahlrichtung 
-(y-Richtung). Durch Division durch die Masse 
-des Lichtteilchens könnten wir die Masse aus der 
-Energie E des Lichtteilchens berechnen.
+Dazu berechnen wir die jetzt Kraft nach Newtons 
+Kraftgesetz auf das Teilchens senkrecht zu Strahlrichtung 
+Durch Division durch die Masse  des Teilchens könnten wir 
+die Masse aus der Energie E des Lichtteilchens berechnen.
 
 m = E/c^2
 
@@ -173,9 +170,9 @@ herauskürzt. Aus den Beschleunigung können die
 Geschwingkeitsänderung dv denkrecht zur x-Axhse 
 berechnen und daraus schließlich die Winkeländerung 
 
-d(phi) = (1/c) ((GM)/r^2) (y/r) (dx/c)
+d(phi) = dv/c = (1/c) ((GM)/r^2) (R/r) (dx/c)
 
-       = ((GM)/c^2) y/r^3 dx
+       = ((GM)/c^2) R/r^3 dx
 
 Dabei ist r der Abstand des Lichtteilchens zur 
 Sonne.
@@ -186,7 +183,7 @@ G ist die Gravitationskonstante und M die Masse
 der Sonne. Die Abkürzung sqrt steht für square 
 root also die Quadratwurzel.
 
-Den Wert von y können wir in sehr guter Näherung 
+Den Wert von y = R können wir in sehr guter Näherung 
 als konstant ansehen, da sich das Teilchen senkrecht 
 dazu bewegt und die Winkeländerung nur minimal ist.
 
@@ -202,16 +199,17 @@ Wolfram Alpha:
 https://www.wolframalpha.com
 
 Ergebnis der klassischen Berechnung:
+----------------------------------------------------
 
 Winkelabweichung im Bogenmaß  
-(1 rad = 1° mal pi/180 
+Einheit des Winkels: 1 rad = 1° mal pi/180) 
 
 1'' = Bogensekunde = pi / (180 * (60*60))
 pi = 3.1415.... die berühmte Kreiszahl
 
 Die gesamte Winkeländerung nach Integration:
 
-Delata phi  = 2 * (GM/c^2) / R
+Delta phi  = 2 * (GM/c^2) / R
 
 Mit R dem Abstand in dem das Teilchen die Sonne 
 passiert. R ist größer oder gleich dem Sonnenradius,
@@ -221,13 +219,14 @@ versteht sich.
 Einstein sagt:
 Die Winkelabweicung ist genau:
 
-Delata phi  = 4 * (GM/c^2) / R
+Delta phi  = 4 * (GM/c^2) / R
 
 ... und wer kann mir das jetzt einmal erklären,
 woher kommt der zusätzliche Faktor zwei ?????????
 
-
+-----------------END OF MESSAGE------------------
 '''
+
 #Generate the private key from a password
 privateKey = h( 'passwordX' ) 
 
@@ -253,13 +252,16 @@ print("sig = ", sig)
 P1 = EINSTEIN.mulP(P, sig['s'])
 P2 = EINSTEIN.mulP(publicKey, sig['e'])
 r  = EINSTEIN.addP(P1, P2)[0]
+
+# Verify the Schnorr Signature
 assert(h(str(r)+message) % ecc_n == sig['e'])
+
 '''
    ECDSA_N with sig['r'] used as NONCE
 
    This algorithm is equivalent to Schnorr's signature.
    We can apply the same public and private key and 
-   the same message.
+   also the same message.
    
    In cryptography, a nonce is an arbitrary number 
    that can be used just once in a cryptographic 
@@ -270,8 +272,9 @@ assert(h(str(r)+message) % ecc_n == sig['e'])
    They can also be useful as initialization vectors and in
    cryptographic hash functions.
 '''
+
 sig = EINSTEIN.ECDSA_N(P, message, privateKey)
-print("The signature is: ")
+print("The ECDSA_N signature is: ")
 print("sig = ",  sig)
 
 #Verification

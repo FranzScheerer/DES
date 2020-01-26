@@ -50,6 +50,27 @@ class EINSTEIN:
       a,b = b,a % b
     return a
 
+  def PP(n):
+    pX = n * [True]
+    res = 1
+    k = 2
+    while k <= n:
+      if pX[k-2]:
+        res *= k
+        kk = 2*k
+        while kk <= n:
+          pX[kk-2] = False
+          kk += k
+      k += 1
+    return res  
+
+  def smooth(n,m):
+    g = EINSTEIN.gcd(n,m)
+    while g > 1:
+       n //= g
+       g = EINSTEIN.gcd(n,m)
+    return n == 1
+
   def nextPrime(p):
     while p % 12 != 7:
       p = p + 1
@@ -285,3 +306,5 @@ P1 = EINSTEIN.mulP(P, sinv * z)
 P2 = EINSTEIN.mulP(publicKey, sinv * sig['r'])
 r = EINSTEIN.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )
+
+

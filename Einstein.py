@@ -71,6 +71,16 @@ class EINSTEIN:
        g = EINSTEIN.gcd(n,m)
     return n == 1
 
+  def test(n,m,a):
+    cnt = 0
+    c = 0
+    while c < a:
+       x = n + c
+       c += 1 
+       if EINSTEIN.smooth(x,m):
+          cnt += 1
+          print(x, " is smooth number ",cnt, "\nof ", c, " numbers tested ")
+
   def nextPrime(p):
     while p % 12 != 7:
       p = p + 1
@@ -307,4 +317,19 @@ P2 = EINSTEIN.mulP(publicKey, sinv * sig['r'])
 r = EINSTEIN.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )
 
+print("Test security of RSA and Rabin Signature")
+print(5000)
+import random
+print("******************************************** 70 *********************")
+for x in range(20): 
+   EINSTEIN.test(random.randint(1,2**70), EINSTEIN.PP(50000), 10000)
+   print("x = ",x)
+print("******************************************** 80 *********************")
+for x in range(20): 
+   EINSTEIN.test(random.randint(1,2**80), EINSTEIN.PP(50000), 10000)
+   print("x = ",x)
+print("******************************************** 100 *********************")
+for x in range(20): 
+   EINSTEIN.test(random.randint(1,2**100), EINSTEIN.PP(200000), 10000)
+   print("x = ",x)
 

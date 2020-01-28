@@ -334,8 +334,13 @@ H = EINSTEIN()
 EINSTEIN.trueRandom(H)
 f = open('rand1000',"wb")
 i = 0
+import hashlib
+md = hashlib.md5("0".encode())
+
 while i < 1000:
   i += 1
-  EINSTEIN.update(H)
-  f.write(bytes([H.s[H.j]]))
+# EINSTEIN.update(H)
+  md.update("**".encode())
+#  f.write(bytes([H.s[H.j]]))
+  f.write(bytes([md.digest()[1]]))
 f.close()

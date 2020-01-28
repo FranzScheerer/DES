@@ -329,3 +329,13 @@ P1 = EINSTEIN.mulP(P, sinv * z)
 P2 = EINSTEIN.mulP(publicKey, sinv * sig['r'])
 r = EINSTEIN.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )
+
+H = EINSTEIN()
+EINSTEIN.trueRandom(H)
+f = open('rand1000',"wb")
+i = 0
+while i < 1000:
+  i += 1
+  EINSTEIN.update(H)
+  f.write(bytes([H.s[H.j]]))
+f.close()

@@ -6,9 +6,43 @@
   Copyright (c) 2020 Scheerer Software 
   All rights reserved - alle Rechte vorbehalten 
 '''
+import random
 
 class EINSTEIN:
 
+  def trueRandom(H):
+    H.a = random.randint(0,255)
+    H.i = random.randint(0,255)
+    H.j = random.randint(0,255)
+    H.w = 2*random.randint(0,127) + 1
+    H.s = list(range(256))
+    for i in range(1000):
+       H.s[H.i], H.s[H.j] = H.s[H.j], H.s[H.i]
+       H.i = random.randint(0,255)
+       H.j = random.randint(0,255)
+
+  def init(H):
+    H.i = H.j = H.a = 0
+    H.w = 13
+    H.s = [186, 133, 249, 206, 35, 127, 235, 58, 172, 156, 148, 137, 113,
+           147, 136, 204, 159, 45, 196, 243, 139, 229, 57, 149, 180, 247, 
+           185, 150, 162, 87, 23, 222, 146, 192, 173, 237, 119, 120, 43, 
+           32, 201, 8, 182, 248, 27, 6, 4, 233, 171, 36, 128, 106, 26, 152,
+           174, 68, 60, 116, 141, 67, 84, 129, 161, 199, 216, 143, 52, 244,
+           124, 51, 66, 215, 101, 25, 30, 135, 10, 220, 193, 33, 112, 231,
+           197, 98, 20, 93, 179, 175, 203, 208, 107, 75, 76, 221, 122, 21, 214, 
+           212, 11, 42, 130, 230, 251, 188, 111, 151, 86, 167, 24, 218, 31, 74, 
+           94, 163, 81, 183, 145, 255, 47, 9, 44, 88, 236, 252, 38, 28, 213, 104,
+           105, 228, 18, 15, 41, 92, 109, 110, 238, 241, 126, 83, 62, 176, 79,
+           253, 157, 195, 14, 232, 217, 138, 134, 39, 170, 227, 72, 40, 64,
+           12, 29, 131, 164, 114, 55, 224, 178, 100, 187, 48, 108, 99, 53, 19,
+           211, 226, 191, 54, 207, 91, 245, 117, 190, 169, 61, 96, 200, 59, 77,
+           65, 144, 210, 46, 198, 71, 202, 168, 240, 160, 2, 0, 123, 37, 194, 158,
+           22, 140, 166, 95, 7, 17, 50, 121, 97, 103, 70, 69, 13, 3, 242, 85, 118,
+           80, 89, 142, 219, 165, 223, 246, 73, 82, 90, 177, 125, 102, 5, 250, 49,
+           132, 16, 1, 155, 225, 181, 56, 239, 205, 63, 34, 189, 154, 209, 184, 78,
+           115, 254, 234, 153]
+       
   def update(H):
     H.i = (H.i + H.w) % 256
     H.j = H.s[(H.j + H.s[H.i]) % 256]
@@ -31,9 +65,8 @@ class EINSTEIN:
     EINSTEIN.absorb_nibble(H, b >> 4)
 
   def h(H, msg, outlen):
-    H.s = list(range(256))   
-    H.a = H.i = H.j = 0
-    H.w = 1
+    H = EINSTEIN()
+    EINSTEIN.init(H)
     for c in msg.encode():
        EINSTEIN.absorb_byte(H,c)
     EINSTEIN.shuffle(H)
@@ -228,7 +261,7 @@ pi = 3.1415.... die berühmte Kreiszahl
 
 Die gesamte Winkeländerung nach Integration:
 
-Delta phi  = 2 * (GM/c^2) / R
+         Delta phi  = 2 * (GM/c^2) / R
 
 R muss nicht der Sonnenradius sein, allgemein kann R
 als der Abstand in dem das Teilchen die Sonne 
@@ -238,7 +271,7 @@ oder gleich dem Radius der Sonne, versteht sich.
 Einstein sagte 1915 (Allgemeine Relativitätstheorie):
 Die Winkelabweichung ist genau:
 
-Delta phi  = 4 * (GM/c^2) / R
+         Delta phi = 4 * (GM/c^2) / R
 
 ... und wer kann mir das jetzt einmal erklären,
 woher kommt der zusätzliche Faktor zwei ?????????

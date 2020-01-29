@@ -225,14 +225,14 @@ herauskürzt. Aus den Beschleunigung können die
 Geschwingkeitsänderung dv denkrecht zur x-Achse 
 berechnen und daraus schließlich die Winkeländerung 
 
-d(phi) = dv/c = (1/c) ((GM)/r^2) (y/r) (dx/c)
+d(phi) = dv/c = (1/c) ((GM)/r^2) (R/r) (dx/c)
 
-       = ((GM)/c^2) y/r^3 dx
+       = ((GM)/c^2) R/r^3 dx
 
 Dabei ist r der Abstand des Lichtteilchens zur 
 Sonne.
   
-               r = sqrt ( x*x + y*y )
+               r = sqrt ( x*x + R*R )
                
 G ist die Gravitationskonstante und M die Masse 
 der Sonne. Die Abkürzung sqrt steht für square 
@@ -261,7 +261,7 @@ pi = 3.1415.... die berühmte Kreiszahl
 
 Die gesamte Winkeländerung nach Integration:
 
-         Delta phi  = 2 * (GM/c^2) / R
+         2 * (GM/c^2) / R
 
 R muss nicht der Sonnenradius sein, allgemein kann R
 als der Abstand in dem das Teilchen die Sonne 
@@ -271,7 +271,7 @@ oder gleich dem Radius der Sonne, versteht sich.
 Einstein sagte 1915 (Allgemeine Relativitätstheorie):
 Die Winkelabweichung ist genau:
 
-         Delta phi = 4 * (GM/c^2) / R
+         4 * (GM/c^2) / R
 
 ... und wer kann mir das jetzt einmal erklären,
 woher kommt der zusätzliche Faktor zwei ?????????
@@ -335,8 +335,18 @@ EINSTEIN.trueRandom(H)
 f = open('rand1000',"wb")
 i = 0
 import hashlib
-md = hashlib.md5("0".encode())
+md = hashlib.sha256("0".encode())
+'''
+   Hmmmmmm - es scheint tatsächlich total egal, ob wir MD5 oder unseren
+   neuen EINSTIEN.trueRandom(H). 
 
+   Mit RC4 lassen sich die Daten aber signifikant besser "komprimieren",
+   auch wenn die gzip-Dateien auch dann nicht kleiner sondern größer als
+   das Original sind. Doch bei einem Kilobyte sind es bei RC4 25 Bytes
+   mehr und mit EINSTIEN.trueRandom(H) oder MD5 sind es 32 Bytes. Doch dieses
+   Ergebnis ist reproduzierbar, auch wenn ich dafür keine wirkliche Erklärung
+   habe.
+'''
 while i < 1000:
   i += 1
 # EINSTEIN.update(H)

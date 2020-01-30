@@ -21,7 +21,7 @@ class EINSTEIN:
        H.i = random.randint(0,255)
        H.j = random.randint(0,255)
 
-  def init(H):
+  def initX(H):
     H.i = H.j = H.a = 0
     H.w = 13
     H.s = [186, 133, 249, 206, 35, 127, 235, 58, 172, 156, 148, 137, 113,
@@ -42,6 +42,11 @@ class EINSTEIN:
            80, 89, 142, 219, 165, 223, 246, 73, 82, 90, 177, 125, 102, 5, 250, 49,
            132, 16, 1, 155, 225, 181, 56, 239, 205, 63, 34, 189, 154, 209, 184, 78,
            115, 254, 234, 153]
+       
+  def init(H):
+    H.i = H.j = H.a = 0
+    H.w = 1
+    H.s = list(range(256)) 
        
   def update(H):
     H.i = (H.i + H.w) % 256
@@ -331,7 +336,8 @@ r = EINSTEIN.addP(P1, P2)[0]
 assert( r % ecc_n == sig['r'] )
 
 H = EINSTEIN()
-EINSTEIN.trueRandom(H)
+EINSTEIN.init(H)
+#EINSTEIN.trueRandom(H)
 f = open('rand1000',"wb")
 i = 0
 import hashlib
@@ -347,10 +353,10 @@ md = hashlib.sha256("0".encode())
    Ergebnis ist reproduzierbar, auch wenn ich dafür keine wirkliche Erklärung
    habe.
 '''
-while i < 1000:
+while i < 1000000:
   i += 1
-# EINSTEIN.update(H)
-  md.update("**".encode())
-#  f.write(bytes([H.s[H.j]]))
-  f.write(bytes([md.digest()[1]]))
+  EINSTEIN.update(H)
+#  md.update("**".encode())
+  f.write(bytes([H.s[H.j]]))
+#  f.write(bytes([md.digest()[1]]))
 f.close()

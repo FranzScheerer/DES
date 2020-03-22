@@ -36,7 +36,7 @@ Widerspruch.
 
 Wären die Beobachtungen bei sogenannten verschränkten
 Teilchen eindeutig vorausbestimmt, aus Eigenschaften 
-der Teichen vor der Messung, wären die Gesetzte der 
+der Teichen vor der Messung, wären die Gesetze der 
 elementaren Logik verletzt. Es gibt die vermeintlich 
 spukhafte Fernwirkung mit Überlichtgeschwingkeit, nicht 
 nur in der Quantenmechanik, zum Beispiel auch bei der 
@@ -125,10 +125,10 @@ also nicht wirklich genau, wo sich das Elektron befindet
 und letztlich nur eine Wahrscheinlichkeit bestimmen, es 
 an einem Ort anzutreffen.
 
-Jetzt nehmen wir doch einmal den Fall Drehimplus gleich null, 
-das Elektron schwingt also mitten durch den Kern. Aber wir 
-wissen nicht in welche Richtung. Wir können nur ausrechnen,
-mit welcher Wahrscheinlichkeit es sich im Volumen 
+Jetzt nehmen wir doch einmal den Fall Drehimplus gleich null. 
+In diesem Fall schwingt das Elektron mitten durch den Kern. 
+Aber wir  wissen nicht in welche Richtung. Wir können nur 
+ausrechnen, mit welcher Wahrscheinlichkeit es sich im Volumen 
 
 (4pi r^2) dr 
 
@@ -139,11 +139,11 @@ lichkeit am Kernort geringer. Da jedoch die Ellipse sehr
 lang gestreckt ist, kann das Elektron im Grundzustand bis
 zum doppelten Bohrradius hinausschwingen, aber nicht weiter! 
 
-Stimmt fast mit der Quantenmechanik überein, allerdings nicht 
-zu 100 Prozent. Insbesondere gibt es nur für die Zustände
-mit Bahndrehimpuls gleich null eine Wahrscheinlichkeit,
-dass sich das Elektron im Kern befindet. Dies gilt aber 
-auch nach Bohr-Sommerfeld.
+Diese Überlegungen stimmen fast mit den Vorhersagen der 
+Quantenmechanik überein, allerdings nicht zu 100 Prozent.
+Insbesondere gibt es nur für die Zustände mit Bahndrehimpuls
+gleich null eine Wahrscheinlichkeit, dass sich das Elektron
+im Kern befindet. Dies gilt aber auch nach Bohr-Sommerfeld.
 
 Spontaner Zerfall und Zufall
 ----------------------------- 
@@ -171,12 +171,12 @@ Wir beschränken uns auf einen einfachen Spezialfall:
    Falls p, (p+1) teilbar durch 4,
    p,(p+1)/4 zwei Primzahlen sind,
    dann liegen genau (p+1) Punkte auf der elliptischen
-   Kurve
+   Kurve inklusive dem virtuellen Punkt im Unendlichen.
    
    EC: y^2 = x^3 - x mod p 
    
-   Dabei zählt auch der virtuelle Punkt im Unendlichen
-   als ein weiterer Punkt.
+   Dabei zählt auch der virtuelle Punkt im Unendlichen,
+   das neutrale Element, als ein weiterer Punkt.
    
    Es ist total einfach - 
    hat aber scheinbar niemand verstanden.

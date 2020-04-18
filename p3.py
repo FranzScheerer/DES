@@ -1,4 +1,5 @@
 '''
+x = [3804. 3485, 3261, 3022, 2871]
 Gibt es echten Zufall?
 
 Die Physiker sagen, etwa der radioaktive Zerfall sei
@@ -356,8 +357,19 @@ assert(ecc_prime > 2**141)
 ecc_n = (ecc_prime + 1)//4
 ecc_a = -1 
 ecc_b = 0 
-
+#
+#               H I N G U C K E R
+#
 message = '''
+Der Blickfang, Hingucker respektive Eyecatcher[1], 
+ist in der Werbung und allen visuellen Medien ein 
+Grafik- oder Text-Element, das die Aufmerksamkeit des
+Betrachters auf eine bestimmte (Werbe-)Botschaft lenken
+soll.[2] Als Blickfang werden Bilder oder Piktogramme, 
+aber auch markante Slogans in auffälliger Typografie 
+eingesetzt, die eine Orientierungsreaktion 
+hin zur Erregung der Aufmerksamkeit erzielen wollen.
+
 Wo ist dann das Teilchen?
 Klar doch - überall wo das Feld nicht null ist!
 Was ist dann eigentlich das Teilchen?

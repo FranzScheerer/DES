@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+<h2>My First JavaScript</h2>
+
+<button type="button"
+onclick="document.getElementById('demo').innerHTML = Date()">
+Click me to display Date and Time.</button>
+
+
+<h2>What Can JavaScript Do?</h2>
+
+<p id="demo">Some text ...X</p>
+
+<button type="button" onclick='document.getElementById("demo").innerHTML = "Hello JavaScript!"'>Click Me!</button>
+<script>
+var a = 0, i = 0, j = 0, w = 1, s = [256], out = [32];
+
+function hex2(x){
+  var res = ''
+  if (x/16 < 10) 
+     res = res + String.fromCharCode(x/16 + '0'.charCodeAt(0));
+  else
+     res = res + String.fromCharCode(x/16 + 'A'.charCodeAt(0) - 10);
+  if (x % 16 < 10) 
+     res = res + String.fromCharCode(x%16 + '0'.charCodeAt(0));
+  else
+     res = res + String.fromCharCode(x%16 + 'A'.charCodeAt(0) - 10);
+  return res;   
+}
+
+function init()
+{
+    a = i = j = 0
+    w = 1
+    for (var v = 0; v < 256; v++) 
+        s[v] = v;
+}
+
+function update()
+{
+    i = (i + w) % 256
+    j = s[(j + s[i]) % 256]
+    tmp = s[i]
+    s[i] = s[j]
+    s[j] = tmp
+}
+
+function shuffle()
+{
+    for (v = 0; v < 256; v++) 
+        update()
+    w = (w + 2) % 256
+    a = 0
+}
+
+function absorb_nibble(x)
+{
+    if (a == 63)
+       shuffle()
+    tmp = s[a]
+    s[a] = s[240 + x]
+    s[240 + x] = tmp
+    a = a + 1
+}
+
+function absorb_byte(b)
+{
+    absorb_nibble(b % 16)
+    absorb_nibble(Math.floor(b / 16))
+}
+
+function output()
+{
+    update()
+    return s[j]
+}
+
+function squeeze(out, outlen)
+{
+    shuffle()
+    shuffle()
+    shuffle()
+    for (v = 0; v < outlen; v++) 
+        out[v] = output()
+}
+
+function MD(txt,r){
+  init()
+  for ( ii = 0; ii < txt.length; ii++ )
+    absorb_byte(txt.charCodeAt(ii))
+  squeeze(out, 32*r)
+  return out
+}
+function h(x,r){
+  var res = bigInt(0)
+  ha = MD(x,r)
+  for (i=0;i<r*32;i++)
+    res = res.times(256).add(ha[i])
+  return res
+} 
+var n =  bigInt("544845798437034147813970220138333987621430679986481798114878366358039645044640839016562592992182295729297055403527641541474193637526754279807760301500838475060886302283525587864323561325798605510349176122305005643374030078713701119904568426692953907025821012523562729748486268943256303301939655264864764726938079844656263480124043189289333164849621435080198734518829924142968573566217")
+var sig =  bigInt("443291633392732864347924038416210504042341809352721082401969452211117292687009447979327432956825583473023154116241417993169621742994389387756299768148595207123229028858863658784810677133770538959898748101646911970002401633988118067491382261523174047057506986130565206930567771655456879175710655107402661913026520022183210950010768371711661828777505731278877624102202122947950930147496")
+
+var msg = document.getElementById("demo").innerHTML
+var hash = h(msg,5).mod(n)
+var sig = sig.times(sig).mod(n)
+var result = sig.equals(hash)
+
+document.getElementById("demo").innerHTML = "Hello JavaScript! hash = " + result
+</script>
+
+</body>
+</html>
+
+
+
+
+
